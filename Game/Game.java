@@ -178,7 +178,7 @@ public class Game {
             winLose = "win";
         else
             winLose = "lose";
-        System.out.println("Game over! You " + g.getGameState() + "!");
+        System.out.println("Game over! You " + winLose + "!");
     }
 
 }
