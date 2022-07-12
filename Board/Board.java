@@ -1,5 +1,8 @@
 package Board;
 
+import Game.Posn;
+import Game.UpdateTracker;
+
 public class Board {
 
     //  A Board has an array of Cells, and also stores the numbers of rows and
@@ -7,13 +10,15 @@ public class Board {
     //      necessary operations on the cells in the board, and are described
     //      in detail before their declarations.
 
-    private Cell[][] board;
+    private final Cell[][] board;
     private int nRows, nCols;
+    private final UpdateTracker updateTracker;
 
-    public Board(int rows, int cols) {
+    public Board(int rows, int cols, UpdateTracker tracker) {
         board = new Cell[rows][cols];
         nRows = rows;
         nCols = cols;
+        updateTracker = tracker;
     }
 
     //  Takes a number of mines, and the location of the first click.
@@ -91,7 +96,10 @@ public class Board {
 
     //  Simply toggles the isFlagged field of the given cell
     public int rightClickCell(int row, int col) {
-        return board[row][col].toggleFlagged();
+        int status = board[row][col].toggleFlagged();
+        if (status != Cell.FLAG_UNCHANGED)
+            updateTracker.addUpdate(new Posn(row, col));
+        return status;
     }
 
     //  Clicks the given cell, and returns a boolean describing whether a mine
@@ -117,6 +125,7 @@ public class Board {
             return false;
         } else if (wasRevealed && minesAdjacent != 0 && minesAdjacent == getFlagsAdjacent(row, col))
             return clickSurrounding(row, col);
+        updateTracker.addUpdate(new Posn(row, col));
         return false;
     }
 
@@ -125,6 +134,7 @@ public class Board {
     //      recursively called for all cells adjacent to it.
     private void chainClickCells(int row, int col) {
         board[row][col].clickCell();
+        updateTracker.addUpdate(new Posn(row, col));
         int minesAdjacent = ((EmptyCell)board[row][col]).getMinesAdjacent();
         if (minesAdjacent == 0)
             for (int i=row-1; i<=row+1; i++)
@@ -147,6 +157,8 @@ public class Board {
                     clickedMine = (clickedMine || board[i][j].clickCell());
                     if (board[i][j] instanceof EmptyCell && ((EmptyCell)board[i][j]).getMinesAdjacent() == 0)
                         chainClickCells(i,j);
+                    else
+                        updateTracker.addUpdate(new Posn(row, col));
                 }
         return clickedMine;
     }
@@ -190,8 +202,10 @@ public class Board {
     //      and the full board is shown to the player upon game over.
     public void setRevealed() {
         for (int i=0; i<nRows; i++)
-            for (int j=0; j<nCols; j++)
+            for (int j=0; j<nCols; j++) {
                 board[i][j].setRevealed();
+                updateTracker.addUpdate(new Posn(i, j));
+            }
     }
 
 }

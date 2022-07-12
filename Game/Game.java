@@ -22,22 +22,22 @@ public class Game {
     public static final int INTERMEDIATE = 1;
     public static final int EXPERT = 2;
 
-    private Board board;
+    private final Board board;
     private int gameState;
     private boolean emptyBoard;
     private int minesMinusFlags;
 
-    public Game(int difficulty) {
+    public Game(int difficulty, UpdateTracker tracker) {
         emptyBoard = true;
         gameState = IN_PROGRESS;
         if (difficulty == BEGINNER) {
-            board = new Board(9, 9);
+            board = new Board(9, 9, tracker);
             minesMinusFlags = 10;
         } else if (difficulty == INTERMEDIATE) {
-            board = new Board(16, 16);
+            board = new Board(16, 16, tracker);
             minesMinusFlags = 40;
         } else { // difficulty == EXPERT
-            board = new Board(16, 30);
+            board = new Board(16, 30, tracker);
             minesMinusFlags = 99;
         }
     }
@@ -129,7 +129,7 @@ public class Game {
             diff = INTERMEDIATE;
         else // input.equals("expert")
             diff = EXPERT;
-        Game g = new Game(diff);
+        Game g = new Game(diff, new UpdateTracker());
         System.out.println( "Command format: \n" +
                             "   lclick row col       -- left click cell at given pos \n" +
                             "   rclick row col       -- right click cell at given pos \n");
