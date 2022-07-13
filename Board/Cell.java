@@ -52,6 +52,13 @@ public abstract class Cell {
         return FLAG_CLEARED;
     }
 
+    //  Used when clearing larger areas of cells adjacent to 0 mines.
+    //      When the cells surrounding a cell with 0 adjacent mines, this is
+    //      the only time a flagged cell can be cleared.
+    public void unflag() {
+        flagged = false;
+    }
+
     //  clickCell will return true if called by a MineCell, and false if called
     //      by an EmptyCell. This return value indicates whether the click
     //      resulted in a loss.

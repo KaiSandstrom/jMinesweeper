@@ -103,7 +103,7 @@ public class Game {
     //  Used to print the board, for debugging and functionality testing before
     //      the implementation of the GUI.
     public void printBoard() {
-        System.out.print(board.toString());
+        System.out.print(board);
     }
 
     //  This main method is temporary, as in this early stage of development,

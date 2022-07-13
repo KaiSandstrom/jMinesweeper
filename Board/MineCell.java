@@ -18,6 +18,7 @@ public class MineCell extends Cell {
         this.exploded = false;
     }
 
+    @Override
     public boolean clickCell() {
         if (flagged)
             return false;
@@ -26,6 +27,7 @@ public class MineCell extends Cell {
     }
 
     // See explanation in Cell.java
+    @Override
     public String getViewState() {
         if (flagged)
             return "flagged";
@@ -37,6 +39,7 @@ public class MineCell extends Cell {
     }
 
     // See explanation in Cell.java
+    @Override
     public String toString() {
         if (flagged)
             return "F";

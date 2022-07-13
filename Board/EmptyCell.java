@@ -27,6 +27,7 @@ public class EmptyCell extends Cell {
         minesAdjacent++;
     }
 
+    @Override
     public boolean clickCell() {
         if (!flagged)
             revealed = true;
@@ -34,6 +35,7 @@ public class EmptyCell extends Cell {
     }
 
     // See explanation in Cell.java
+    @Override
     public String getViewState() {
         if (flagged && revealed)
             return "falseFlagged";
@@ -48,6 +50,7 @@ public class EmptyCell extends Cell {
     }
 
     // See explanation in Cell.java
+    @Override
     public String toString() {
         if (flagged && revealed)
             return "N";

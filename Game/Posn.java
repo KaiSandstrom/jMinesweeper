@@ -12,6 +12,10 @@ public class Posn {
         col = c;
     }
 
+    public boolean equals(Posn p) {
+        return (p.row == row && p.col == col);
+    }
+
     public int row() {
         return row;
     }

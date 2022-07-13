@@ -11,7 +11,7 @@ public class Board {
     //      in detail before their declarations.
 
     private final Cell[][] board;
-    private int nRows, nCols;
+    private final int nRows, nCols;
     private final UpdateTracker updateTracker;
 
     public Board(int rows, int cols, UpdateTracker tracker) {
@@ -115,8 +115,10 @@ public class Board {
     //      clicked and the game is over.
     public boolean leftClickCell(int row, int col) {
         boolean wasRevealed = board[row][col].isRevealed();
-        if (board[row][col].clickCell())
+        if (board[row][col].clickCell()) {
+            updateTracker.addUpdate(new Posn(row, col));
             return true;
+        }
         if (board[row][col].isFlagged())
             return false;
         int minesAdjacent = ((EmptyCell)board[row][col]).getMinesAdjacent();
@@ -133,6 +135,7 @@ public class Board {
     //      and if the given cell is not adjacent to any mines, this method is
     //      recursively called for all cells adjacent to it.
     private void chainClickCells(int row, int col) {
+        board[row][col].unflag();
         board[row][col].clickCell();
         updateTracker.addUpdate(new Posn(row, col));
         int minesAdjacent = ((EmptyCell)board[row][col]).getMinesAdjacent();
