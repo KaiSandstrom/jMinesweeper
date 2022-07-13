@@ -28,14 +28,14 @@ public class MineCell extends Cell {
 
     // See explanation in Cell.java
     @Override
-    public String getViewState() {
+    public int getViewState() {
         if (flagged)
-            return "flagged";
+            return FLAGGED;
         if (exploded)
-            return "revealedExploded";
+            return EXPLODED_MINE;
         if(revealed)
-            return "revealedMine";
-        return "unrevealed";
+            return REVEALED_MINE;
+        return UNREVEALED;
     }
 
     // See explanation in Cell.java

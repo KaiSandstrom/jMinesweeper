@@ -63,11 +63,14 @@ public class Game {
     //      for an empty board, the cell is clicked, and this method sets the
     //      game state flags accordingly.
     public void leftClickCell(int row, int col) {
+        if (gameState != IN_PROGRESS)
+            return;
         if (emptyBoard) {
             board.populateBoard(row, col, minesMinusFlags);
             emptyBoard = false;
         }
         if (board.leftClickCell(row, col)) {
+            board.setRevealed();
             gameState = OVER_LOSS;
         }
         updateWinCondition();
@@ -81,6 +84,8 @@ public class Game {
     //      flagged and all non-flagged cells are revealed, the game state
     //      flags are set accordingly.
     public void rightClickCell(int row, int col) {
+        if (gameState != IN_PROGRESS)
+            return;
         if (emptyBoard) {
             board.populateBoard(-2, -2, minesMinusFlags);
             emptyBoard = false;
@@ -96,7 +101,7 @@ public class Game {
     //  Simply calls the board's getViewState method. Used by the GUI, which
     //      will be implemented in a later update, to determine which image to
     //      draw for each cell.
-    public String getViewState(int row, int col) {
+    public int getViewState(int row, int col) {
         return board.getViewState(row, col);
     }
 

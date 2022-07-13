@@ -26,6 +26,21 @@ public abstract class Cell {
         this.flagged = false;
     }
 
+    public static final int REVEALED_BLANK = 0;
+    public static final int REVEALED_1 = 1;
+    public static final int REVEALED_2 = 2;
+    public static final int REVEALED_3 = 3;
+    public static final int REVEALED_4 = 4;
+    public static final int REVEALED_5 = 5;
+    public static final int REVEALED_6 = 6;
+    public static final int REVEALED_7 = 7;
+    public static final int REVEALED_8 = 8;
+    public static final int UNREVEALED = 9;
+    public static final int FLAGGED = 10;
+    public static final int FALSE_FLAGGED = 11;
+    public static final int REVEALED_MINE = 12;
+    public static final int EXPLODED_MINE = 13;
+
     public boolean isRevealed() {
         return revealed;
     }
@@ -66,7 +81,7 @@ public abstract class Cell {
 
     //  This method is used by the GUI, which will be added in a later update,
     //      to determine which image to display for each cell.
-    public abstract String getViewState();
+    public abstract int getViewState();
 
     //  toString's implementations in Cell's subclasses differ only in their
     //      return values -- toString returns 1-character strings, for the

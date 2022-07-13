@@ -36,17 +36,17 @@ public class EmptyCell extends Cell {
 
     // See explanation in Cell.java
     @Override
-    public String getViewState() {
+    public int getViewState() {
         if (flagged && revealed)
-            return "falseFlagged";
+            return FALSE_FLAGGED;
         if (flagged)
-            return "flagged";
+            return FLAGGED;
         if (!revealed)
-            return "unrevealed";
+            return UNREVEALED;
         if (minesAdjacent == 0)
-            return "revealedBlank";
+            return REVEALED_BLANK;
         else
-            return "revealedNumber" + minesAdjacent;
+            return minesAdjacent;
     }
 
     // See explanation in Cell.java

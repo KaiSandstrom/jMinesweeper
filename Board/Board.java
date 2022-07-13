@@ -161,16 +161,16 @@ public class Board {
                     if (board[i][j] instanceof EmptyCell && ((EmptyCell)board[i][j]).getMinesAdjacent() == 0)
                         chainClickCells(i,j);
                     else
-                        updateTracker.addUpdate(new Posn(row, col));
+                        updateTracker.addUpdate(new Posn(i, j));
                 }
         return clickedMine;
     }
 
     //  Used by the GUI to determine which image to display for the cell at the
     //      given coordinates.
-    public String getViewState(int row, int col) {
+    public int getViewState(int row, int col) {
         if (board[row][col] == null)
-            return "unrevealed";
+            return Cell.UNREVEALED;
         return board[row][col].getViewState();
     }
 
@@ -206,8 +206,10 @@ public class Board {
     public void setRevealed() {
         for (int i=0; i<nRows; i++)
             for (int j=0; j<nCols; j++) {
-                board[i][j].setRevealed();
-                updateTracker.addUpdate(new Posn(i, j));
+                if (board[i][j] instanceof MineCell || board[i][j].isFlagged()) {
+                    board[i][j].setRevealed();
+                    updateTracker.addUpdate(new Posn(i, j));
+                }
             }
     }
 
