@@ -23,6 +23,7 @@ public class Game {
     public static final int EXPERT = 2;
 
     private final Board board;
+    private final UpdateTracker updateTracker;
     private int gameState;
     private boolean emptyBoard;
     private int minesMinusFlags;
@@ -40,6 +41,7 @@ public class Game {
             board = new Board(16, 30, tracker);
             minesMinusFlags = 99;
         }
+        updateTracker = tracker;
     }
 
     public int getGameState() {
@@ -48,6 +50,10 @@ public class Game {
 
     public int getMinesRemaining() {
         return minesMinusFlags;
+    }
+
+    public UpdateTracker getUpdateTracker() {
+        return updateTracker;
     }
 
     private void updateWinCondition() {
