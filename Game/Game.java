@@ -23,11 +23,13 @@ public class Game {
 
     private final Board board;
     private final UpdateTracker updateTracker;
+    private final int difficulty;
     private int gameState;
     private boolean emptyBoard;
     private int minesMinusFlags;
 
-    public Game(int difficulty, UpdateTracker tracker) {
+    public Game(int diff, UpdateTracker tracker) {
+        difficulty = diff;
         emptyBoard = true;
         gameState = IN_PROGRESS;
         if (difficulty == BEGINNER) {
@@ -45,6 +47,10 @@ public class Game {
 
     public int getGameState() {
         return gameState;
+    }
+
+    public int getDifficulty() {
+        return difficulty;
     }
 
     public int getMinesRemaining() {

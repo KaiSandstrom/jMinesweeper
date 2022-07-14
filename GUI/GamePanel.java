@@ -1,10 +1,23 @@
 package GUI;
-;
+
 import Game.*;
 import javax.swing.*;
 import java.awt.*;
 
 public class GamePanel {
+
+    //  The GamePanel holds a JPanel that contains the two main dynamic regions
+    //      of the game window: the board, and the info panel. The
+    //      board is described in CellBoardPanel, and is placed in the
+    //      BorderLayout.CENTER region of the GamePanel. The East, West, and
+    //      South regions contain only border graphics. The North region, also
+    //      using BorderLayout, contains the info panel in its Center region,
+    //      and border graphics everywhere else.
+
+    //  Since the ActionListener associated with the smiley button element of
+    //      the info panel must invoke a call to reset the game, the info panel
+    //      is not split off into its own class. This may be changed in the
+    //      future.
 
     public static final ImageIcon borderTop = new ImageIcon("Image/borderTop.png");
     public static final ImageIcon borderRight = new ImageIcon("Image/borderRight.png");
@@ -19,17 +32,28 @@ public class GamePanel {
     public static final ImageIcon borderMidRight = new ImageIcon("Image/borderMidRight.png");
 
     private final int rows, cols;
-    private final Game game;
     private final JPanel gamePanel;
+    private Game game;
 
-    public GamePanel(int nRows, int nCols, Game g) {
-        rows = nRows;
-        cols = nCols;
-        game = g;
+    public GamePanel(int difficulty) {
+        switch (difficulty) {
+            case Game.BEGINNER:
+                rows = 9; cols = 9; break;
+            case Game.EXPERT:
+                rows = 16; cols = 30; break;
+            case Game.INTERMEDIATE:
+            default:
+                rows = 16; cols = 16;
+        }
+        game = new Game(difficulty, new UpdateTracker());
         gamePanel = new JPanel(new BorderLayout());
         initialize();
     }
 
+    //  First creates the border, which varies in size based on difficulty.
+    //      The info panel will eventually be implemented, but for now a
+    //      placeholder "PROTOTYPE" label takes its place. Next, the cell board
+    //      is added.
     private void initialize() {
         JPanel south = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         south.add(new JLabel(borderBLCorner));
@@ -83,6 +107,14 @@ public class GamePanel {
 
         CellBoardPanel cellBoardPanel = new CellBoardPanel(rows, cols, game);
         gamePanel.add(cellBoardPanel.getBoard(), BorderLayout.CENTER);
+    }
+
+    //  Will be called when the smiley icon in the info panel is pressed.
+    private void reset() {
+        Game newGame = new Game(game.getDifficulty(), new UpdateTracker());
+        CellBoardPanel cellBoardPanel = new CellBoardPanel(rows, cols, newGame);
+        gamePanel.add(cellBoardPanel.getBoard(), BorderLayout.CENTER);
+        game = newGame;
     }
 
     public JPanel getGamePanel() {

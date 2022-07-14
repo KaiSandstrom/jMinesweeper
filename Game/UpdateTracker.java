@@ -56,4 +56,8 @@ public class UpdateTracker implements Iterable<Posn> {
         }
         return false;
     }
+
+    public void clear() {
+        updated.clear();
+    }
 }

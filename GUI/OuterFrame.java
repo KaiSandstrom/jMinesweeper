@@ -5,8 +5,12 @@ import Game.*;
 
 public class OuterFrame {
 
+    //  This JFrame is the game window. It holds one element, a JPanel returned
+    //      by a GamePanel object. Eventually, this panel will include menus,
+    //      and selecting a new difficulty will cause a new GamePanel to be
+    //      created and replace the previous one, causing the JFrame to resize.
+
     private final JFrame frame;
-    private Game game;
 
     public OuterFrame() {
         frame = new JFrame();
@@ -14,23 +18,11 @@ public class OuterFrame {
     }
 
     public void initPanel(int difficulty) {
-        int rows, cols;
-        switch (difficulty) {
-            case Game.BEGINNER:
-                rows = 9; cols = 9; break;
-            case Game.EXPERT:
-                rows = 16; cols = 30; break;
-            case Game.INTERMEDIATE:
-            default:
-                rows = 16; cols = 16;
-        }
         frame.setTitle("jMinesweeper by Kai Sandstrom");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setResizable(false);
 
-        UpdateTracker updateTracker = new UpdateTracker();
-        game = new Game(difficulty, updateTracker);
-        GamePanel gamePanel = new GamePanel(rows, cols, game);
+        GamePanel gamePanel = new GamePanel(difficulty);
         frame.add(gamePanel.getGamePanel());
 
         frame.pack();

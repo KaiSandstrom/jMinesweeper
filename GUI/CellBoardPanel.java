@@ -7,9 +7,13 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 
 public class CellBoardPanel {
+
+    //  A CellBoardPanel represents the area of the game window containing the
+    //      grid of cell buttons. On each click, the proper call must be made
+    //      to the Game object to process the operation, and the cells must
+    //      display correctly.
 
     public static final ImageIcon unrevealed = new ImageIcon("Image/unrevealed.png");
     public static final ImageIcon revealedBlank = new ImageIcon("Image/revealedBlank.png");
@@ -29,19 +33,19 @@ public class CellBoardPanel {
     private final JPanel board;
     private final int rows, cols;
     private final Game game;
-    private final UpdateTracker updateTracker;
-    private JButton[][] buttons;
+    private final JButton[][] buttons;
 
     public CellBoardPanel(int nRows, int nCols, Game g) {
         rows = nRows;
         cols = nCols;
         buttons = new JButton[rows][cols];
         game = g;
-        updateTracker = game.getUpdateTracker();
         board = new JPanel(new GridLayout(rows, cols, 0, 0));
         initialize();
     }
 
+    //  Initializes the grid of JButtons and makes a call to
+    //      addCellClickHandler, which adds the mouse listener to each one.
     private void initialize() {
         for (int i=0; i<rows; i++)
             for (int j=0; j<cols; j++) {
@@ -55,11 +59,26 @@ public class CellBoardPanel {
             }
     }
 
+    //  A new MouseAdapter is defined in an anonymous class. The mouseClicked
+    //      method is where all game logic is invoked; the other methods are
+    //      here to facilitate visual response to click and release.
     private void addCellClickHandler(int row, int col) {
         buttons[row][col].addMouseListener(new MouseAdapter() {
 
-            private ArrayList<Posn> clicked = new ArrayList<>();
+            //  Special UpdateTracker used to keep track of which cells have
+            //      been clicked on but not yet released on. If the player
+            //      moves the mouse away from the clicked cell while the left
+            //      button is pressed, no click occurs, and the cells that were
+            //      previously displayed as "pressed" must be reset.
+            private final UpdateTracker clicked = new UpdateTracker();
 
+            //  Changes clicked cells' display state to "pressed" (same as
+            //      revealed blank), and places them in the local UpdateTracker
+            //      for use by the next two methods. If a single unrevealed
+            //      cell is clicked, that single cell is added. If a revealed
+            //      cell with the correct number of adjacent flags is clicked,
+            //      all adjacent non-flagged unrevealed cells are displayed as
+            //      clicked and added to the UpdateTracker.
             @Override
             public void mousePressed(MouseEvent e) {
                 if (game.getGameState() != Game.IN_PROGRESS)
@@ -67,41 +86,54 @@ public class CellBoardPanel {
                 if (e.getButton() != MouseEvent.BUTTON1)
                     return;
                 if (game.getViewState(row, col) == Cell.UNREVEALED) {
-                    clicked.add(new Posn(row, col));
+                    clicked.addUpdate(new Posn(row, col));
                     buttons[row][col].setIcon(revealedBlank);
                 } else if (game.getViewState(row, col) == countFlaggedSurrounding()) {
                     for (int i=row-1; i<=row+1; i++)
                         for (int j=col-1; j<=col+1; j++)
                             if (isValidCell(i, j) && game.getViewState(i, j) == Cell.UNREVEALED) {
                                 buttons[i][j].setIcon(revealedBlank);
-                                clicked.add(new Posn(i, j));
+                                clicked.addUpdate(new Posn(i, j));
                             }
                 }
             }
 
+            //  When this method is called and clicked is nonempty, the mouse
+            //      was dragged away before being released, and the icon of the
+            //      affected cells must be restored.
             @Override
             public void mouseExited(MouseEvent e) {
-                for (Posn pos : clicked) {
-                    int r = pos.row();
-                    int c = pos.col();
-                    buttons[r][c].setIcon(getIconFromViewState(game.getViewState(r, c)));
-                }
-                clicked.clear();
+                updateCells(clicked);
             }
 
+            //  When the mouse is finally released, the UpdateTracker can be
+            //      cleared, as if the mouse is still on the initially clicked
+            //      cell, the view state will be updated by the click
+            //      operation. If the mouse was already dragged away,
+            //      mouseExited was already called, and clicked is empty.
             public void mouseReleased(MouseEvent e) {
                 clicked.clear();
             }
 
+            //  This is the most important method in this inner class.
+            //      mouseClicked determines whether the left or right mouse
+            //      button was clicked, and calls the relevant method in the
+            //      Game. After this operation, updateCells is called, changing
+            //      the icons of any affected cells.
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1)
                     game.leftClickCell(row, col);
                 else if (e.getButton() == MouseEvent.BUTTON3)
                     game.rightClickCell(row, col);
-                updateCells();
+                updateCells(game.getUpdateTracker());
             }
 
+            //  Private method to count the number of flagged cells surrounding
+            //      the current cell. This is used to determine whether the
+            //      cells surrounding a clicked revealed cell should be
+            //      displayed as clicked, as they should only be shown as
+            //      clicked if the click will result in cells being revealed.
             private int countFlaggedSurrounding() {
                 int count = 0;
                 for (int i=row-1; i<=row+1; i++)
@@ -111,28 +143,32 @@ public class CellBoardPanel {
                 return count;
             }
 
+            //  Simple shorthand to make if statements cleaner
             private boolean isValidCell(int i, int j) {
                 return (i>=0 && j>=0 && i<rows && j<cols);
             }
         });
     }
 
+    //  Getter for the board JPanel, used by GamePanel to get its center
+    //      element, which is the board panel.
     public JPanel getBoard() {
         return board;
     }
 
-    private void updateCells() {
+    //  Updates the cells at all Posns in the given UpdateTracker. This is used
+    //      both to display updates from the Game logic, and to restore the
+    //      view state of cells after aborted clicks.
+    private void updateCells(UpdateTracker updateTracker) {
         for (Posn pos : updateTracker) {
-            int row = pos.row();
-            int col = pos.col();
-            JButton button = buttons[row][col];
-            int viewState = game.getViewState(row, col);
-            ImageIcon icon = getIconFromViewState(viewState);
-            button.setIcon(icon);
+            int r = pos.row();
+            int c = pos.col();
+            buttons[r][c].setIcon(getIconFromViewState(game.getViewState(r, c)));
         }
-        game.printBoard();
     }
 
+    //  Simple switch statement to map viewState values to their associated
+    //      ImageIcons.
     private ImageIcon getIconFromViewState(int viewState) {
         ImageIcon icon;
         switch (viewState) {
