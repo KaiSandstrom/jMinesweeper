@@ -6,8 +6,6 @@ import Game.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -51,7 +49,7 @@ public class GamePanel {
         cols = nCols;
         buttons = new JButton[rows][cols];
         updateTracker = new UpdateTracker();
-        game = new Game(Game.INTERMEDIATE, updateTracker);
+        game = new Game(Game.EXPERT, updateTracker);
 
         initialize();
     }
@@ -114,15 +112,17 @@ public class GamePanel {
         frame.add(north, BorderLayout.NORTH);
 
         JPanel board = new JPanel(new GridLayout(rows, cols, 0, 0));
-        for (int i=0; i<rows*cols; i++) {
-            JButton button = new JButton();
-            button.setIcon(unrevealed);
-            button.setMargin(new Insets(0, 0, 0, 0));
-            button.setBorder(new EmptyBorder(0, 0, 0, 0));
-            board.add(button);
-            buttons[i/rows][i%rows] = button;
-            addActionListener(i/rows, i%rows);
-        }
+        for (int i=0; i<rows; i++)
+            for (int j=0; j<cols; j++) {
+                JButton button = new JButton();
+                button.setIcon(unrevealed);
+                button.setMargin(new Insets(0, 0, 0, 0));
+                button.setBorder(new EmptyBorder(0, 0, 0, 0));
+                board.add(button);
+                buttons[i][j] = button;
+                addCellClickHandler(i, j);
+            }
+
         frame.add(board, BorderLayout.CENTER);
 
         frame.pack();
@@ -130,7 +130,7 @@ public class GamePanel {
         frame.setVisible(true);
     }
 
-    private void addActionListener(int row, int col) {
+    private void addCellClickHandler(int row, int col) {
         buttons[row][col].addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {

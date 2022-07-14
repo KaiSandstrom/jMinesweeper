@@ -12,7 +12,7 @@ public class Launcher {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                GamePanel gp = new GamePanel(16, 16);
+                GamePanel gp = new GamePanel(16, 30);
             }
         });
     }
