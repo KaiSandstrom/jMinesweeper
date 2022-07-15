@@ -105,7 +105,7 @@ public class CellBoardPanel {
                 else if (e.getButton() == MouseEvent.BUTTON3)
                     game.rightClickCell(row, col);
                 updateCells(game.getUpdateTracker());
-                infoPanel.updateSmiley(game.getGameState());
+                infoPanel.updateSmiley();
             }
 
             //  Changes clicked cells' display state to "pressed" (same as
@@ -144,7 +144,7 @@ public class CellBoardPanel {
             @Override
             public void mouseExited(MouseEvent e) {
                 updateCells(clicked);
-                infoPanel.updateSmiley(game.getGameState());
+                infoPanel.updateSmiley();
             }
 
             //  When the mouse is finally released, the UpdateTracker can be

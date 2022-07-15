@@ -92,7 +92,7 @@ public class GamePanel {
         nSouth.add(new JLabel(borderMidRight));
         north.add(nSouth, BorderLayout.SOUTH);
 
-        info = new InfoPanel(this);
+        info = new InfoPanel(this, game);
         north.add(info.getInfoJPanel(), BorderLayout.CENTER);
 
         gamePanel.add(north, BorderLayout.NORTH);
