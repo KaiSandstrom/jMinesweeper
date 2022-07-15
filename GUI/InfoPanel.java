@@ -25,10 +25,12 @@ public class InfoPanel {
     private final JPanel infoPanel;
     private final GamePanel gamePanel;
     private final JButton smiley;
+    private Game game;
 
 
-    public InfoPanel(GamePanel gp) {
+    public InfoPanel(GamePanel gp, Game g) {
         gamePanel = gp;
+        game = g;
         infoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 6, 6));
         smiley = new JButton(smileyNormal);
         initialize();
@@ -43,32 +45,26 @@ public class InfoPanel {
         infoPanel.add(smiley);
         smiley.addMouseListener(new MouseAdapter() {
 
-            ImageIcon prev = smileyNormal;
-
-            //  When the smiley is clicked, call the GamePanel's reset method,
-            //      and overwrite any stored icon with smileyNormal.
+            //  When the smiley is clicked, call the GamePanel's reset method.
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() != MouseEvent.BUTTON1)
                     return;
                 gamePanel.reset();
-                prev = smileyNormal;
             }
 
-            //  Pressed but not yet released: Store the previous icon and
-            //      display the smileyPressed icon.
+            //  Pressed but not yet released: Display the smileyPressed icon.
             @Override
             public void mousePressed(MouseEvent e) {
                 if (e.getButton() != MouseEvent.BUTTON1)
                     return;
-                prev = (ImageIcon)smiley.getIcon();
                 smiley.setIcon(smileyPressed);
             }
 
-            //  Click aborted: Restore the previous icon.
+            //  Click aborted: Restore the previous icon with updateSmiley.
             @Override
             public void mouseExited(MouseEvent e) {
-                smiley.setIcon(prev);
+                updateSmiley();
             }
 
         });
@@ -86,14 +82,15 @@ public class InfoPanel {
         smiley.setIcon(smileyShocked);
     }
 
-    //  Also called by the CellBoardPanel's cell buttons, after a successful
-    //      left-click, or when a click is aborted.
-    public void updateSmiley(int gameState) {
-        if (gameState == Game.IN_PROGRESS)
+    //  Called by the smiley button's mouse listener when a smiley click is
+    //      aborted, and by the CellBoardPanel's cell buttons' mouse listeners
+    //      after either a successful or aborted click.
+    public void updateSmiley() {
+        if (game.getGameState() == Game.IN_PROGRESS)
             smiley.setIcon(smileyNormal);
-        else if (gameState == Game.OVER_LOSS)
+        else if (game.getGameState() == Game.OVER_LOSS)
             smiley.setIcon(smileyDead);
-        else // gameState == Game.OVER_WIN
+        else // game.getGameState() == Game.OVER_WIN
             smiley.setIcon(smileyCool);
     }
 
