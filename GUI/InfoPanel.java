@@ -40,6 +40,10 @@ public class InfoPanel {
     //      but will eventually initialize the numeric displays as well.
     private void initialize() {
         infoPanel.setBackground(new Color(198, 198, 198));
+        initSmiley();
+    }
+
+    private void initSmiley() {
         smiley.setMargin(new Insets(0, 0, 0, 0));
         smiley.setBorder(new EmptyBorder(0, 0, 0, 0));
         infoPanel.add(smiley);
