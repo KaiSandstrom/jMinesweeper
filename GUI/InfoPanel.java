@@ -51,6 +51,7 @@ public class InfoPanel {
                 if (e.getButton() != MouseEvent.BUTTON1)
                     return;
                 gamePanel.reset();
+                smiley.setIcon(smileyNormal);
             }
 
             //  Pressed but not yet released: Display the smileyPressed icon.
@@ -73,6 +74,10 @@ public class InfoPanel {
     //  Called in GamePanel when building the initial JPanel
     public JPanel getInfoJPanel() {
         return infoPanel;
+    }
+
+    public void setGame(Game g) {
+        game = g;
     }
 
     //  Called by the CellBoardPanel's cell buttons whenever a cell is clicked.
