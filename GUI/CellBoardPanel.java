@@ -15,6 +15,14 @@ public class CellBoardPanel {
     //      to the Game object to process the operation, and the cells must
     //      display correctly.
 
+    //  A CellBoardPanel has a reference to the Game object, in order to make
+    //      calls invoking game logic, and a reference to the InfoPanel, in
+    //      order to update the smiley icon on each click. Originally, the plan
+    //      was to add another mouseListener to the entire GamePanel, but that
+    //      mouseListener wasn't registering any clicks.
+
+    //  JButtons associated with the individual Cells are stored in a 2D array.
+
     public static final ImageIcon unrevealed = new ImageIcon("Image/unrevealed.png");
     public static final ImageIcon revealedBlank = new ImageIcon("Image/revealedBlank.png");
     public static final ImageIcon revealedNumber1 = new ImageIcon("Image/revealedNumber1.png");
@@ -32,14 +40,16 @@ public class CellBoardPanel {
 
     private final JPanel board;
     private final int rows, cols;
-    private final Game game;
+    private final InfoPanel infoPanel;
     private final JButton[][] buttons;
+    private Game game;
 
-    public CellBoardPanel(int nRows, int nCols, Game g) {
+    public CellBoardPanel(int nRows, int nCols, Game g, InfoPanel ip) {
         rows = nRows;
         cols = nCols;
         buttons = new JButton[rows][cols];
         game = g;
+        infoPanel = ip;
         board = new JPanel(new GridLayout(rows, cols, 0, 0));
         initialize();
     }
@@ -57,6 +67,15 @@ public class CellBoardPanel {
                 buttons[i][j] = button;
                 addCellClickHandler(i, j);
             }
+    }
+
+    //  Used when resetting the game by clicking the smiley. A new Game object
+    //      is provided, and the cells all get set to unrevealed.
+    public void reset(Game g) {
+        game = g;
+        for (int i=0; i<rows; i++)
+            for (int j=0; j<cols; j++)
+                buttons[i][j].setIcon(unrevealed);
     }
 
     //  A new MouseAdapter is defined in an anonymous class. The mouseClicked
@@ -77,7 +96,8 @@ public class CellBoardPanel {
             //      mouseClicked determines whether the left or right mouse
             //      button was clicked, and calls the relevant method in the
             //      Game. After this operation, updateCells is called, changing
-            //      the icons of any affected cells.
+            //      the icons of any affected cells. The smiley icon also gets
+            //      updated depending on the resulting game state.
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1)
@@ -85,6 +105,7 @@ public class CellBoardPanel {
                 else if (e.getButton() == MouseEvent.BUTTON3)
                     game.rightClickCell(row, col);
                 updateCells(game.getUpdateTracker());
+                infoPanel.updateSmiley(game.getGameState());
             }
 
             //  Changes clicked cells' display state to "pressed" (same as
@@ -93,7 +114,8 @@ public class CellBoardPanel {
             //      cell is clicked, that single cell is added. If a revealed
             //      cell with the correct number of adjacent flags is clicked,
             //      all adjacent non-flagged unrevealed cells are displayed as
-            //      clicked and added to the UpdateTracker.
+            //      clicked and added to the UpdateTracker. The smiley icon is
+            //      also set to the "shocked" expression.
             @Override
             public void mousePressed(MouseEvent e) {
                 if (game.getGameState() != Game.IN_PROGRESS)
@@ -111,14 +133,18 @@ public class CellBoardPanel {
                                 clicked.addUpdate(new Posn(i, j));
                             }
                 }
+                infoPanel.setSmileyShocked();
             }
 
             //  When this method is called and clicked is nonempty, the mouse
             //      was dragged away before being released, and the icons of
-            //      the affected cells must be restored.
+            //      the affected cells must be restored. The smiley icon is
+            //      also restored to whatever expression it previously had (in
+            //      practice, this will always be "normal")
             @Override
             public void mouseExited(MouseEvent e) {
                 updateCells(clicked);
+                infoPanel.updateSmiley(game.getGameState());
             }
 
             //  When the mouse is finally released, the UpdateTracker can be
@@ -153,7 +179,7 @@ public class CellBoardPanel {
 
     //  Getter for the board JPanel, used by GamePanel to get its center
     //      element, which is the board panel.
-    public JPanel getBoard() {
+    public JPanel getBoardJPanel() {
         return board;
     }
 

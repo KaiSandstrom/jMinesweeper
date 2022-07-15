@@ -26,6 +26,8 @@ public class GamePanel {
     private final int rows, cols;
     private final JPanel gamePanel;
     private Game game;
+    private CellBoardPanel board;
+    private InfoPanel info;
 
     public GamePanel(int difficulty) {
         switch (difficulty) {
@@ -65,7 +67,6 @@ public class GamePanel {
         gamePanel.add(east, BorderLayout.EAST);
 
         JPanel north = new JPanel(new BorderLayout());
-        north.setBackground(new Color(198, 198, 198));
 
         JPanel nNorth = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         nNorth.add(new JLabel(borderCornerTL));
@@ -91,22 +92,23 @@ public class GamePanel {
         nSouth.add(new JLabel(borderMidRight));
         north.add(nSouth, BorderLayout.SOUTH);
 
-        JLabel prototype = new JLabel("PROTOTYPE", SwingConstants.CENTER);
-        prototype.setFont(new Font("", Font.BOLD, 48));
-        north.add(prototype, BorderLayout.CENTER);
+        info = new InfoPanel(this);
+        north.add(info.getInfoJPanel(), BorderLayout.CENTER);
 
         gamePanel.add(north, BorderLayout.NORTH);
 
-        CellBoardPanel cellBoardPanel = new CellBoardPanel(rows, cols, game);
-        gamePanel.add(cellBoardPanel.getBoard(), BorderLayout.CENTER);
+        board = new CellBoardPanel(rows, cols, game, info);
+        gamePanel.add(board.getBoardJPanel(), BorderLayout.CENTER);
+    }
+
+    public Game getGame() {
+        return game;
     }
 
     //  Will be called when the smiley icon in the info panel is pressed.
-    private void reset() {
-        Game newGame = new Game(game.getDifficulty(), new UpdateTracker());
-        CellBoardPanel cellBoardPanel = new CellBoardPanel(rows, cols, newGame);
-        gamePanel.add(cellBoardPanel.getBoard(), BorderLayout.CENTER);
-        game = newGame;
+    public void reset() {
+        game = new Game(game.getDifficulty(), new UpdateTracker());
+        board.reset(game);
     }
 
     public JPanel getGamePanel() {
