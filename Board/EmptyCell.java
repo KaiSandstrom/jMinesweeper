@@ -10,7 +10,7 @@ public class EmptyCell extends Cell {
     //      superclass: int minesAdjacent. This field stores the number of
     //      MineCell instances adjacent to this cell, including diagonally.
     //      The minesAdjacent field is incremented to the correct value through
-    //      calls to incMinesAdjacent when the board is populated in Board,
+    //      calls to incMinesAdjacent when the board is populated in Board.
 
     private int minesAdjacent;
 

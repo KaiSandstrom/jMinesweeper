@@ -201,8 +201,9 @@ public class Board {
         return output;
     }
 
-    //  Sets all cells to be revealed. This is used when a mine is clicked on,
-    //      and the full board is shown to the player upon game over.
+    //  Sets all mines and falsely-flagged cells to be revealed. This is used
+    //      when a mine is clicked on, and the mines are is shown to the player
+    //      upon game over.
     public void setRevealed() {
         for (int i=0; i<nRows; i++)
             for (int j=0; j<nCols; j++) {

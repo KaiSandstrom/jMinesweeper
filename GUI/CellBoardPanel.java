@@ -61,7 +61,8 @@ public class CellBoardPanel {
 
     //  A new MouseAdapter is defined in an anonymous class. The mouseClicked
     //      method is where all game logic is invoked; the other methods are
-    //      here to facilitate visual response to click and release.
+    //      here simply to add visual feedback when clicking and releasing the
+    //      mouse.
     private void addCellClickHandler(int row, int col) {
         buttons[row][col].addMouseListener(new MouseAdapter() {
 
@@ -71,6 +72,20 @@ public class CellBoardPanel {
             //      button is pressed, no click occurs, and the cells that were
             //      previously displayed as "pressed" must be reset.
             private final UpdateTracker clicked = new UpdateTracker();
+
+            //  This is the most important method in this inner class.
+            //      mouseClicked determines whether the left or right mouse
+            //      button was clicked, and calls the relevant method in the
+            //      Game. After this operation, updateCells is called, changing
+            //      the icons of any affected cells.
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON1)
+                    game.leftClickCell(row, col);
+                else if (e.getButton() == MouseEvent.BUTTON3)
+                    game.rightClickCell(row, col);
+                updateCells(game.getUpdateTracker());
+            }
 
             //  Changes clicked cells' display state to "pressed" (same as
             //      revealed blank), and places them in the local UpdateTracker
@@ -99,8 +114,8 @@ public class CellBoardPanel {
             }
 
             //  When this method is called and clicked is nonempty, the mouse
-            //      was dragged away before being released, and the icon of the
-            //      affected cells must be restored.
+            //      was dragged away before being released, and the icons of
+            //      the affected cells must be restored.
             @Override
             public void mouseExited(MouseEvent e) {
                 updateCells(clicked);
@@ -113,20 +128,6 @@ public class CellBoardPanel {
             //      mouseExited was already called, and clicked is empty.
             public void mouseReleased(MouseEvent e) {
                 clicked.clear();
-            }
-
-            //  This is the most important method in this inner class.
-            //      mouseClicked determines whether the left or right mouse
-            //      button was clicked, and calls the relevant method in the
-            //      Game. After this operation, updateCells is called, changing
-            //      the icons of any affected cells.
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON1)
-                    game.leftClickCell(row, col);
-                else if (e.getButton() == MouseEvent.BUTTON3)
-                    game.rightClickCell(row, col);
-                updateCells(game.getUpdateTracker());
             }
 
             //  Private method to count the number of flagged cells surrounding

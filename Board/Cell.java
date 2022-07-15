@@ -14,17 +14,9 @@ public abstract class Cell {
     //      value; thus, it is explained further down below, as are the
     //      abstract methods.
 
-    public static int FLAG_SET = 0;
-    public static int FLAG_CLEARED = 1;
-    public static int FLAG_UNCHANGED = 2;
-
-    protected boolean revealed;
-    protected boolean flagged;
-
-    public Cell() {
-        this.revealed = false;
-        this.flagged = false;
-    }
+    public static final int FLAG_SET = 0;
+    public static final int FLAG_CLEARED = 1;
+    public static final int FLAG_UNCHANGED = 2;
 
     public static final int REVEALED_BLANK = 0;
     public static final int REVEALED_1 = 1;
@@ -40,6 +32,14 @@ public abstract class Cell {
     public static final int FALSE_FLAGGED = 11;
     public static final int REVEALED_MINE = 12;
     public static final int EXPLODED_MINE = 13;
+
+    protected boolean revealed;
+    protected boolean flagged;
+
+    public Cell() {
+        this.revealed = false;
+        this.flagged = false;
+    }
 
     public boolean isRevealed() {
         return revealed;
@@ -68,8 +68,8 @@ public abstract class Cell {
     }
 
     //  Used when clearing larger areas of cells adjacent to 0 mines.
-    //      When the cells surrounding a cell with 0 adjacent mines, this is
-    //      the only time a flagged cell can be cleared.
+    //      When the cells surrounding a cell with 0 adjacent mines are being
+    //      cleared, this is the only time a flagged cell can be cleared.
     public void unflag() {
         flagged = false;
     }
@@ -79,16 +79,16 @@ public abstract class Cell {
     //      resulted in a loss.
     public abstract boolean clickCell();
 
-    //  This method is used by the GUI, which will be added in a later update,
-    //      to determine which image to display for each cell.
+    //  This method is used by the GUI to determine which image to display for
+    //      each cell.
     public abstract int getViewState();
 
-    //  toString's implementations in Cell's subclasses differ only in their
-    //      return values -- toString returns 1-character strings, for the
-    //      purpose of printing the board in the text-based version of the
-    //      game, whereas the longer state strings returned by getViewState
-    //      are designed for readability in the relevant conditional statement
-    //      in the GUI code.
+    //  toString's implementations in Cell's subclasses differ from
+    //      getViewState only in their return values -- toString returns
+    //      1-character strings, for the purpose of printing the board in the
+    //      text-based version of the game, whereas the state constants
+    //      returned by getViewState are designed for readability in the
+    //      relevant conditional statement in the GUI code.
     public abstract String toString();
 
 }

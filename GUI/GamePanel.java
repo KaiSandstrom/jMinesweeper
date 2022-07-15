@@ -14,20 +14,12 @@ public class GamePanel {
     //      using BorderLayout, contains the info panel in its Center region,
     //      and border graphics everywhere else.
 
-    //  Since the ActionListener associated with the smiley button element of
-    //      the info panel must invoke a call to reset the game, the info panel
-    //      is not split off into its own class. This may be changed in the
-    //      future.
-
-    public static final ImageIcon borderTop = new ImageIcon("Image/borderTop.png");
-    public static final ImageIcon borderRight = new ImageIcon("Image/borderRight.png");
-    public static final ImageIcon borderBottom = new ImageIcon("Image/borderBottom.png");
-    public static final ImageIcon borderLeft = new ImageIcon("Image/borderLeft.png");
-    public static final ImageIcon borderTLCorner = new ImageIcon("Image/borderTLCorner.png");
-    public static final ImageIcon borderTRCorner = new ImageIcon("Image/borderTRCorner.png");
-    public static final ImageIcon borderBRCorner = new ImageIcon("Image/borderBRCorner.png");
-    public static final ImageIcon borderBLCorner = new ImageIcon("Image/borderBLCorner.png");
-    public static final ImageIcon borderMid = new ImageIcon("Image/borderMid.png");
+    public static final ImageIcon borderEdgeHoriz = new ImageIcon("Image/borderEdgeHoriz.png");
+    public static final ImageIcon borderEdgeVert = new ImageIcon("Image/borderEdgeVert.png");
+    public static final ImageIcon borderCornerTL = new ImageIcon("Image/borderCornerTL.png");
+    public static final ImageIcon borderCornerTR = new ImageIcon("Image/borderCornerTR.png");
+    public static final ImageIcon borderCornerBR = new ImageIcon("Image/borderCornerBR.png");
+    public static final ImageIcon borderCornerBL = new ImageIcon("Image/borderCornerBL.png");
     public static final ImageIcon borderMidLeft = new ImageIcon("Image/borderMidLeft.png");
     public static final ImageIcon borderMidRight = new ImageIcon("Image/borderMidRight.png");
 
@@ -56,46 +48,46 @@ public class GamePanel {
     //      is added.
     private void initialize() {
         JPanel south = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        south.add(new JLabel(borderBLCorner));
+        south.add(new JLabel(borderCornerBL));
         for (int i=0; i<cols; i++)
-            south.add(new JLabel(borderBottom));
-        south.add(new JLabel(borderBRCorner));
+            south.add(new JLabel(borderEdgeHoriz));
+        south.add(new JLabel(borderCornerBR));
         gamePanel.add(south, BorderLayout.SOUTH);
 
         JPanel west = new JPanel(new GridLayout(rows, 1, 0, 0));
         for (int i=0; i<rows; i++)
-            west.add(new JLabel(borderLeft));
+            west.add(new JLabel(borderEdgeVert));
         gamePanel.add(west, BorderLayout.WEST);
 
         JPanel east = new JPanel(new GridLayout(rows, 1, 0, 0));
         for (int i=0; i<rows; i++)
-            east.add(new JLabel(borderRight));
+            east.add(new JLabel(borderEdgeVert));
         gamePanel.add(east, BorderLayout.EAST);
 
         JPanel north = new JPanel(new BorderLayout());
         north.setBackground(new Color(198, 198, 198));
 
         JPanel nNorth = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        nNorth.add(new JLabel(borderTLCorner));
+        nNorth.add(new JLabel(borderCornerTL));
         for (int i=0; i<cols; i++)
-            nNorth.add(new JLabel(borderTop));
-        nNorth.add(new JLabel(borderTRCorner));
+            nNorth.add(new JLabel(borderEdgeHoriz));
+        nNorth.add(new JLabel(borderCornerTR));
         north.add(nNorth, BorderLayout.NORTH);
 
         JPanel nWest = new JPanel(new GridLayout(2, 1, 0, 0));
-        nWest.add(new JLabel(borderLeft));
-        nWest.add(new JLabel(borderLeft));
+        nWest.add(new JLabel(borderEdgeVert));
+        nWest.add(new JLabel(borderEdgeVert));
         north.add(nWest, BorderLayout.WEST);
 
         JPanel nEast = new JPanel(new GridLayout(2, 1, 0, 0));
-        nEast.add(new JLabel(borderRight));
-        nEast.add(new JLabel(borderRight));
+        nEast.add(new JLabel(borderEdgeVert));
+        nEast.add(new JLabel(borderEdgeVert));
         north.add(nEast, BorderLayout.EAST);
 
         JPanel nSouth = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         nSouth.add(new JLabel(borderMidLeft));
         for (int i=0; i<cols; i++)
-            nSouth.add(new JLabel(borderMid));
+            nSouth.add(new JLabel(borderEdgeHoriz));
         nSouth.add(new JLabel(borderMidRight));
         north.add(nSouth, BorderLayout.SOUTH);
 

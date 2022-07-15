@@ -6,7 +6,7 @@ public class MineCell extends Cell {
     //      If a MineCell is clicked using clickCell, true is returned,
     //      signaling to the Game that the game has been lost.
 
-    // A MineCell has one additional field not present in it superclass:
+    //  A MineCell has one additional field not present in it superclass:
     //      boolean exploded. This field is used only to keep track of which
     //      mine was clicked on resulting in a game over, and the "exploded"
     //      mine is displayed using a different image when the game is over.
