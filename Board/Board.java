@@ -157,7 +157,9 @@ public class Board {
             for (int j=col-1; j<=col+1; j++)
                 if(isValidCell(i, j) && !board[i][j].isFlagged() &&
                         !board[i][j].isRevealed()) {
-                    clickedMine = (clickedMine || board[i][j].clickCell());
+                    if (clickedMine && board[i][j] instanceof MineCell)
+                        continue;
+                    clickedMine = (board[i][j].clickCell() || clickedMine);
                     if (board[i][j] instanceof EmptyCell && ((EmptyCell)board[i][j]).getMinesAdjacent() == 0)
                         chainClickCells(i,j);
                     else
