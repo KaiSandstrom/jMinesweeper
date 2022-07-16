@@ -100,12 +100,21 @@ public class CellBoardPanel {
             //      updated depending on the resulting game state.
             @Override
             public void mouseClicked(MouseEvent e) {
+                int prevState = game.getGameState();
                 if (e.getButton() == MouseEvent.BUTTON1)
                     game.leftClickCell(row, col);
-                else if (e.getButton() == MouseEvent.BUTTON3)
+                else if (e.getButton() == MouseEvent.BUTTON3) {
                     game.rightClickCell(row, col);
+                    infoPanel.updateMineCount();
+                }
+                else
+                    return;
                 updateCells(game.getUpdateTracker());
                 infoPanel.updateSmiley();
+                if (prevState == Game.NOT_STARTED && game.getGameState() == Game.IN_PROGRESS)
+                    infoPanel.startTimer();
+                else if (prevState == Game.IN_PROGRESS && game.getGameState() > Game.IN_PROGRESS)
+                    infoPanel.haltTimer();
             }
 
             //  Changes clicked cells' display state to "pressed" (same as
@@ -118,7 +127,7 @@ public class CellBoardPanel {
             //      also set to the "shocked" expression.
             @Override
             public void mousePressed(MouseEvent e) {
-                if (game.getGameState() != Game.IN_PROGRESS)
+                if (game.getGameState() > Game.IN_PROGRESS)
                     return;
                 if (e.getButton() != MouseEvent.BUTTON1)
                     return;

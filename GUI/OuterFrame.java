@@ -3,6 +3,8 @@ package GUI;
 import javax.swing.*;
 import Game.*;
 
+import java.awt.*;
+
 public class OuterFrame {
 
     //  This JFrame is the game window. It holds one element, a JPanel returned
@@ -19,6 +21,7 @@ public class OuterFrame {
 
     public void initPanel(int difficulty) {
         frame.setTitle("jMinesweeper by Kai Sandstrom");
+        frame.setIconImage(new ImageIcon("Image/mineIcon.png").getImage());
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setResizable(false);
 

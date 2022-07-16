@@ -1,19 +1,18 @@
 package GUI;
 
-import Game.Game;
 import javax.swing.*;
 import java.awt.*;
 
 public abstract class NumericDisplay {
 
-    public static final ImageIcon numDisplayBorderTop = new ImageIcon("Image/numDisplayBorderTop.png");
-    public static final ImageIcon numDisplayBorderBottom = new ImageIcon("Image/numDisplayBorderBottom.png");
-    public static final ImageIcon numDisplayBorderLeft = new ImageIcon("Image/numDisplayBorderLeft.png");
-    public static final ImageIcon numDisplayBorderRight = new ImageIcon("Image/numDisplayBorderRight.png");
-    public static final ImageIcon numDisplayBorderCornerTL = new ImageIcon("Image/numDisplayBorderCornerTL.png");
-    public static final ImageIcon numDisplayBorderCornerTR = new ImageIcon("Image/numDisplayBorderCornerTR.png");
-    public static final ImageIcon numDisplayBorderCornerBR = new ImageIcon("Image/numDisplayBorderCornerBR.png");
-    public static final ImageIcon numDisplayBorderCornerBL = new ImageIcon("Image/numDisplayBorderCornerBL.png");
+    public static final ImageIcon numsBorderTop = new ImageIcon("Image/numsBorderTop.png");
+    public static final ImageIcon numsBorderBottom = new ImageIcon("Image/numsBorderBottom.png");
+    public static final ImageIcon numsBorderLeft = new ImageIcon("Image/numsBorderLeft.png");
+    public static final ImageIcon numsBorderRight = new ImageIcon("Image/numsBorderRight.png");
+    public static final ImageIcon numsBorderCornerTL = new ImageIcon("Image/numsBorderCornerTL.png");
+    public static final ImageIcon numsBorderCornerTR = new ImageIcon("Image/numsBorderCornerTR.png");
+    public static final ImageIcon numsBorderCornerBR = new ImageIcon("Image/numsBorderCornerBR.png");
+    public static final ImageIcon numsBorderCornerBL = new ImageIcon("Image/numsBorderCornerBL.png");
 
     public static final ImageIcon numDisplayNeg = new ImageIcon("Image/numDisplayNeg.png");
     public static final ImageIcon numDisplay0 = new ImageIcon("Image/numDisplay0.png");
@@ -35,23 +34,24 @@ public abstract class NumericDisplay {
         left = new JLabel(numDisplay0);
         center = new JLabel(numDisplay0);
         right = new JLabel(numDisplay0);
+        initialize();
     }
 
     private void initialize() {
         JPanel north = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        north.add(new JLabel(numDisplayBorderCornerTL));
-        north.add(new JLabel(numDisplayBorderTop));
-        north.add(new JLabel(numDisplayBorderCornerTR));
+        north.add(new JLabel(numsBorderCornerTL));
+        north.add(new JLabel(numsBorderTop));
+        north.add(new JLabel(numsBorderCornerTR));
         outer.add(north, BorderLayout.NORTH);
 
-        outer.add(new JLabel(numDisplayBorderLeft), BorderLayout.WEST);
+        outer.add(new JLabel(numsBorderLeft), BorderLayout.WEST);
 
-        outer.add(new JLabel(numDisplayBorderRight), BorderLayout.EAST);
+        outer.add(new JLabel(numsBorderRight), BorderLayout.EAST);
 
         JPanel south = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        south.add(new JLabel(numDisplayBorderCornerBL));
-        south.add(new JLabel(numDisplayBorderBottom));
-        south.add(new JLabel(numDisplayBorderCornerBR));
+        south.add(new JLabel(numsBorderCornerBL));
+        south.add(new JLabel(numsBorderBottom));
+        south.add(new JLabel(numsBorderCornerBR));
         outer.add(south, BorderLayout.SOUTH);
 
         JPanel nums = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
@@ -59,6 +59,10 @@ public abstract class NumericDisplay {
         nums.add(center);
         nums.add(right);
         outer.add(nums, BorderLayout.CENTER);
+    }
+
+    public JPanel getPanel() {
+        return outer;
     }
 
     protected void setNumsFromInt(int num) {
@@ -99,6 +103,5 @@ public abstract class NumericDisplay {
         return result;
     }
 
-    public abstract void setNums();
 
 }

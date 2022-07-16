@@ -25,28 +25,43 @@ public class InfoPanel {
     private final JPanel infoPanel;
     private final GamePanel gamePanel;
     private final JButton smiley;
+    private final NumDisplayMines mineCount;
+    private final NumDisplayTimer timeCount;
+
     private Game game;
 
 
     public InfoPanel(GamePanel gp, Game g) {
         gamePanel = gp;
         game = g;
-        infoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 6, 6));
+        infoPanel = new JPanel(new GridLayout(1, 3, 0, 0));
         smiley = new JButton(smileyNormal);
+        mineCount = new NumDisplayMines(game);
+        timeCount = new NumDisplayTimer();
         initialize();
     }
 
     //  Initializes the InfoPanel. This currently only initializes the smiley,
     //      but will eventually initialize the numeric displays as well.
     private void initialize() {
-        infoPanel.setBackground(new Color(198, 198, 198));
+        JPanel mineCountHolder = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 8));
+        mineCountHolder.add(mineCount.getPanel());
+        mineCountHolder.setBackground(new Color(198, 198, 198));
+        infoPanel.add(mineCountHolder);
         initSmiley();
+        JPanel timeCountHolder = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 8));
+        timeCountHolder.add(timeCount.getPanel());
+        timeCountHolder.setBackground(new Color(198, 198, 198));
+        infoPanel.add(timeCountHolder);
     }
 
     private void initSmiley() {
         smiley.setMargin(new Insets(0, 0, 0, 0));
         smiley.setBorder(new EmptyBorder(0, 0, 0, 0));
-        infoPanel.add(smiley);
+        JPanel smileyHolder = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 6));
+        smileyHolder.add(smiley);
+        smileyHolder.setBackground(new Color(198, 198, 198));
+        infoPanel.add(smileyHolder);
         smiley.addMouseListener(new MouseAdapter() {
 
             //  When the smiley is clicked, call the GamePanel's reset method.
@@ -80,10 +95,6 @@ public class InfoPanel {
         return infoPanel;
     }
 
-    public void setGame(Game g) {
-        game = g;
-    }
-
     //  Called by the CellBoardPanel's cell buttons whenever a cell is clicked.
     //      This sets the smiley to the "shocked" expression when a cell is
     //      clicked but not yet released.
@@ -95,12 +106,32 @@ public class InfoPanel {
     //      aborted, and by the CellBoardPanel's cell buttons' mouse listeners
     //      after either a successful or aborted click.
     public void updateSmiley() {
-        if (game.getGameState() == Game.IN_PROGRESS)
+        int state = game.getGameState();
+        if (state == Game.IN_PROGRESS || state == Game.NOT_STARTED)
             smiley.setIcon(smileyNormal);
-        else if (game.getGameState() == Game.OVER_LOSS)
+        else if (state == Game.OVER_LOSS)
             smiley.setIcon(smileyDead);
-        else // game.getGameState() == Game.OVER_WIN
+        else // state == Game.OVER_WIN
             smiley.setIcon(smileyCool);
+    }
+
+    public void startTimer() {
+        timeCount.startTimer();
+    }
+
+    public void haltTimer() {
+        timeCount.haltTimer();
+    }
+
+    public void reset(Game g) {
+        game = g;
+        mineCount.setGame(g);
+        mineCount.setNums();
+        timeCount.clearTimer();
+    }
+
+    public void updateMineCount() {
+        mineCount.setNums();
     }
 
 }

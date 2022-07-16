@@ -109,7 +109,7 @@ public class GamePanel {
     public void reset() {
         game = new Game(game.getDifficulty(), new UpdateTracker());
         board.reset(game);
-        info.setGame(game);
+        info.reset(game);
     }
 
     public JPanel getGamePanel() {

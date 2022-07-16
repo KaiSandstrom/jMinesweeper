@@ -15,9 +15,10 @@ public class Game {
     //      a user interface needs to access -- starting a new game,
     //      left-clicking a cell, and right-clicking a cell.
 
-    public static final int IN_PROGRESS = 0;
-    public static final int OVER_WIN = 1;
-    public static final int OVER_LOSS = 2;
+    public static final int NOT_STARTED = 0;
+    public static final int IN_PROGRESS = 1;
+    public static final int OVER_WIN = 2;
+    public static final int OVER_LOSS = 3;
 
     public static final int BEGINNER = 0;
     public static final int INTERMEDIATE = 1;
@@ -27,13 +28,11 @@ public class Game {
     private final UpdateTracker updateTracker;
     private final int difficulty;
     private int gameState;
-    private boolean emptyBoard;
     private int minesMinusFlags;
 
     public Game(int diff, UpdateTracker tracker) {
         difficulty = diff;
-        emptyBoard = true;
-        gameState = IN_PROGRESS;
+        gameState = NOT_STARTED;
         if (difficulty == BEGINNER) {
             board = new Board(9, 9, tracker);
             minesMinusFlags = 10;
@@ -76,11 +75,11 @@ public class Game {
     //      for an empty board, the cell is clicked, and this method sets the
     //      game state flag accordingly.
     public void leftClickCell(int row, int col) {
-        if (gameState != IN_PROGRESS)
+        if (gameState > IN_PROGRESS) // Game over
             return;
-        if (emptyBoard) {
+        if (gameState == NOT_STARTED) {
             board.populateBoard(row, col, minesMinusFlags);
-            emptyBoard = false;
+            gameState = IN_PROGRESS;
         }
         if (board.leftClickCell(row, col)) {
             board.setRevealed();
@@ -97,11 +96,11 @@ public class Game {
     //      flagged and all non-flagged cells are revealed, the game state
     //      flag is set accordingly.
     public void rightClickCell(int row, int col) {
-        if (gameState != IN_PROGRESS)
+        if (gameState > IN_PROGRESS) // Game over
             return;
-        if (emptyBoard) {
+        if (gameState == NOT_STARTED) {
             board.populateBoard(-2, -2, minesMinusFlags);
-            emptyBoard = false;
+            gameState = IN_PROGRESS;
         }
         int rClickResult = board.rightClickCell(row, col);
         if (rClickResult == Cell.FLAG_SET)
