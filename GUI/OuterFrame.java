@@ -12,7 +12,7 @@ public class OuterFrame {
     //      and selecting a new difficulty will cause a new GamePanel to be
     //      created and replace the previous one, causing the JFrame to resize.
 
-    public static final ImageIcon mineIcon = new ImageIcon("Image/mineIcon.png");
+    private static final ImageIcon mineIcon = new ImageIcon("Image/mineIcon.png");
 
     private final JFrame frame;
     private final JRadioButtonMenuItem beginner, intermediate, expert;

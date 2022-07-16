@@ -5,26 +5,26 @@ import java.awt.*;
 
 public abstract class NumericDisplay {
 
-    public static final ImageIcon numsBorderTop = new ImageIcon("Image/numsBorderTop.png");
-    public static final ImageIcon numsBorderBottom = new ImageIcon("Image/numsBorderBottom.png");
-    public static final ImageIcon numsBorderLeft = new ImageIcon("Image/numsBorderLeft.png");
-    public static final ImageIcon numsBorderRight = new ImageIcon("Image/numsBorderRight.png");
-    public static final ImageIcon numsBorderCornerTL = new ImageIcon("Image/numsBorderCornerTL.png");
-    public static final ImageIcon numsBorderCornerTR = new ImageIcon("Image/numsBorderCornerTR.png");
-    public static final ImageIcon numsBorderCornerBR = new ImageIcon("Image/numsBorderCornerBR.png");
-    public static final ImageIcon numsBorderCornerBL = new ImageIcon("Image/numsBorderCornerBL.png");
+    private static final ImageIcon numsBorderTop = new ImageIcon("Image/numsBorderTop.png");
+    private static final ImageIcon numsBorderBottom = new ImageIcon("Image/numsBorderBottom.png");
+    private static final ImageIcon numsBorderLeft = new ImageIcon("Image/numsBorderLeft.png");
+    private static final ImageIcon numsBorderRight = new ImageIcon("Image/numsBorderRight.png");
+    private static final ImageIcon numsBorderCornerTL = new ImageIcon("Image/numsBorderCornerTL.png");
+    private static final ImageIcon numsBorderCornerTR = new ImageIcon("Image/numsBorderCornerTR.png");
+    private static final ImageIcon numsBorderCornerBR = new ImageIcon("Image/numsBorderCornerBR.png");
+    private static final ImageIcon numsBorderCornerBL = new ImageIcon("Image/numsBorderCornerBL.png");
 
-    public static final ImageIcon numDisplayNeg = new ImageIcon("Image/numDisplayNeg.png");
-    public static final ImageIcon numDisplay0 = new ImageIcon("Image/numDisplay0.png");
-    public static final ImageIcon numDisplay1 = new ImageIcon("Image/numDisplay1.png");
-    public static final ImageIcon numDisplay2 = new ImageIcon("Image/numDisplay2.png");
-    public static final ImageIcon numDisplay3 = new ImageIcon("Image/numDisplay3.png");
-    public static final ImageIcon numDisplay4 = new ImageIcon("Image/numDisplay4.png");
-    public static final ImageIcon numDisplay5 = new ImageIcon("Image/numDisplay5.png");
-    public static final ImageIcon numDisplay6 = new ImageIcon("Image/numDisplay6.png");
-    public static final ImageIcon numDisplay7 = new ImageIcon("Image/numDisplay7.png");
-    public static final ImageIcon numDisplay8 = new ImageIcon("Image/numDisplay8.png");
-    public static final ImageIcon numDisplay9 = new ImageIcon("Image/numDisplay9.png");
+    private static final ImageIcon numDisplayNeg = new ImageIcon("Image/numDisplayNeg.png");
+    private static final ImageIcon numDisplay0 = new ImageIcon("Image/numDisplay0.png");
+    private static final ImageIcon numDisplay1 = new ImageIcon("Image/numDisplay1.png");
+    private static final ImageIcon numDisplay2 = new ImageIcon("Image/numDisplay2.png");
+    private static final ImageIcon numDisplay3 = new ImageIcon("Image/numDisplay3.png");
+    private static final ImageIcon numDisplay4 = new ImageIcon("Image/numDisplay4.png");
+    private static final ImageIcon numDisplay5 = new ImageIcon("Image/numDisplay5.png");
+    private static final ImageIcon numDisplay6 = new ImageIcon("Image/numDisplay6.png");
+    private static final ImageIcon numDisplay7 = new ImageIcon("Image/numDisplay7.png");
+    private static final ImageIcon numDisplay8 = new ImageIcon("Image/numDisplay8.png");
+    private static final ImageIcon numDisplay9 = new ImageIcon("Image/numDisplay9.png");
 
     private final JPanel outer;
     private final JLabel left, center, right;
@@ -61,7 +61,7 @@ public abstract class NumericDisplay {
         outer.add(nums, BorderLayout.CENTER);
     }
 
-    public JPanel getPanel() {
+    protected JPanel getPanel() {
         return outer;
     }
 

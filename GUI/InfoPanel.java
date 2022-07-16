@@ -16,11 +16,11 @@ public class InfoPanel {
 
     //  The two numeric displays are currently unimplemented.
 
-    public static final ImageIcon smileyNormal = new ImageIcon("Image/smileyNormal.png");
-    public static final ImageIcon smileyPressed = new ImageIcon("Image/smileyPressed.png");
-    public static final ImageIcon smileyShocked = new ImageIcon("Image/smileyShocked.png");
-    public static final ImageIcon smileyDead = new ImageIcon("Image/smileyDead.png");
-    public static final ImageIcon smileyCool = new ImageIcon("Image/smileyCool.png");
+    private static final ImageIcon smileyNormal = new ImageIcon("Image/smileyNormal.png");
+    private static final ImageIcon smileyPressed = new ImageIcon("Image/smileyPressed.png");
+    private static final ImageIcon smileyShocked = new ImageIcon("Image/smileyShocked.png");
+    private static final ImageIcon smileyDead = new ImageIcon("Image/smileyDead.png");
+    private static final ImageIcon smileyCool = new ImageIcon("Image/smileyCool.png");
 
     private final JPanel infoPanel;
     private final GamePanel gamePanel;
