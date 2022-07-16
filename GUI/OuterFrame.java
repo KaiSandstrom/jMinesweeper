@@ -16,18 +16,17 @@ public class OuterFrame {
 
     public OuterFrame() {
         frame = new JFrame();
-        initPanel(Game.INTERMEDIATE);
-    }
-
-    public void initPanel(int difficulty) {
         frame.setTitle("jMinesweeper by Kai Sandstrom");
         frame.setIconImage(new ImageIcon("Image/mineIcon.png").getImage());
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setResizable(false);
+        initPanel(Game.INTERMEDIATE);
+    }
 
+    public void initPanel(int difficulty) {
+        frame.setVisible(false);
         GamePanel gamePanel = new GamePanel(difficulty);
         frame.add(gamePanel.getGamePanel());
-
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);

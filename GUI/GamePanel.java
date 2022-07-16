@@ -2,6 +2,7 @@ package GUI;
 
 import Game.*;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class GamePanel {
@@ -99,6 +100,9 @@ public class GamePanel {
 
         board = new CellBoardPanel(rows, cols, game, info);
         gamePanel.add(board.getBoardJPanel(), BorderLayout.CENTER);
+
+        gamePanel.setBackground(Color.BLACK);
+        gamePanel.setBorder(new EmptyBorder(1, 1, 1, 1));
     }
 
     public Game getGame() {
