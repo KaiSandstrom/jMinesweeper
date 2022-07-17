@@ -68,6 +68,12 @@ finally clicked again. As far as I can tell, this is caused by the
 mouseClicked MouseEvent not firing, and I don't know what I could do to fix
 it at this time.
 
+Missed MouseEvents seem to be particularly prevalent on Windows, or at least on
+the one Windows machine I used to test v1.0.0. On this machine, in addition to
+left clicks, right clicks were frequently not detected as well. I could not
+determine the conditions under which this occurs. The application ran much more
+smoothly on the Linux machine where development occurred.
+
 Another much more rare bug is that occasionally, the game window doesn't
 resize properly, resulting in either board with a broken border and
 oddly-spaced-out buttons, or a window with missing content. I previously
