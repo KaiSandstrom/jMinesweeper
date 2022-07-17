@@ -5,6 +5,8 @@ import game.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
@@ -93,11 +95,40 @@ public class CellBoardPanel {
                 buttons[i][j].setIcon(unrevealed);
     }
 
-    //  A new MouseAdapter is defined in an anonymous class. The mouseClicked
-    //      method is where all game logic is invoked; the other methods are
-    //      here simply to add visual feedback when clicking and releasing the
-    //      mouse.
+    //  This method adds both an ActionListener and a MouseAdapter to a cell
+    //      button. The ActionListener processes successful left clicks,
+    //      whereas the MouseAdapter processes right clicks and adds visual
+    //      feedback for right clicks.
     private void addCellClickHandler(int row, int col) {
+        buttons[row][col].addActionListener(new ActionListener() {
+            //  This new ActionListener fires when a cell has been successfully
+            //      left-clicked. It calls the Game's left click method on the
+            //      cell in question, and makes a call to updateCells to redraw
+            //      the icons for the affected cells. Depending on the game
+            //      state before and after the click, the timer may be started
+            //      or halted.
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int prevState = game.getGameState();
+                game.leftClickCell(row, col);
+                updateCells(game.getUpdateTracker());
+                infoPanel.updateSmiley();
+                if (prevState == Game.NOT_STARTED && game.getGameState() == Game.IN_PROGRESS)
+                    infoPanel.startTimer();
+                else if (prevState == Game.IN_PROGRESS && game.getGameState() > Game.IN_PROGRESS)
+                    infoPanel.haltTimer();
+            }
+        });
+
+        //  This MouseAdapter applies visual feedback for left clicks, and
+        //      is responsible for handling right clicks. Since the
+        //      MouseAdapter's mouseClicked method is only called when the
+        //      mouse button is pressed and released without moving at all,
+        //      it's not a viable way of reliably detecting clicks.
+        //      ActionListener can handle left clicks, but for right clicks,
+        //      it's necessary to use mousePressed and mouseReleased, and
+        //      ensure tha these methods were called with the cursor over
+        //      the same cell.
         buttons[row][col].addMouseListener(new MouseAdapter() {
 
             //  Special UpdateTracker used to keep track of which cells have
@@ -107,46 +138,33 @@ public class CellBoardPanel {
             //      previously displayed as "pressed" must be reset.
             private final UpdateTracker clicked = new UpdateTracker();
 
-            //  This is the most important method in this inner class.
-            //      mouseClicked determines whether the left or right mouse
-            //      button was clicked, and calls the relevant method in the
-            //      Game. After this operation, updateCells is called, changing
-            //      the icons of any affected cells. The smiley icon also gets
-            //      updated depending on the resulting game state, the mine
-            //      count display gets updated if a cell was right-clicked,
-            //      and the timer gets started or halted depending on the game
-            //      state before and after a click.
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                int prevState = game.getGameState();
-                if (e.getButton() == MouseEvent.BUTTON1)
-                    game.leftClickCell(row, col);
-                else if (e.getButton() == MouseEvent.BUTTON3) {
-                    game.rightClickCell(row, col);
-                    infoPanel.updateMineCount();
-                }
-                else
-                    return;
-                updateCells(game.getUpdateTracker());
-                infoPanel.updateSmiley();
-                if (prevState == Game.NOT_STARTED && game.getGameState() == Game.IN_PROGRESS)
-                    infoPanel.startTimer();
-                else if (prevState == Game.IN_PROGRESS && game.getGameState() > Game.IN_PROGRESS)
-                    infoPanel.haltTimer();
-            }
+            //  When this boolean is set to true, the right mouse button has
+            //      been pressed and the cursor is still on the cell. If this
+            //      variable is set to true when the button is released, a
+            //      valid right click has occurred.
+            private boolean rightClicked = false;
 
-            //  Changes clicked cells' display state to "pressed" (same as
-            //      revealed blank), and places them in the local UpdateTracker
-            //      for use by the next two methods. If a single unrevealed
-            //      cell is clicked, that single cell is added. If a revealed
-            //      cell with the correct number of adjacent flags is clicked,
-            //      all adjacent non-flagged unrevealed cells are displayed as
-            //      clicked and added to the UpdateTracker. The smiley icon is
-            //      also set to the "shocked" expression.
+            //  If left click: Changes clicked cells' display state to
+            //      "pressed" (same as revealed blank), and places them in the
+            //      local UpdateTracker for use by the next two methods. If a
+            //      single unrevealed cell is clicked, that single cell is
+            //      added. If a revealed cell with the correct number of
+            //      adjacent flags is clicked, all adjacent non-flagged
+            //      unrevealed cells are displayed as clicked and added to the
+            //      UpdateTracker. The smiley icon is also set to the "shocked"
+            //      expression.
+            //  If right click: rightClicked boolean is set to true. It will be
+            //      setback to false either when the mouse leaves the cell
+            //      (aborted click), or when the right button is released
+            //      (successful click).
             @Override
             public void mousePressed(MouseEvent e) {
                 if (game.getGameState() > Game.IN_PROGRESS)
                     return;
+                if (e.getButton() == MouseEvent.BUTTON3) {
+                    rightClicked = true;
+                    return;
+                }
                 if (e.getButton() != MouseEvent.BUTTON1)
                     return;
                 if (game.getViewState(row, col) == Cell.UNREVEALED) {
@@ -163,24 +181,42 @@ public class CellBoardPanel {
                 infoPanel.setSmileyShocked();
             }
 
-            //  When this method is called and clicked is nonempty, the mouse
-            //      was dragged away before being released, and the icons of
-            //      the affected cells must be restored. The smiley icon is
-            //      also restored to whatever expression it previously had (in
-            //      practice, this will always be "normal")
+            //  Most times this method is called, nothing will be done, as the
+            //      cursor is simply gliding across the window. When the mouse
+            //      has been dragged out of a cell after pressing a button,
+            //      however, whether left or right, this indicates an aborted
+            //      click and the previous state must be restored. In the case
+            //      of a left click, this is done by updating the cells at the
+            //      coordinates stored in clicked back to unrevealed, and in
+            //      the case of a right click, this is done by resetting
+            //      rightClicked to false.
             @Override
             public void mouseExited(MouseEvent e) {
+                rightClicked = false;
                 updateCells(clicked);
                 infoPanel.updateSmiley();
             }
 
-            //  When the mouse is finally released, the UpdateTracker can be
-            //      cleared, as if the mouse is still on the initially clicked
-            //      cell, the view state will be updated by the click
-            //      operation. If the mouse was already dragged away,
-            //      mouseExited was already called, and clicked is empty.
+            //  For left click: When the mouse is finally released, the
+            //      UpdateTracker can be cleared, as if the mouse is still on
+            //      the initially clicked cell, the view state will be updated
+            //      by the ActionListener. If the mouse was already dragged
+            //      away, mouseExited was already called, and clicked is empty.
+            //  For right click: If rightClicked is true, this means a
+            //      successful right click has been performed. This click must
+            //      be invoked in the Game object and the affected cells' icons
+            //      must be updated. If the right click results in a win, the
+            //      timer is halted.
             public void mouseReleased(MouseEvent e) {
                 clicked.clear();
+                if (rightClicked) {
+                    game.rightClickCell(row, col);
+                    infoPanel.updateMineCount();
+                    updateCells(game.getUpdateTracker());
+                    rightClicked = false;
+                    if (game.getGameState() == Game.OVER_WIN)
+                        infoPanel.haltTimer();
+                }
             }
 
             //  Private method to count the number of flagged cells surrounding

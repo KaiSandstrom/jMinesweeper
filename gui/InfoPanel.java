@@ -4,6 +4,8 @@ import game.Game;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
@@ -57,24 +59,25 @@ public class InfoPanel {
         infoPanel.add(timeCountHolder);
     }
 
-    //  Initializes the smiley button, including a listener for mouse events.
+    //  Initializes the smiley button, including listeners for mouse events.
     private void initSmiley() {
         smiley.setBorder(new EmptyBorder(0, 0, 0, 0));
         JPanel smileyHolder = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 6));
         smileyHolder.add(smiley);
         smileyHolder.setBackground(new Color(198, 198, 198));
         infoPanel.add(smileyHolder);
-        smiley.addMouseListener(new MouseAdapter() {
 
-            //  When the smiley is clicked, call the GamePanel's reset method.
+        //  ActionListener processes successful left clicks
+        smiley.addActionListener(new ActionListener() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getButton() != MouseEvent.BUTTON1)
-                    return;
+            public void actionPerformed(ActionEvent e) {
                 gamePanel.reset();
                 smiley.setIcon(smileyNormal);
             }
+        });
 
+        //  MouseAdapter adds visual feedback for left clicks.
+        smiley.addMouseListener(new MouseAdapter() {
             //  Pressed but not yet released: Display the smileyPressed icon.
             @Override
             public void mousePressed(MouseEvent e) {
