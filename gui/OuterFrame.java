@@ -18,7 +18,7 @@ public class OuterFrame {
 
     private final JFrame frame = new JFrame();
     private final JRadioButtonMenuItem beginner, intermediate, expert;
-    private GamePanel gamePanel = new GamePanel(Game.INTERMEDIATE);
+    private GamePanel gamePanel;
 
     //  This constructor initializes the JFrame for an intermediate difficulty
     //      game and centers the frame on the screen. For the sake of
