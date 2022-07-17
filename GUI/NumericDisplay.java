@@ -5,6 +5,16 @@ import java.awt.*;
 
 public abstract class NumericDisplay {
 
+    //  A NumericDisplay is an abstract class that handles the basic graphical
+    //      and mathematical operations shared by both the timer display and
+    //      the remaining mines display. It has no abstract methods, but is
+    //      still declared abstract, as it is meant to be extended, not
+    //      instantiated.
+
+    //  The two subclasses of NumericDisplay inherit the setNumsFromInt method,
+    //      which takes an int, and if possible, modifies the numeric display
+    //      JPanel to reflect the given int.
+
     private static final ImageIcon numsBorderTop = new ImageIcon("Image/numsBorderTop.png");
     private static final ImageIcon numsBorderBottom = new ImageIcon("Image/numsBorderBottom.png");
     private static final ImageIcon numsBorderLeft = new ImageIcon("Image/numsBorderLeft.png");
@@ -26,18 +36,12 @@ public abstract class NumericDisplay {
     private static final ImageIcon numDisplay8 = new ImageIcon("Image/numDisplay8.png");
     private static final ImageIcon numDisplay9 = new ImageIcon("Image/numDisplay9.png");
 
-    private final JPanel outer;
+    private final JPanel outer = new JPanel(new BorderLayout(0, 0));
     private final JLabel left, center, right;
 
+    //  Constructor initializes the numeric display with a border and three
+    //      zeroes.
     public NumericDisplay() {
-        outer = new JPanel(new BorderLayout(0, 0));
-        left = new JLabel(numDisplay0);
-        center = new JLabel(numDisplay0);
-        right = new JLabel(numDisplay0);
-        initialize();
-    }
-
-    private void initialize() {
         JPanel north = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         north.add(new JLabel(numsBorderCornerTL));
         north.add(new JLabel(numsBorderTop));
@@ -55,16 +59,23 @@ public abstract class NumericDisplay {
         outer.add(south, BorderLayout.SOUTH);
 
         JPanel nums = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        left = new JLabel(numDisplay0);
+        center = new JLabel(numDisplay0);
+        right = new JLabel(numDisplay0);
         nums.add(left);
         nums.add(center);
         nums.add(right);
         outer.add(nums, BorderLayout.CENTER);
     }
 
-    protected JPanel getPanel() {
+    //  Returns a reference to the store JPanel. Used in InfoPanel to place
+    //      these panels into the wider board.
+    public JPanel getPanel() {
         return outer;
     }
 
+    //  Inherited by subclasses. Sets the icons in the panel based on the int
+    //      provided.
     protected void setNumsFromInt(int num) {
         if (num < 0)
             left.setIcon(numDisplayNeg);
@@ -75,6 +86,7 @@ public abstract class NumericDisplay {
         right.setIcon(intToIcon(num % 10));
     }
 
+    //  Simple switch statement wrapper to map digits to icons.
     private ImageIcon intToIcon(int num) {
         num = Math.abs(num);
         ImageIcon result;

@@ -27,8 +27,8 @@ public class GamePanel {
     private final int rows, cols;
     private final JPanel gamePanel;
     private Game game;
-    private CellBoardPanel board;
-    private InfoPanel info;
+    private final CellBoardPanel board;
+    private final InfoPanel info;
 
     public GamePanel(int difficulty) {
         switch (difficulty) {
@@ -40,15 +40,18 @@ public class GamePanel {
             default:
                 rows = 16; cols = 16;
         }
-        game = new Game(difficulty, new UpdateTracker());
         gamePanel = new JPanel(new BorderLayout());
+        game = new Game(difficulty, new UpdateTracker());
+        info = new InfoPanel(this, game);
+        board = new CellBoardPanel(rows, cols, game, info);
         initialize();
     }
 
     //  First creates the border, which varies in size based on difficulty.
-    //      The info panel will eventually be implemented, but for now a
-    //      placeholder "PROTOTYPE" label takes its place. Next, the cell board
-    //      is added.
+    //      Two JPanels containing meaningful information, the panel returned
+    //      by the final CellBoardPanel field and the panel returned by the
+    //      final InfoPanel field, are inserted into the JPanel stored and
+    //      returned by this GamePanel.
     private void initialize() {
         JPanel south = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         south.add(new JLabel(borderCornerBL));
@@ -93,12 +96,10 @@ public class GamePanel {
         nSouth.add(new JLabel(borderMidRight));
         north.add(nSouth, BorderLayout.SOUTH);
 
-        info = new InfoPanel(this, game);
         north.add(info.getInfoJPanel(), BorderLayout.CENTER);
 
         gamePanel.add(north, BorderLayout.NORTH);
 
-        board = new CellBoardPanel(rows, cols, game, info);
         gamePanel.add(board.getBoardJPanel(), BorderLayout.CENTER);
 
         gamePanel.setBackground(Color.BLACK);
@@ -109,7 +110,8 @@ public class GamePanel {
         return game;
     }
 
-    //  Will be called when the smiley icon in the info panel is pressed.
+    //  Called when the smiley icon is clicked, the "New" menu option is
+    //      clicked, or the F2 key is pressed.
     public void reset() {
         game = new Game(game.getDifficulty(), new UpdateTracker());
         board.reset(game);

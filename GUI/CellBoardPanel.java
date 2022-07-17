@@ -17,9 +17,9 @@ public class CellBoardPanel {
 
     //  A CellBoardPanel has a reference to the Game object, in order to make
     //      calls invoking game logic, and a reference to the InfoPanel, in
-    //      order to update the smiley icon on each click. Originally, the plan
-    //      was to add another mouseListener to the entire GamePanel, but that
-    //      mouseListener wasn't registering any clicks.
+    //      order to update the smiley, mine counter, and timer. Originally,
+    //      the plan was to add another mouseListener to the entire GamePanel,
+    //      but that mouseListener wasn't registering any clicks.
 
     //  JButtons associated with the individual Cells are stored in a 2D array.
 
@@ -97,7 +97,10 @@ public class CellBoardPanel {
             //      button was clicked, and calls the relevant method in the
             //      Game. After this operation, updateCells is called, changing
             //      the icons of any affected cells. The smiley icon also gets
-            //      updated depending on the resulting game state.
+            //      updated depending on the resulting game state, the mine
+            //      count display gets updated if a cell was right-clicked,
+            //      and the timer gets started or halted depending on the game
+            //      state before and after a click.
             @Override
             public void mouseClicked(MouseEvent e) {
                 int prevState = game.getGameState();

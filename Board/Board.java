@@ -94,7 +94,9 @@ public class Board {
         return totalFlagged;
     }
 
-    //  Simply toggles the isFlagged field of the given cell
+    //  Toggles the isFlagged field of the given cell, and returns a value
+    //      describing whether the value was toggled off, toggled on, or
+    //      not changed.
     public int rightClickCell(int row, int col) {
         int status = board[row][col].toggleFlagged();
         if (status != Cell.FLAG_UNCHANGED)

@@ -10,11 +10,9 @@ import java.awt.event.MouseEvent;
 public class InfoPanel {
 
     //  An InfoPanel is a wrapper for a JPanel containing the three elements in
-    //      the top info bar of the jMinesweeper window: the smiley reset
-    //      button, the timer, and the display showing the number of unflagged
-    //      mines remaining.
-
-    //  The two numeric displays are currently unimplemented.
+    //      the top info bar of the jMinesweeper window: the display showing
+    //      the number of unflagged mines remaining, the smiley icon that
+    //      serves as a reset button, and the timer.
 
     private static final ImageIcon smileyNormal = new ImageIcon("Image/smileyNormal.png");
     private static final ImageIcon smileyPressed = new ImageIcon("Image/smileyPressed.png");
@@ -24,9 +22,9 @@ public class InfoPanel {
 
     private final JPanel infoPanel;
     private final GamePanel gamePanel;
-    private final JButton smiley;
+    private final JButton smiley = new JButton(smileyNormal);
     private final NumDisplayMines mineCount;
-    private final NumDisplayTimer timeCount;
+    private final NumDisplayTimer timeCount = new NumDisplayTimer();
 
     private Game game;
 
@@ -35,14 +33,12 @@ public class InfoPanel {
         gamePanel = gp;
         game = g;
         infoPanel = new JPanel(new GridLayout(1, 3, 0, 0));
-        smiley = new JButton(smileyNormal);
         mineCount = new NumDisplayMines(game);
-        timeCount = new NumDisplayTimer();
         initialize();
     }
 
-    //  Initializes the InfoPanel. This currently only initializes the smiley,
-    //      but will eventually initialize the numeric displays as well.
+    //  Initializes the three elements in the InfoPanel and places them in the
+    //      correct locations.
     private void initialize() {
         JPanel mineCountHolder = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 8));
         mineCountHolder.add(mineCount.getPanel());
@@ -55,8 +51,8 @@ public class InfoPanel {
         infoPanel.add(timeCountHolder);
     }
 
+    //  Initializes the smiley button, including a listener for mouse events.
     private void initSmiley() {
-        smiley.setMargin(new Insets(0, 0, 0, 0));
         smiley.setBorder(new EmptyBorder(0, 0, 0, 0));
         JPanel smileyHolder = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 6));
         smileyHolder.add(smiley);
