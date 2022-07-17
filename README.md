@@ -62,3 +62,7 @@ times for each board type.
 
 Changing to a higher difficulty (larger board) while the game window is placed
 near the edge of the screen may cause graphical anomalies on some platforms.
+
+On some default look and feels (particularly macOS), a redundant click
+animation is shown where the button, including the icon that takes up the
+button's entire footprint, is darkened. 
