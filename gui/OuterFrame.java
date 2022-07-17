@@ -4,6 +4,7 @@ import javax.swing.*;
 import game.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Objects;
 
 public class OuterFrame {
 
@@ -12,7 +13,8 @@ public class OuterFrame {
     //      object. The JFrame also has JMenus to set the difficulty, reset the
     //      game, and display an info/credits box.
 
-    private static final ImageIcon mineIcon = new ImageIcon("Image/mineIcon.png");
+    private final ImageIcon mineIcon = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/mineIcon.png")));
 
     private final JFrame frame = new JFrame();
     private final JRadioButtonMenuItem beginner, intermediate, expert;
@@ -49,7 +51,7 @@ public class OuterFrame {
     //      ActionListeners, and adds the menu bar to the frame.
     private void initializeMenus() {
         JMenuBar menuBar = new JMenuBar();
-        JMenu gameMenu = new JMenu("game");
+        JMenu gameMenu = new JMenu("Game");
         gameMenu.setMnemonic(KeyEvent.VK_G);
         JMenu helpMenu = new JMenu("Help");
         helpMenu.setMnemonic(KeyEvent.VK_H);

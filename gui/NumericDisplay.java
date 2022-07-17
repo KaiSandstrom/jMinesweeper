@@ -2,6 +2,7 @@ package gui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 public abstract class NumericDisplay {
 
@@ -15,26 +16,45 @@ public abstract class NumericDisplay {
     //      which takes an int, and if possible, modifies the numeric display
     //      JPanel to reflect the given int.
 
-    private static final ImageIcon numsBorderTop = new ImageIcon("Image/numsBorderTop.png");
-    private static final ImageIcon numsBorderBottom = new ImageIcon("Image/numsBorderBottom.png");
-    private static final ImageIcon numsBorderLeft = new ImageIcon("Image/numsBorderLeft.png");
-    private static final ImageIcon numsBorderRight = new ImageIcon("Image/numsBorderRight.png");
-    private static final ImageIcon numsBorderCornerTL = new ImageIcon("Image/numsBorderCornerTL.png");
-    private static final ImageIcon numsBorderCornerTR = new ImageIcon("Image/numsBorderCornerTR.png");
-    private static final ImageIcon numsBorderCornerBR = new ImageIcon("Image/numsBorderCornerBR.png");
-    private static final ImageIcon numsBorderCornerBL = new ImageIcon("Image/numsBorderCornerBL.png");
+    private final ImageIcon numsBorderTop = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/numsBorderTop.png")));
+    private final ImageIcon numsBorderBottom = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/numsBorderBottom.png")));
+    private final ImageIcon numsBorderLeft = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/numsBorderLeft.png")));
+    private final ImageIcon numsBorderRight = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/numsBorderRight.png")));
+    private final ImageIcon numsBorderCornerTL = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/numsBorderCornerTL.png")));
+    private final ImageIcon numsBorderCornerTR = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/numsBorderCornerTR.png")));
+    private final ImageIcon numsBorderCornerBR = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/numsBorderCornerBR.png")));
+    private final ImageIcon numsBorderCornerBL = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/numsBorderCornerBL.png")));
 
-    private static final ImageIcon numDisplayNeg = new ImageIcon("Image/numDisplayNeg.png");
-    private static final ImageIcon numDisplay0 = new ImageIcon("Image/numDisplay0.png");
-    private static final ImageIcon numDisplay1 = new ImageIcon("Image/numDisplay1.png");
-    private static final ImageIcon numDisplay2 = new ImageIcon("Image/numDisplay2.png");
-    private static final ImageIcon numDisplay3 = new ImageIcon("Image/numDisplay3.png");
-    private static final ImageIcon numDisplay4 = new ImageIcon("Image/numDisplay4.png");
-    private static final ImageIcon numDisplay5 = new ImageIcon("Image/numDisplay5.png");
-    private static final ImageIcon numDisplay6 = new ImageIcon("Image/numDisplay6.png");
-    private static final ImageIcon numDisplay7 = new ImageIcon("Image/numDisplay7.png");
-    private static final ImageIcon numDisplay8 = new ImageIcon("Image/numDisplay8.png");
-    private static final ImageIcon numDisplay9 = new ImageIcon("Image/numDisplay9.png");
+    private final ImageIcon numDisplayNeg = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/numDisplayNeg.png")));
+    private final ImageIcon numDisplay0 = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/numDisplay0.png")));
+    private final ImageIcon numDisplay1 = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/numDisplay1.png")));
+    private final ImageIcon numDisplay2 = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/numDisplay2.png")));
+    private final ImageIcon numDisplay3 = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/numDisplay3.png")));
+    private final ImageIcon numDisplay4 = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/numDisplay4.png")));
+    private final ImageIcon numDisplay5 = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/numDisplay5.png")));
+    private final ImageIcon numDisplay6 = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/numDisplay6.png")));
+    private final ImageIcon numDisplay7 = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/numDisplay7.png")));
+    private final ImageIcon numDisplay8 = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/numDisplay8.png")));
+    private final ImageIcon numDisplay9 = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/numDisplay9.png")));
 
     private final JPanel outer = new JPanel(new BorderLayout(0, 0));
     private final JLabel left, center, right;

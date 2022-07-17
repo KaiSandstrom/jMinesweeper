@@ -4,6 +4,7 @@ import game.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.Objects;
 
 public class GamePanel {
 
@@ -15,14 +16,22 @@ public class GamePanel {
     //      using BorderLayout, contains the info panel in its Center region,
     //      and border graphics everywhere else.
 
-    public static final ImageIcon borderEdgeHoriz = new ImageIcon("Image/borderEdgeHoriz.png");
-    public static final ImageIcon borderEdgeVert = new ImageIcon("Image/borderEdgeVert.png");
-    public static final ImageIcon borderCornerTL = new ImageIcon("Image/borderCornerTL.png");
-    public static final ImageIcon borderCornerTR = new ImageIcon("Image/borderCornerTR.png");
-    public static final ImageIcon borderCornerBR = new ImageIcon("Image/borderCornerBR.png");
-    public static final ImageIcon borderCornerBL = new ImageIcon("Image/borderCornerBL.png");
-    public static final ImageIcon borderMidLeft = new ImageIcon("Image/borderMidLeft.png");
-    public static final ImageIcon borderMidRight = new ImageIcon("Image/borderMidRight.png");
+    private final ImageIcon borderEdgeHoriz = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/borderEdgeHoriz.png")));
+    private final ImageIcon borderEdgeVert = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/borderEdgeVert.png")));
+    private final ImageIcon borderCornerTL = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/borderCornerTL.png")));
+    private final ImageIcon borderCornerTR = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/borderCornerTR.png")));
+    private final ImageIcon borderCornerBR = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/borderCornerBR.png")));
+    private final ImageIcon borderCornerBL = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/borderCornerBL.png")));
+    private final ImageIcon borderMidLeft = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/borderMidLeft.png")));
+    private final ImageIcon borderMidRight = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/borderMidRight.png")));
 
     private final int rows, cols;
     private final JPanel gamePanel;

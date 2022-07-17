@@ -6,6 +6,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Objects;
 
 public class InfoPanel {
 
@@ -14,11 +15,16 @@ public class InfoPanel {
     //      the number of unflagged mines remaining, the smiley icon that
     //      serves as a reset button, and the timer.
 
-    private static final ImageIcon smileyNormal = new ImageIcon("Image/smileyNormal.png");
-    private static final ImageIcon smileyPressed = new ImageIcon("Image/smileyPressed.png");
-    private static final ImageIcon smileyShocked = new ImageIcon("Image/smileyShocked.png");
-    private static final ImageIcon smileyDead = new ImageIcon("Image/smileyDead.png");
-    private static final ImageIcon smileyCool = new ImageIcon("Image/smileyCool.png");
+    private final ImageIcon smileyNormal = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/smileyNormal.png")));
+    private final ImageIcon smileyPressed = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/smileyPressed.png")));
+    private final ImageIcon smileyShocked = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/smileyShocked.png")));
+    private final ImageIcon smileyDead = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/smileyDead.png")));
+    private final ImageIcon smileyCool = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/smileyCool.png")));
 
     private final JPanel infoPanel;
     private final GamePanel gamePanel;

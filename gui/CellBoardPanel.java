@@ -7,6 +7,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Objects;
 
 public class CellBoardPanel {
 
@@ -23,20 +24,34 @@ public class CellBoardPanel {
 
     //  JButtons associated with the individual Cells are stored in a 2D array.
 
-    public static final ImageIcon unrevealed = new ImageIcon("/resources/unrevealed.png");
-    public static final ImageIcon revealedBlank = new ImageIcon("/resources/revealedBlank.png");
-    public static final ImageIcon revealedNumber1 = new ImageIcon("/resources/revealedNumber1.png");
-    public static final ImageIcon revealedNumber2 = new ImageIcon("/resources/revealedNumber2.png");
-    public static final ImageIcon revealedNumber3 = new ImageIcon("/resources/revealedNumber3.png");
-    public static final ImageIcon revealedNumber4 = new ImageIcon("/resources/revealedNumber4.png");
-    public static final ImageIcon revealedNumber5 = new ImageIcon("/resources/revealedNumber5.png");
-    public static final ImageIcon revealedNumber6 = new ImageIcon("/resources/revealedNumber6.png");
-    public static final ImageIcon revealedNumber7 = new ImageIcon("/resources/revealedNumber7.png");
-    public static final ImageIcon revealedNumber8 = new ImageIcon("/resources/revealedNumber8.png");
-    public static final ImageIcon flagged = new ImageIcon("/resources/flagged.png");
-    public static final ImageIcon falseFlagged = new ImageIcon("/resources/falseFlagged.png");
-    public static final ImageIcon revealedMine = new ImageIcon("/resources/revealedMine.png");
-    public static final ImageIcon revealedExploded = new ImageIcon("/resources/revealedExploded.png");
+    private final ImageIcon unrevealed = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/unrevealed.png")));
+    private final ImageIcon revealedBlank = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/revealedBlank.png")));
+    private final ImageIcon revealedNumber1 = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/revealedNumber1.png")));
+    private final ImageIcon revealedNumber2 = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/revealedNumber2.png")));
+    private final ImageIcon revealedNumber3 = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/revealedNumber3.png")));
+    private final ImageIcon revealedNumber4 = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/revealedNumber4.png")));
+    private final ImageIcon revealedNumber5 = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/revealedNumber5.png")));
+    private final ImageIcon revealedNumber6 = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/revealedNumber6.png")));
+    private final ImageIcon revealedNumber7 = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/revealedNumber7.png")));
+    private final ImageIcon revealedNumber8 = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/revealedNumber8.png")));
+    private final ImageIcon flagged = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/flagged.png")));
+    private final ImageIcon falseFlagged = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/falseFlagged.png")));
+    private final ImageIcon revealedMine = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/revealedMine.png")));
+    private final ImageIcon revealedExploded = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/revealedExploded.png")));
 
     private final JPanel board;
     private final int rows, cols;
