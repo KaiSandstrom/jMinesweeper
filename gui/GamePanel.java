@@ -16,14 +16,14 @@ public class GamePanel {
     //      using BorderLayout, contains the info panel in its Center region,
     //      and border graphics everywhere else.
 
-    //  These first three are static because they are used by the static
-    //      methods for calculating the size in pixels of a theoretical
-    //      game panel with a given number of rows/columns.
-    private static final ImageIcon borderEdgeHoriz = new ImageIcon(Objects.requireNonNull(
+    //  These first three are public static because they are used by methods
+    //      for calculating the size in pixels of a theoretical sizes in pixels
+    //      and cells of theoretical boards, located in OuterFrame
+    public static final ImageIcon borderEdgeHoriz = new ImageIcon(Objects.requireNonNull(
             GamePanel.class.getResource("/resources/borderEdgeHoriz.png")));
-    private static final ImageIcon borderEdgeVert = new ImageIcon(Objects.requireNonNull(
+    public static final ImageIcon borderEdgeVert = new ImageIcon(Objects.requireNonNull(
             GamePanel.class.getResource("/resources/borderEdgeVert.png")));
-    private static final ImageIcon borderCornerTL = new ImageIcon(Objects.requireNonNull(
+    public static final ImageIcon borderCornerTL = new ImageIcon(Objects.requireNonNull(
             GamePanel.class.getResource("/resources/borderCornerTL.png")));
     private final ImageIcon borderCornerTR = new ImageIcon(Objects.requireNonNull(
             getClass().getResource("/resources/borderCornerTR.png")));
@@ -125,31 +125,6 @@ public class GamePanel {
 
     public JPanel getGamePanel() {
         return gamePanel;
-    }
-
-    //  Returns the width of a theoretical GamePanel with a given number of
-    //      columns.
-    public static int getWidthInPixels(int nCols) {
-        return 2 + (2 * borderCornerTL.getIconWidth()) + (nCols * borderEdgeHoriz.getIconWidth());
-    }
-
-    //  Returns the height of a theoretical GamePanel with a given number of
-    //      rows.
-    public static int getHeightInPixels(int nRows) {
-        return 2 + (3 * borderCornerTL.getIconHeight()) + ((nRows+2) * borderEdgeVert.getIconHeight());
-    }
-
-    //  Returns the number of columns that can fit into a board of a
-    //      theoretical width in pixels.
-    public static int getMaxColsFromWidthInPixels(int pix) {
-        return (pix - (2 + 2*(borderCornerTL.getIconWidth()))) / borderEdgeHoriz.getIconWidth();
-    }
-
-    //  Returns the number of rows that can fit into a board of a theoretical
-    //      height in pixels.
-    public static int getMaxRowsFromHeightInPixels(int pix) {
-        return (pix - (2 + 3*(borderCornerTL.getIconHeight()) + 2*borderEdgeVert.getIconHeight())) /
-                borderEdgeVert.getIconHeight();
     }
 
 }

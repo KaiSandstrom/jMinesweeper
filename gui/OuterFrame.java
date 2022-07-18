@@ -199,8 +199,27 @@ public class OuterFrame {
     //      and reset the game panel if they do.
     private class CustomDiffListener implements ActionListener {
 
-        // These are made fields so that the private methods can access them.
+        //  These are made fields so that the private methods can access them.
         int rows, cols, mines;
+
+        //  The prompts panel and its components are made final fields so that
+        //      the program will remember previous inputs from the same
+        //      session.
+        final JPanel prompts;
+        final JTextField getWidth, getHeight, getMines;
+
+        public CustomDiffListener() {
+            prompts = new JPanel(new GridLayout(3, 2, 10, 5));
+            prompts.add(new JLabel("Height:"));
+            getHeight = new JTextField(3);
+            prompts.add(getHeight);
+            prompts.add(new JLabel("Width:"));
+            getWidth = new JTextField(3);
+            prompts.add(getWidth);
+            prompts.add(new JLabel("Mines:"));
+            getMines = new JTextField(3);
+            prompts.add(getMines);
+        }
 
         //  The three fields are set to 0 at the very beginning of
         //      actionPerformed, and are set in the prompt() call immediately
@@ -252,17 +271,6 @@ public class OuterFrame {
         //      more than 1000 mines, a warning is displayed, as the mine
         //      counter display has a maximum value of 999.
         private boolean prompt() {
-            JTextField getWidth, getHeight, getMines;
-            JPanel prompts = new JPanel(new GridLayout(3, 2, 10, 5));
-            prompts.add(new JLabel("Height:"));
-            getHeight = new JTextField(3);
-            prompts.add(getHeight);
-            prompts.add(new JLabel("Width:"));
-            getWidth = new JTextField(3);
-            prompts.add(getWidth);
-            prompts.add(new JLabel("Mines:"));
-            getMines = new JTextField(3);
-            prompts.add(getMines);
             int result = JOptionPane.showConfirmDialog(frame, prompts, "Custom Field",
                     JOptionPane.OK_CANCEL_OPTION);
             if (result != JOptionPane.OK_OPTION)
@@ -311,10 +319,17 @@ public class OuterFrame {
         private boolean isValidScreenSize(int rows, int cols) {
             GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
             Rectangle bounds = env.getMaximumWindowBounds();
-            int newWidth = GamePanel.getWidthInPixels(cols);
-            int newHeight = GamePanel.getHeightInPixels(rows) +
+            int newWidth = getWidthInPixels(cols);
+            int newHeight = getHeightInPixels(rows) +
                     (frame.getHeight() - gamePanel.getGamePanel().getHeight());
             return (newWidth <= bounds.getWidth()) && (newHeight <= bounds.getHeight());
+        }
+
+        //  Returns the width of a theoretical GamePanel with a given number of
+        //      columns.
+        private int getWidthInPixels(int nCols) {
+            return 2 + (2 * GamePanel.borderCornerTL.getIconWidth()) +
+                    (nCols * GamePanel.borderEdgeHoriz.getIconWidth());
         }
 
         //  Private method that returns the maximum number of rows and columns
@@ -322,10 +337,30 @@ public class OuterFrame {
         private Dimension getMaxBoardSize() {
             GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
             Rectangle bounds = env.getMaximumWindowBounds();
-            int maxRows = GamePanel.getMaxRowsFromHeightInPixels((int)bounds.getHeight() -
+            int maxRows = getMaxRowsFromHeightInPixels((int)bounds.getHeight() -
                     (frame.getHeight() - gamePanel.getGamePanel().getHeight()));
-            int maxCols = GamePanel.getMaxColsFromWidthInPixels((int)bounds.getWidth());
+            int maxCols = getMaxColsFromWidthInPixels((int)bounds.getWidth());
             return new Dimension(maxCols, maxRows);
+        }
+
+        //  Returns the height of a theoretical GamePanel with a given number of
+        //      rows.
+        private int getHeightInPixels(int nRows) {
+            return 2 + (3 * GamePanel.borderCornerTL.getIconHeight()) +
+                    ((nRows+2) * GamePanel.borderEdgeVert.getIconHeight());
+        }
+
+        //  Returns the number of columns that can fit into a board of a
+        //      theoretical width in pixels.
+        private int getMaxColsFromWidthInPixels(int pix) {
+            return (pix - (2 + 2*(GamePanel.borderCornerTL.getIconWidth()))) / GamePanel.borderEdgeHoriz.getIconWidth();
+        }
+
+        //  Returns the number of rows that can fit into a board of a theoretical
+        //      height in pixels.
+        private int getMaxRowsFromHeightInPixels(int pix) {
+            return (pix - (2 + 3*(GamePanel.borderCornerTL.getIconHeight()) +
+                    2*GamePanel.borderEdgeVert.getIconHeight())) / GamePanel.borderEdgeVert.getIconHeight();
         }
     }
 

@@ -5,11 +5,14 @@
 jMinesweeper is a clone of the original Windows Minesweeper, written in Java 
 using Swing. 
 
-It currently supports three difficulties:
+It comes with three default difficulties:
 
 * Easy, a 9x9 board with 10 mines
 * Intermediate, a 16x16 board with 40 mines
 * Expert, a 16x30 board with 99 mines
+
+Custom boards can also be created, with user-defined numbers of rows, columns,
+and mines.
 
 JMinesweeper uses objects to represent the game state. Mine-containing cells
 and non-mine-containing cells are represented by classes that extend the

@@ -213,6 +213,7 @@ public class CellBoardPanel {
                     game.rightClickCell(row, col);
                     infoPanel.updateMineCount();
                     updateCells(game.getUpdateTracker());
+                    infoPanel.updateSmiley();
                     rightClicked = false;
                     if (game.getGameState() == Game.OVER_WIN)
                         infoPanel.haltTimer();
