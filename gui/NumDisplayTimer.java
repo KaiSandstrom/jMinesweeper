@@ -18,16 +18,18 @@ public class NumDisplayTimer extends NumericDisplay {
         super();
         timeCount = 0;
         timer = new Timer(1000, new ActionListener() {
-            //  Timer ticks every second. If more than 1000 seconds have
-            //      elapsed, no updates are shown and the timer is stopped.
+            //  When the timer ticks every second, it updates the stored time
+            //      counter value and displays it on the timer display with a
+            //      call to its inherited setNumsFromInt method. When the
+            //      thousandth second has elapsed, this call sets the display
+            //      to a dashed line, and the timer is stopped, as all future
+            //      ticks will also display a dashed line.
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (timeCount < 1000) {
-                    timeCount++;
-                    setNumsFromInt(timeCount);
-                } else {
+                timeCount++;
+                setNumsFromInt(timeCount);
+                if (timeCount > 1000)
                     timer.stop();
-                }
             }
         });
         clearTimer();

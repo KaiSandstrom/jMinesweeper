@@ -16,12 +16,15 @@ public class GamePanel {
     //      using BorderLayout, contains the info panel in its Center region,
     //      and border graphics everywhere else.
 
-    private final ImageIcon borderEdgeHoriz = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/borderEdgeHoriz.png")));
-    private final ImageIcon borderEdgeVert = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/borderEdgeVert.png")));
-    private final ImageIcon borderCornerTL = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/borderCornerTL.png")));
+    //  These first three are static because they are used by the static
+    //      methods for calculating the size in pixels of a theoretical
+    //      game panel with a given number of rows/columns.
+    private static final ImageIcon borderEdgeHoriz = new ImageIcon(Objects.requireNonNull(
+            GamePanel.class.getResource("/resources/borderEdgeHoriz.png")));
+    private static final ImageIcon borderEdgeVert = new ImageIcon(Objects.requireNonNull(
+            GamePanel.class.getResource("/resources/borderEdgeVert.png")));
+    private static final ImageIcon borderCornerTL = new ImageIcon(Objects.requireNonNull(
+            GamePanel.class.getResource("/resources/borderCornerTL.png")));
     private final ImageIcon borderCornerTR = new ImageIcon(Objects.requireNonNull(
             getClass().getResource("/resources/borderCornerTR.png")));
     private final ImageIcon borderCornerBR = new ImageIcon(Objects.requireNonNull(
@@ -39,16 +42,9 @@ public class GamePanel {
     private final CellBoardPanel board;
     private final InfoPanel info;
 
-    public GamePanel(int difficulty) {
-        switch (difficulty) {
-            case Game.BEGINNER:
-                rows = 9; cols = 9; break;
-            case Game.EXPERT:
-                rows = 16; cols = 30; break;
-            case Game.INTERMEDIATE:
-            default:
-                rows = 16; cols = 16;
-        }
+    public GamePanel(Difficulty difficulty) {
+        rows = difficulty.getRows();
+        cols = difficulty.getColumns();
         gamePanel = new JPanel(new BorderLayout());
         game = new Game(difficulty, new UpdateTracker());
         info = new InfoPanel(this, game);
@@ -129,6 +125,31 @@ public class GamePanel {
 
     public JPanel getGamePanel() {
         return gamePanel;
+    }
+
+    //  Returns the width of a theoretical GamePanel with a given number of
+    //      columns.
+    public static int getWidthInPixels(int nCols) {
+        return 2 + (2 * borderCornerTL.getIconWidth()) + (nCols * borderEdgeHoriz.getIconWidth());
+    }
+
+    //  Returns the height of a theoretical GamePanel with a given number of
+    //      rows.
+    public static int getHeightInPixels(int nRows) {
+        return 2 + (3 * borderCornerTL.getIconHeight()) + ((nRows+2) * borderEdgeVert.getIconHeight());
+    }
+
+    //  Returns the number of columns that can fit into a board of a
+    //      theoretical width in pixels.
+    public static int getMaxColsFromWidthInPixels(int pix) {
+        return (pix - (2 + 2*(borderCornerTL.getIconWidth()))) / borderEdgeHoriz.getIconWidth();
+    }
+
+    //  Returns the number of rows that can fit into a board of a theoretical
+    //      height in pixels.
+    public static int getMaxRowsFromHeightInPixels(int pix) {
+        return (pix - (2 + 3*(borderCornerTL.getIconHeight()) + 2*borderEdgeVert.getIconHeight())) /
+                borderEdgeVert.getIconHeight();
     }
 
 }

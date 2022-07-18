@@ -95,8 +95,15 @@ public abstract class NumericDisplay {
     }
 
     //  Inherited by subclasses. Sets the icons in the panel based on the int
-    //      provided.
+    //      provided. If the number is out of the displayable range, a dashed
+    //      line is displayed.
     protected void setNumsFromInt(int num) {
+        if (num > 999 || num < -99) {
+            left.setIcon(numDisplayNeg);
+            center.setIcon(numDisplayNeg);
+            right.setIcon(numDisplayNeg);
+            return;
+        }
         if (num < 0)
             left.setIcon(numDisplayNeg);
         else {

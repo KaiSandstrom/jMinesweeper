@@ -17,7 +17,7 @@ public class OuterFrame {
             getClass().getResource("/resources/mineIcon.png")));
 
     private final JFrame frame = new JFrame();
-    private final JRadioButtonMenuItem beginner, intermediate, expert;
+    private final JRadioButtonMenuItem beginner, intermediate, expert, custom;
     private GamePanel gamePanel;
 
     //  This constructor initializes the JFrame for an intermediate difficulty
@@ -38,9 +38,10 @@ public class OuterFrame {
         beginner = new JRadioButtonMenuItem("Beginner", false);
         intermediate = new JRadioButtonMenuItem("Intermediate", true);
         expert = new JRadioButtonMenuItem("Expert", false);
+        custom = new JRadioButtonMenuItem("Custom...", false);
         initializeMenus();
 
-        gamePanel = new GamePanel(Game.INTERMEDIATE);
+        gamePanel = new GamePanel(Difficulty.INTERMEDIATE);
         frame.add(gamePanel.getGamePanel());
         frame.pack();
         frame.setLocationRelativeTo(null);
@@ -50,11 +51,11 @@ public class OuterFrame {
     //  Populates a JMenuBar with menu options, mnemonics, accelerators, and
     //      ActionListeners, and adds the menu bar to the frame.
     private void initializeMenus() {
-        JMenuBar menuBar = new JMenuBar();
         JMenu gameMenu = new JMenu("Game");
         gameMenu.setMnemonic(KeyEvent.VK_G);
         JMenu helpMenu = new JMenu("Help");
         helpMenu.setMnemonic(KeyEvent.VK_H);
+        JMenuBar menuBar = new JMenuBar();
         menuBar.add(gameMenu);
         menuBar.add(helpMenu);
 
@@ -65,14 +66,17 @@ public class OuterFrame {
         beginner.setMnemonic(KeyEvent.VK_B);
         intermediate.setMnemonic(KeyEvent.VK_I);
         expert.setMnemonic(KeyEvent.VK_E);
+        custom.setMnemonic(KeyEvent.VK_C);
         beginner.addActionListener(new DifficultyListener(beginner));
         intermediate.addActionListener(new DifficultyListener(intermediate));
         expert.addActionListener(new DifficultyListener(expert));
+        custom.addActionListener(new CustomDiffListener());
         gameMenu.add(newGame);
         gameMenu.addSeparator();
         gameMenu.add(beginner);
         gameMenu.add(intermediate);
         gameMenu.add(expert);
+        gameMenu.add(custom);
 
         JMenuItem about = new JMenuItem("About jMinesweeper...");
         about.setMnemonic(KeyEvent.VK_A);
@@ -86,7 +90,7 @@ public class OuterFrame {
     //      replaced, and the new JPanel that it returns is placed into the
     //      frame in place of the old one. In addition to simply swapping out
     //      the JPanel, the JFrame must be resized and re-centered.
-    private void resetFrame(int difficulty) {
+    private void resetFrame(Difficulty difficulty) {
         Point oldLocation = frame.getLocation();
         Dimension oldSize = frame.getSize();
         frame.remove(gamePanel.getGamePanel());
@@ -101,14 +105,30 @@ public class OuterFrame {
     //      window such that the newly-resized window is centered on the same
     //      point as the old one. This makes starting a new game on a different
     //      difficulty less jarring after moving the window on the screen.
+    //      this method also prevents a newly-expanded window from jutting off
+    //      the edge of the screen.
     private Point getNewLocation(Point oldLocation, Dimension oldSize, Dimension newSize) {
-        int newX = (int) ((oldSize.getWidth()/2.0) - (newSize.getWidth()/2.0) + oldLocation.getX());
-        int newY = (int) ((oldSize.getHeight()/2.0) - (newSize.getHeight()/2.0) + oldLocation.getY());
+        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        Rectangle bounds = env.getMaximumWindowBounds();
+        int maxX = (int)bounds.getX() + (int)bounds.getWidth();
+        int maxY = (int)bounds.getY() + (int)bounds.getHeight();
+        int newX = (int) ((oldSize.getWidth() - newSize.getWidth())/2 + oldLocation.getX());
+        int newY = (int) ((oldSize.getHeight() - newSize.getHeight())/2 + oldLocation.getY());
+        int rightEdge = (int)(newX+newSize.getWidth());
+        int bottomEdge = (int)(newY+newSize.getHeight());
+        if (newX < bounds.getX())
+            newX = (int)bounds.getX();
+        else if (rightEdge > maxX)
+            newX = maxX - (int)newSize.getWidth();
+        if (newY < bounds.getY())
+            newY = (int)bounds.getY();
+        else if (bottomEdge > maxY)
+            newY = maxY - (int)newSize.getHeight();
         return new Point(newX, newY);
     }
 
     //  This ActionListener resets the GamePanel with a new difficulty when the
-    //      difficulty selection options are chosen in the menu.
+    //      default difficulty selection options are chosen in the menu.
     private class DifficultyListener implements ActionListener {
         //  DifficultyListener takes the individual object it's observing as an
         //      argument for easy reference. Each difficulty setting button is
@@ -128,6 +148,7 @@ public class OuterFrame {
                 beginner.setSelected(false);
                 intermediate.setSelected(false);
                 expert.setSelected(false);
+                custom.setSelected(false);
                 item.setSelected(true);
                 resetFrame(textToDifficulty());
             //  If the item has become unselected, the user clicked the
@@ -138,14 +159,14 @@ public class OuterFrame {
             }
         }
 
-        //  Simple method to map menu option text to difficulty levels.
-        private int textToDifficulty() {
+        //  Simple method to map menu option text to Difficulty objects.
+        private Difficulty textToDifficulty() {
             if (item.getText().equals("Beginner"))
-                return Game.BEGINNER;
+                return Difficulty.BEGINNER;
             if (item.getText().equals("Intermediate"))
-                return Game.INTERMEDIATE;
+                return Difficulty.INTERMEDIATE;
             else // item.getText().equals("Expert")
-                return Game.EXPERT;
+                return Difficulty.EXPERT;
         }
     }
 
@@ -169,6 +190,142 @@ public class OuterFrame {
         public void actionPerformed(ActionEvent e) {
             JOptionPane.showMessageDialog(frame, "jMinesweeper\nBy Kai Sandstrom\n2022",
                     "About jMinesweeper", JOptionPane.PLAIN_MESSAGE, mineIcon);
+        }
+    }
+
+    //  ActionListener for the custom board menu option. This ActionListener
+    //      displays a popup to input values, checks these values to make sure
+    //      they describe a valid board, give error feedback if they don't,
+    //      and reset the game panel if they do.
+    private class CustomDiffListener implements ActionListener {
+
+        // These are made fields so that the private methods can access them.
+        int rows, cols, mines;
+
+        //  The three fields are set to 0 at the very beginning of
+        //      actionPerformed, and are set in the prompt() call immediately
+        //      after. This prompt() call handles all user input and input
+        //      checking. If it returns true, then the window will be
+        //      reset. Next, actionPerformed checks if the input parameters
+        //      match one of the default difficulty levels. If they do, the
+        //      user is notified and the default difficulty is selected
+        //      instead. Finally, the window is reset.
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            rows = cols = mines = 0;
+            if (!prompt()) {
+                custom.setSelected(false);
+                return;
+            }
+            beginner.setSelected(false);
+            intermediate.setSelected(false);
+            expert.setSelected(false);
+            Difficulty newDiff = new Difficulty(rows, cols, mines);
+            if (newDiff.equals(Difficulty.BEGINNER)) {
+                custom.setSelected(false);
+                JOptionPane.showMessageDialog(frame,
+                        "Custom field is the same as Beginner. Starting new Beginner game...\n ",
+                        "", JOptionPane.PLAIN_MESSAGE);
+                beginner.doClick();
+            } else if (newDiff.equals(Difficulty.INTERMEDIATE)) {
+                custom.setSelected(false);
+                JOptionPane.showMessageDialog(frame,
+                        "Custom field is the same as Intermediate. Starting new Intermediate game...\n ",
+                        "", JOptionPane.PLAIN_MESSAGE);
+                intermediate.doClick();
+            } else if (newDiff.equals(Difficulty.EXPERT)) {
+                custom.setSelected(false);
+                JOptionPane.showMessageDialog(frame,
+                        "Custom field is the same as Expert. Starting new Expert game...\n ",
+                        "", JOptionPane.PLAIN_MESSAGE);
+                expert.doClick();
+            }
+            resetFrame(newDiff);
+        }
+
+        //  The prompt method returns true if the user-input values describe a
+        //      valid board, and false otherwise. User input is collected via
+        //      JTextFields in a JOptionPane. Various checks are performed to
+        //      verify that the values describe a valid board, and various
+        //      descriptive error messages are provided in separate
+        //      JOptionPanes if they are invalid. Finally, if the user input
+        //      more than 1000 mines, a warning is displayed, as the mine
+        //      counter display has a maximum value of 999.
+        private boolean prompt() {
+            JTextField getWidth, getHeight, getMines;
+            JPanel prompts = new JPanel(new GridLayout(3, 2, 10, 5));
+            prompts.add(new JLabel("Height:"));
+            getHeight = new JTextField(3);
+            prompts.add(getHeight);
+            prompts.add(new JLabel("Width:"));
+            getWidth = new JTextField(3);
+            prompts.add(getWidth);
+            prompts.add(new JLabel("Mines:"));
+            getMines = new JTextField(3);
+            prompts.add(getMines);
+            int result = JOptionPane.showConfirmDialog(frame, prompts, "Custom Field",
+                    JOptionPane.OK_CANCEL_OPTION);
+            if (result != JOptionPane.OK_OPTION)
+                return false;
+            String reason = null;
+            try {
+                cols = Integer.parseInt(getWidth.getText());
+                rows = Integer.parseInt(getHeight.getText());
+                mines = Integer.parseInt(getMines.getText());
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(frame, "Invalid inputs:\n\nAll inputs must be whole numbers.\n ",
+                        "", JOptionPane.PLAIN_MESSAGE);
+                return false;
+            }
+            if (!isValidScreenSize(rows, cols)) {
+                Dimension maxSize = getMaxBoardSize();
+                reason = "Custom board is too big to fit on the screen.\n\nLargest possible board for your screen:\n" +
+                        "Height: " + (int)maxSize.getHeight() + "\nWidth:  " + (int)maxSize.getWidth() + "\n ";
+            } else if (cols < 8 || rows < 2)
+                reason = "Custom board must have at least 2 rows and 8 columns.\n ";
+            else if (mines > (cols * rows)-9)
+                reason = "Too many mines. There must be at least 9 non-mine cells on the board.\n ";
+            else if (mines < 2)
+                reason = "There must be at least one mine on the board.\n ";
+            if (reason != null) {
+                JOptionPane.showMessageDialog(frame, "Invalid inputs:\n\n" + reason,
+                        "", JOptionPane.PLAIN_MESSAGE);
+                return false;
+            }
+            if (mines > 999) {
+                String insert;
+                if (mines-999 == 1)
+                    insert = " 1 mine has ";
+                else
+                    insert = " " + (mines - 999) + " mines have ";
+                JOptionPane.showMessageDialog(frame, "This board has more than 999 mines.\n\nSince the left " +
+                                "numeric display in the info panel can\nonly display numbers up to 999, it will " +
+                                "display a\ndashed line until" + insert + "been flagged.\n ",
+                        "", JOptionPane.PLAIN_MESSAGE);
+            }
+            return true;
+        }
+
+        //  Private method to check that a board with a given number of rows
+        //      and columns can fit on the system's screen.
+        private boolean isValidScreenSize(int rows, int cols) {
+            GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            Rectangle bounds = env.getMaximumWindowBounds();
+            int newWidth = GamePanel.getWidthInPixels(cols);
+            int newHeight = GamePanel.getHeightInPixels(rows) +
+                    (frame.getHeight() - gamePanel.getGamePanel().getHeight());
+            return (newWidth <= bounds.getWidth()) && (newHeight <= bounds.getHeight());
+        }
+
+        //  Private method that returns the maximum number of rows and columns
+        //      that can fit on the screen.
+        private Dimension getMaxBoardSize() {
+            GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            Rectangle bounds = env.getMaximumWindowBounds();
+            int maxRows = GamePanel.getMaxRowsFromHeightInPixels((int)bounds.getHeight() -
+                    (frame.getHeight() - gamePanel.getGamePanel().getHeight()));
+            int maxCols = GamePanel.getMaxColsFromWidthInPixels((int)bounds.getWidth());
+            return new Dimension(maxCols, maxRows);
         }
     }
 

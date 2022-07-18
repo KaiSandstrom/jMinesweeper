@@ -24,12 +24,9 @@ public class NumDisplayMines extends NumericDisplay {
         game = g;
     }
 
-    //  Simply extracts the number of mines remaining, checks that this number
-    //      fits on the display, and calls its inherited setNumsFromInt method.
+    //  Simply extracts the number of mines remaining and calls its inherited
+    //      setNumsFromInt method.
     public void setNums() {
-        int mines = game.getMinesRemaining();
-        if (mines > 999 || mines < -99)
-            return;
-        setNumsFromInt(mines);
+        setNumsFromInt(game.getMinesRemaining());
     }
 }

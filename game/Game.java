@@ -19,29 +19,16 @@ public class Game {
     public static final int OVER_WIN = 2;
     public static final int OVER_LOSS = 3;
 
-    public static final int BEGINNER = 0;
-    public static final int INTERMEDIATE = 1;
-    public static final int EXPERT = 2;
-
     private final Board board;
     private final UpdateTracker updateTracker;
-    private final int difficulty;
+    private final Difficulty difficulty;
     private int gameState;
     private int minesMinusFlags;
 
-    public Game(int diff, UpdateTracker tracker) {
+    public Game(Difficulty diff, UpdateTracker tracker) {
         difficulty = diff;
-        gameState = NOT_STARTED;
-        if (difficulty == BEGINNER) {
-            board = new Board(9, 9, tracker);
-            minesMinusFlags = 10;
-        } else if (difficulty == INTERMEDIATE) {
-            board = new Board(16, 16, tracker);
-            minesMinusFlags = 40;
-        } else { // difficulty == EXPERT
-            board = new Board(16, 30, tracker);
-            minesMinusFlags = 99;
-        }
+        board = new Board(diff.getRows(), diff.getColumns(), tracker);
+        minesMinusFlags = diff.getMines();
         updateTracker = tracker;
     }
 
@@ -49,7 +36,7 @@ public class Game {
         return gameState;
     }
 
-    public int getDifficulty() {
+    public Difficulty getDifficulty() {
         return difficulty;
     }
 
