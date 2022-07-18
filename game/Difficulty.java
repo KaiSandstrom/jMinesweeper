@@ -35,4 +35,14 @@ public class Difficulty {
         return (this.nRows == that.nRows && this.nCols == that.nCols && this.nMines == that.nMines);
     }
 
+    public String toString() {
+        if (this == BEGINNER)
+            return "Beginner";
+        if (this == INTERMEDIATE)
+            return "Intermediate";
+        if (this == EXPERT)
+            return "Expert";
+        return "Custom (H:" + nRows + ", W:" + nCols + ", M:" + nMines + ")";
+    }
+
 }
