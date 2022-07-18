@@ -51,12 +51,8 @@ will be clicked resulting in a loss.
 
 ## Planned Features
 
-jMinesweeper currently only supports three hardcoded board sizes, each with
-a hardcoded number of mines. A custom board option is planned for the near
-future.
-
-Also coming soon is a high score feature, where players can log their fastest
-times for each board type.
+A high score feature, where players can log their fastest times for each board
+type, will be added in the near future.
 
 ## Known Bugs
 
