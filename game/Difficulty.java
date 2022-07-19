@@ -9,7 +9,7 @@ public class Difficulty {
 
     public static final Difficulty BEGINNER = new Difficulty(10, 10, 9);
     public static final Difficulty INTERMEDIATE = new Difficulty(16, 16, 40);
-    public static final Difficulty EXPERT = new Difficulty(16, 30, 40);
+    public static final Difficulty EXPERT = new Difficulty(16, 30, 99);
 
     private final int nRows, nCols, nMines;
 
