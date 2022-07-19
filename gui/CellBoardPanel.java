@@ -113,7 +113,6 @@ public class CellBoardPanel {
                 game.leftClickCell(row, col);
                 updateCells(game.getUpdateTracker());
                 infoPanel.updateSmiley();
-                infoPanel.updateMineCount();
                 if (prevState == Game.NOT_STARTED && game.getGameState() == Game.IN_PROGRESS)
                     infoPanel.startTimer();
                 else if (prevState == Game.IN_PROGRESS && game.getGameState() > Game.IN_PROGRESS)
@@ -211,8 +210,6 @@ public class CellBoardPanel {
             public void mouseReleased(MouseEvent e) {
                 clicked.clear();
                 if (rightClicked) {
-                    if (game.getGameState() == Game.NOT_STARTED)
-                        infoPanel.startTimer();
                     game.rightClickCell(row, col);
                     infoPanel.updateMineCount();
                     updateCells(game.getUpdateTracker());

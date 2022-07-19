@@ -13,7 +13,6 @@ public class Board {
     private final Cell[][] board;
     private final int nRows, nCols;
     private final UpdateTracker updateTracker;
-    private int minesMinusFlags;
 
     public Board(int rows, int cols, UpdateTracker tracker) {
         board = new Cell[rows][cols];
@@ -31,7 +30,6 @@ public class Board {
     //      arguments are used to avoid placing mines adjacent to the first
     //      click.
     public void populateBoard(int rowPos, int colPos, int totalMines) {
-        minesMinusFlags = totalMines;
         int currentMines = 0;
         while (currentMines < totalMines) {
             int randomRow = (int)(Math.random()*nRows);
@@ -72,10 +70,6 @@ public class Board {
         return (row>=0 && col>=0 && row<nRows && col<nCols);
     }
 
-    public int getMinesRemaining() {
-        return minesMinusFlags;
-    }
-
     // Used to check a win condition in Game. If a call to this method returns
     //      true, and the correct number of flags have been placed, the game
     //      is won.
@@ -100,18 +94,13 @@ public class Board {
         return totalFlagged;
     }
 
-    //  Toggles the isFlagged field of the given cell, and updates its stored
-    //      minesMinusFlags field accordingly.
+    //  Toggles the isFlagged field of the given cell, and returns a value
+    //      describing whether the value was toggled off, toggled on, or
+    //      not changed.
     public int rightClickCell(int row, int col) {
         int status = board[row][col].toggleFlagged();
-        if (status == Cell.FLAG_SET) {
-            minesMinusFlags--;
-        } else if (status == Cell.FLAG_CLEARED) {
-            minesMinusFlags++;
-        } else {
-            return status;
-        }
-        updateTracker.addUpdate(new Posn(row, col));
+        if (status != Cell.FLAG_UNCHANGED)
+            updateTracker.addUpdate(new Posn(row, col));
         return status;
     }
 
@@ -148,10 +137,7 @@ public class Board {
     //      and if the given cell is not adjacent to any mines, this method is
     //      recursively called for all cells adjacent to it.
     private void chainClickCells(int row, int col) {
-        if (board[row][col].isFlagged()) {
-            board[row][col].unflag();
-            minesMinusFlags++;
-        }
+        board[row][col].unflag();
         board[row][col].clickCell();
         updateTracker.addUpdate(new Posn(row, col));
         int minesAdjacent = ((EmptyCell)board[row][col]).getMinesAdjacent();
