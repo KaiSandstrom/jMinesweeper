@@ -330,13 +330,6 @@ public class OuterFrame {
             return (newWidth <= bounds.getWidth()) && (newHeight <= bounds.getHeight());
         }
 
-        //  Returns the width of a theoretical GamePanel with a given number of
-        //      columns.
-        private int getWidthInPixels(int nCols) {
-            return 2 + (2 * GamePanel.borderCornerTL.getIconWidth()) +
-                    (nCols * GamePanel.borderEdgeHoriz.getIconWidth());
-        }
-
         //  Private method that returns the maximum number of rows and columns
         //      that can fit on the screen.
         private Dimension getMaxBoardSize() {
@@ -347,26 +340,40 @@ public class OuterFrame {
             int maxCols = getMaxColsFromWidthInPixels((int)bounds.getWidth());
             return new Dimension(maxCols, maxRows);
         }
+    }
 
-        //  Returns the height of a theoretical GamePanel with a given number of
-        //      rows.
-        private int getHeightInPixels(int nRows) {
-            return 2 + (3 * GamePanel.borderCornerTL.getIconHeight()) +
-                    ((nRows+2) * GamePanel.borderEdgeVert.getIconHeight());
-        }
+    //  Returns the width of a theoretical GamePanel with a given number of
+    //      columns.
+    private int getWidthInPixels(int nCols) {
+        return 2 + (2 * GamePanel.borderCornerTL.getIconWidth()) +
+                (nCols * GamePanel.borderEdgeHoriz.getIconWidth());
+    }
 
-        //  Returns the number of columns that can fit into a board of a
-        //      theoretical width in pixels.
-        private int getMaxColsFromWidthInPixels(int pix) {
-            return (pix - (2 + 2*(GamePanel.borderCornerTL.getIconWidth()))) / GamePanel.borderEdgeHoriz.getIconWidth();
-        }
+    //  Returns the height of a theoretical GamePanel with a given number of
+    //      rows.
+    private int getHeightInPixels(int nRows) {
+        return 2 + (3 * GamePanel.borderCornerTL.getIconHeight()) +
+                ((nRows+2) * GamePanel.borderEdgeVert.getIconHeight());
+    }
 
-        //  Returns the number of rows that can fit into a board of a theoretical
-        //      height in pixels.
-        private int getMaxRowsFromHeightInPixels(int pix) {
-            return (pix - (2 + 3*(GamePanel.borderCornerTL.getIconHeight()) +
-                    2*GamePanel.borderEdgeVert.getIconHeight())) / GamePanel.borderEdgeVert.getIconHeight();
-        }
+    //  Returns the number of columns that can fit into a board of a
+    //      theoretical width in pixels.
+    private int getMaxColsFromWidthInPixels(int pix) {
+        return (pix - (2 + 2*(GamePanel.borderCornerTL.getIconWidth()))) / GamePanel.borderEdgeHoriz.getIconWidth();
+    }
+
+    //  Returns the number of rows that can fit into a board of a theoretical
+    //      height in pixels.
+    private int getMaxRowsFromHeightInPixels(int pix) {
+        return (pix - (2 + 3*(GamePanel.borderCornerTL.getIconHeight()) +
+                2*GamePanel.borderEdgeVert.getIconHeight())) / GamePanel.borderEdgeVert.getIconHeight();
+    }
+
+    private Dimension getNewSize(Difficulty diff) {
+        int newX = getWidthInPixels(diff.getColumns());
+        int topBarHeight = frame.getHeight() - gamePanel.getGamePanel().getHeight();
+        int newY = getHeightInPixels(diff.getRows()) + topBarHeight;
+        return new Dimension(newX, newY);
     }
 
 }
