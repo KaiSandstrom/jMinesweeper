@@ -137,7 +137,8 @@ public class Board {
     //      and if the given cell is not adjacent to any mines, this method is
     //      recursively called for all cells adjacent to it.
     private void chainClickCells(int row, int col) {
-        board[row][col].unflag();
+        if (board[row][col].isFlagged())
+            return;
         board[row][col].clickCell();
         updateTracker.addUpdate(new Posn(row, col));
         int minesAdjacent = ((EmptyCell)board[row][col]).getMinesAdjacent();

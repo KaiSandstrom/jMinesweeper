@@ -210,6 +210,8 @@ public class CellBoardPanel {
             public void mouseReleased(MouseEvent e) {
                 clicked.clear();
                 if (rightClicked) {
+                    if (game.getGameState() == Game.NOT_STARTED)
+                        infoPanel.startTimer();
                     game.rightClickCell(row, col);
                     infoPanel.updateMineCount();
                     updateCells(game.getUpdateTracker());

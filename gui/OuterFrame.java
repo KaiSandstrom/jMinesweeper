@@ -176,10 +176,14 @@ public class OuterFrame {
     //      GamePanel object to reset for a new game, whereas in resetPanel,
     //      the GamePanel is thrown out and replaced with a new GamePanel for
     //      a different difficulty.
+    //  Also re-packs the frame, to give the user an easy way to fix visual
+    //      glitches. This is a stopgap until a way is found to completely
+    //      resolve the issue.
     private class NewGameListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             gamePanel.reset();
+            frame.pack();
         }
     }
 
@@ -239,6 +243,7 @@ public class OuterFrame {
             beginner.setSelected(false);
             intermediate.setSelected(false);
             expert.setSelected(false);
+            custom.setSelected(true);
             Difficulty newDiff = new Difficulty(rows, cols, mines);
             if (newDiff.equals(Difficulty.BEGINNER)) {
                 custom.setSelected(false);
@@ -289,11 +294,11 @@ public class OuterFrame {
                 Dimension maxSize = getMaxBoardSize();
                 reason = "Custom board is too big to fit on the screen.\n\nLargest possible board for your screen:\n" +
                         "Height: " + (int)maxSize.getHeight() + "\nWidth:  " + (int)maxSize.getWidth() + "\n ";
-            } else if (cols < 8 || rows < 2)
+            } else if (cols < 9 || rows < 2)
                 reason = "Custom board must have at least 2 rows and 8 columns.\n ";
             else if (mines > (cols * rows)-9)
                 reason = "Too many mines. There must be at least 9 non-mine cells on the board.\n ";
-            else if (mines < 2)
+            else if (mines < 1)
                 reason = "There must be at least one mine on the board.\n ";
             if (reason != null) {
                 JOptionPane.showMessageDialog(frame, "Invalid inputs:\n\n" + reason,
