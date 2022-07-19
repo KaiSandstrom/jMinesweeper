@@ -71,6 +71,7 @@ public class Game {
             board.setRevealed();
             gameState = OVER_LOSS;
         }
+        minesMinusFlags = board.getMinesRemaining();
         updateWinCondition();
     }
 
@@ -88,11 +89,8 @@ public class Game {
             board.populateBoard(-2, -2, minesMinusFlags);
             gameState = IN_PROGRESS;
         }
-        int rClickResult = board.rightClickCell(row, col);
-        if (rClickResult == Cell.FLAG_SET)
-            minesMinusFlags--;
-        else if (rClickResult == Cell.FLAG_CLEARED)
-            minesMinusFlags++;
+        board.rightClickCell(row, col);
+        minesMinusFlags = board.getMinesRemaining();
         updateWinCondition();
     }
 
