@@ -91,14 +91,16 @@ public class OuterFrame {
     //      frame in place of the old one. In addition to simply swapping out
     //      the JPanel, the JFrame must be resized and re-centered.
     private void resetFrame(Difficulty difficulty) {
-        Point oldLocation = frame.getLocation();
         Dimension oldSize = frame.getSize();
+        Dimension newSize = getNewSize(difficulty);
+        Point oldLocation = frame.getLocationOnScreen();
+        Point newLocation = getNewLocation(oldLocation, oldSize, newSize);
+        frame.setSize(newSize);
+        frame.setLocation(newLocation);
         frame.remove(gamePanel.getGamePanel());
         gamePanel = new GamePanel(difficulty);
         frame.add(gamePanel.getGamePanel());
         frame.pack();
-        Dimension newSize = frame.getSize();
-        frame.setLocation(getNewLocation(oldLocation, oldSize, newSize));
     }
 
     //  This method returns a Point representing the top-left corner of the new
@@ -176,14 +178,10 @@ public class OuterFrame {
     //      GamePanel object to reset for a new game, whereas in resetPanel,
     //      the GamePanel is thrown out and replaced with a new GamePanel for
     //      a different difficulty.
-    //  Also re-packs the frame, to give the user an easy way to fix visual
-    //      glitches. This is a stopgap until a way is found to completely
-    //      resolve the issue.
     private class NewGameListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             gamePanel.reset();
-            frame.pack();
         }
     }
 
@@ -251,18 +249,21 @@ public class OuterFrame {
                         "Custom field is the same as Beginner. Starting new Beginner game...\n ",
                         "", JOptionPane.PLAIN_MESSAGE);
                 beginner.doClick();
+                return;
             } else if (newDiff.equals(Difficulty.INTERMEDIATE)) {
                 custom.setSelected(false);
                 JOptionPane.showMessageDialog(frame,
                         "Custom field is the same as Intermediate. Starting new Intermediate game...\n ",
                         "", JOptionPane.PLAIN_MESSAGE);
                 intermediate.doClick();
+                return;
             } else if (newDiff.equals(Difficulty.EXPERT)) {
                 custom.setSelected(false);
                 JOptionPane.showMessageDialog(frame,
                         "Custom field is the same as Expert. Starting new Expert game...\n ",
                         "", JOptionPane.PLAIN_MESSAGE);
                 expert.doClick();
+                return;
             }
             resetFrame(newDiff);
         }

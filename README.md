@@ -67,5 +67,15 @@ On some default look and feels (particularly macOS), a redundant click
 animation is shown where the button, including the icon that takes up the
 button's entire footprint, is darkened. 
 
-jMinesweeper was also tested on linux and Windows, and neither of these
-problems was present.
+On some Linux windowing systems (Issue was found on GNOME Desktop), the frame
+sometimes doesn't resize and reposition correctly. This only happens when the
+custom board option is selected, even though they use the same code to reset
+the frame, and it still happens when a default difficulty value is hardcoded
+for testing purposes, so it must have something to do with the windowing 
+system's processing of the closing of the dialogue box, then the resizing and
+repositioning of the frame in rapid succession. Previously, this bug could
+result in a broken-looking window of the wrong size, but in the right position.
+In the most recent update, an extra pack() call was added, which makes the
+frame the right size but in the wrong location. I have no idea how a call to
+pack() could retroactively change the position of a JFrame to where it was
+previously, but that seems to be what's happening.
