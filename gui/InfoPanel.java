@@ -120,6 +120,13 @@ public class InfoPanel {
             smiley.setIcon(smileyCool);
     }
 
+    //  Used to fetch the timer's value upon winning, to check for a high score
+    public int getTimeCount() {
+        return timeCount.getTimeCount();
+    }
+
+    //  Start and halt methods are used by the CellBoardPanel to manipulate the
+    //      timer based on the results of clicks.
     public void startTimer() {
         timeCount.startTimer();
     }
@@ -128,6 +135,8 @@ public class InfoPanel {
         timeCount.haltTimer();
     }
 
+    //  Resets both the timer and mine count, using a new Game object passed
+    //      from the GamePanel.
     public void reset(Game g) {
         game = g;
         mineCount.setGame(g);
@@ -135,6 +144,8 @@ public class InfoPanel {
         timeCount.clearTimer();
     }
 
+    //  Invoked by CellBoardPanel when a successful right click has been
+    //      performed.
     public void updateMineCount() {
         mineCount.setNums();
     }

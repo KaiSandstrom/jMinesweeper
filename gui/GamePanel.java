@@ -41,14 +41,16 @@ public class GamePanel {
     private Game game;
     private final CellBoardPanel board;
     private final InfoPanel info;
+    private final OuterFrame parent;
 
-    public GamePanel(Difficulty difficulty) {
+    public GamePanel(Difficulty difficulty, OuterFrame parentComponent) {
         rows = difficulty.getRows();
         cols = difficulty.getColumns();
         gamePanel = new JPanel(new BorderLayout());
         game = new Game(difficulty, new UpdateTracker());
         info = new InfoPanel(this, game);
-        board = new CellBoardPanel(rows, cols, game, info);
+        parent = parentComponent;
+        board = new CellBoardPanel(rows, cols, game, this);
         initialize();
     }
 
@@ -125,6 +127,21 @@ public class GamePanel {
 
     public JPanel getGamePanel() {
         return gamePanel;
+    }
+
+    public InfoPanel getInfoPanel() {
+        return info;
+    }
+
+    //  The GamePanel takes a reference to its parent OuterFrame, and the
+    //      CellBoardPanel takes a reference to its parent GamePanel. When
+    //      a win is detected in the CellBoardPanel, a call is made here in
+    //      its parent, which then fetches the player's score from the
+    //      InfoPanel, which itself fetches it from the NumDisplayTimer, and
+    //      a call is made to the OuterFrame where the score is finally
+    //      processed.
+    public void processWin() {
+        parent.processWin(info.getTimeCount());
     }
 
 }

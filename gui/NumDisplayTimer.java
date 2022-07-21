@@ -35,6 +35,11 @@ public class NumDisplayTimer extends NumericDisplay {
         clearTimer();
     }
 
+    //  Simple getter, used to check a winning player's score.
+    public int getTimeCount() {
+        return timeCount;
+    }
+
     //  Halts and zeroes out the timer. This is used in the constructor, and
     //      when the game is reset using the smiley, menu option, or F2.
     public void clearTimer() {

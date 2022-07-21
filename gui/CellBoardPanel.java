@@ -19,10 +19,13 @@ public class CellBoardPanel {
     //      display correctly.
 
     //  A CellBoardPanel has a reference to the Game object, in order to make
-    //      calls invoking game logic, and a reference to the InfoPanel, in
-    //      order to update the smiley, mine counter, and timer. Originally,
-    //      the plan was to add another mouseListener to the entire GamePanel,
-    //      but that mouseListener wasn't registering any clicks.
+    //      calls invoking game logic, and a reference to the parent GamePanel.
+    //      The reference to the parent GamePanel is used to update the smiley,
+    //      mine counter, and timer in the InfoPanel. Originally, the plan was
+    //      to add another mouseListener to the entire GamePanel, but that
+    //      mouseListener wasn't registering any clicks. This reference to the
+    //      parent GamePanel is also used to pass a call back to the OuterFrame
+    //      to check for a high score when the game is won.
 
     //  JButtons associated with the individual Cells are stored in a 2D array.
 
@@ -57,16 +60,16 @@ public class CellBoardPanel {
 
     private final JPanel board;
     private final int rows, cols;
-    private final InfoPanel infoPanel;
+    private final GamePanel parent;
     private final JButton[][] buttons;
     private Game game;
 
-    public CellBoardPanel(int nRows, int nCols, Game g, InfoPanel ip) {
+    public CellBoardPanel(int nRows, int nCols, Game g, GamePanel parentComponent) {
         rows = nRows;
         cols = nCols;
         buttons = new JButton[rows][cols];
         game = g;
-        infoPanel = ip;
+        parent = parentComponent;
         board = new JPanel(new GridLayout(rows, cols, 0, 0));
         initialize();
     }
@@ -106,17 +109,20 @@ public class CellBoardPanel {
             //      cell in question, and makes a call to updateCells to redraw
             //      the icons for the affected cells. Depending on the game
             //      state before and after the click, the timer may be started
-            //      or halted.
+            //      or halted, and the OuterFrame may be notified to check for
+            //      a win.
             @Override
             public void actionPerformed(ActionEvent e) {
                 int prevState = game.getGameState();
                 game.leftClickCell(row, col);
                 updateCells(game.getUpdateTracker());
-                infoPanel.updateSmiley();
+                parent.getInfoPanel().updateSmiley();
                 if (prevState == Game.NOT_STARTED && game.getGameState() == Game.IN_PROGRESS)
-                    infoPanel.startTimer();
+                    parent.getInfoPanel().startTimer();
                 else if (prevState == Game.IN_PROGRESS && game.getGameState() > Game.IN_PROGRESS)
-                    infoPanel.haltTimer();
+                    parent.getInfoPanel().haltTimer();
+                if (game.getGameState() == Game.OVER_WIN)
+                    parent.processWin();
             }
         });
 
@@ -178,7 +184,7 @@ public class CellBoardPanel {
                                 clicked.addUpdate(new Posn(i, j));
                             }
                 }
-                infoPanel.setSmileyShocked();
+                parent.getInfoPanel().setSmileyShocked();
             }
 
             //  Most times this method is called, nothing will be done, as the
@@ -194,7 +200,7 @@ public class CellBoardPanel {
             public void mouseExited(MouseEvent e) {
                 rightClicked = false;
                 updateCells(clicked);
-                infoPanel.updateSmiley();
+                parent.getInfoPanel().updateSmiley();
             }
 
             //  For left click: When the mouse is finally released, the
@@ -206,19 +212,22 @@ public class CellBoardPanel {
             //      successful right click has been performed. This click must
             //      be invoked in the Game object and the affected cells' icons
             //      must be updated. If the right click results in a win, the
-            //      timer is halted.
+            //      timer is halted and a call is passed back up to the
+            //      OuterFrame to check for a high score.
             public void mouseReleased(MouseEvent e) {
                 clicked.clear();
                 if (rightClicked) {
                     if (game.getGameState() == Game.NOT_STARTED)
-                        infoPanel.startTimer();
+                        parent.getInfoPanel().startTimer();
                     game.rightClickCell(row, col);
-                    infoPanel.updateMineCount();
+                    parent.getInfoPanel().updateMineCount();
                     updateCells(game.getUpdateTracker());
-                    infoPanel.updateSmiley();
+                    parent.getInfoPanel().updateSmiley();
                     rightClicked = false;
-                    if (game.getGameState() == Game.OVER_WIN)
-                        infoPanel.haltTimer();
+                    if (game.getGameState() == Game.OVER_WIN) {
+                        parent.getInfoPanel().haltTimer();
+                        parent.processWin();
+                    }
                 }
             }
 

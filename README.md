@@ -14,6 +14,13 @@ It comes with three default difficulties:
 Custom boards can also be created, with user-defined numbers of rows, columns,
 and mines.
 
+High scores for each difficulty (default and custom) are saved in a file for
+persistence between sessions, along with the most recently-played board and
+most recently-entered custom board parameters. The location where this file is
+stored is by default the directory where the .jar file is located, but may be
+different depending on the system. For example, on the Linux machine used for
+development, the save file is placed in the home directory.
+
 JMinesweeper uses objects to represent the game state. Mine-containing cells
 and non-mine-containing cells are represented by classes that extend the
 abstract Cell class, with polymorphic methods for click operations and state
@@ -51,11 +58,6 @@ on the revealed cell in question. If the appropriate number of flags have not
 been set adjacent to the cell, the click will have no effect (and won't even
 give visual feedback on-click), and if the flags are set incorrectly, a mine
 will be clicked resulting in a loss.
-
-## Planned Features
-
-A high score feature, where players can log their fastest times for each board
-type, will be added in the near future.
 
 ## Known Bugs
 
