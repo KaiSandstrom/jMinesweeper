@@ -399,8 +399,10 @@ public class OuterFrame {
         public void actionPerformed(ActionEvent e) {
             JPanel scores = getScoresPanel();
             String[] choices = {"Reset Scores", "Close"};
+            ImageIcon smallerIcon = new ImageIcon(mineIcon.getImage().getScaledInstance(
+                    64, 64, Image.SCALE_REPLICATE));
             int result = JOptionPane.showOptionDialog(frame, scores, "Best Times", JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE, null, choices, choices[1]);
+                    JOptionPane.QUESTION_MESSAGE, smallerIcon, choices, choices[1]);
             if (result == JOptionPane.YES_OPTION)
                 promptClear();
         }
