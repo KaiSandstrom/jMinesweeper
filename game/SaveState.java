@@ -26,6 +26,9 @@ public class SaveState implements Serializable, Iterable<String[]> {
 
     private Difficulty selected;
     private String[] lastCustomEntry;
+    private boolean questionMarks;
+    private boolean clickSurrounding;
+    private boolean avoidFirstClickMines;
     private final HashMap<Difficulty, SaveData> scores;
 
     //  Simple private wrapper struct for player name and score. This is used
@@ -47,6 +50,9 @@ public class SaveState implements Serializable, Iterable<String[]> {
         scores = new HashMap<>();
         selected = Difficulty.INTERMEDIATE;
         lastCustomEntry = new String[]{"", "", ""};
+        questionMarks = false;
+        avoidFirstClickMines = true;
+        clickSurrounding = true;
     }
 
     //  Load a saved SaveState from file, or create a new SaveState if the file
@@ -123,6 +129,41 @@ public class SaveState implements Serializable, Iterable<String[]> {
 
     public void clearScores() {
         scores.clear();
+    }
+
+    public byte getOptionFlags() {
+        byte retVal = 0;
+        if (avoidFirstClickMines)
+            retVal |= 1;
+        if (clickSurrounding)
+            retVal |= 2;
+        if (questionMarks)
+            retVal |= 4;
+        return retVal;
+    }
+
+    public boolean getAvoidAroundFirstClick() {
+        return avoidFirstClickMines;
+    }
+
+    public boolean getClickSurroundingRevealed() {
+        return clickSurrounding;
+    }
+
+    public boolean getQuestionMarksEnabled() {
+        return questionMarks;
+    }
+
+    public void setAvoidAroundFirstClick(boolean val) {
+        avoidFirstClickMines = val;
+    }
+
+    public void setClickSurroundingRevealed(boolean val) {
+        clickSurrounding = val;
+    }
+
+    public void setQuestionMarksEnabled(boolean val) {
+        questionMarks = val;
     }
 
     //  Iterator returns score table entries in the order of difficulty, as

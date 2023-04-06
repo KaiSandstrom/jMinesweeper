@@ -43,11 +43,11 @@ public class GamePanel {
     private final InfoPanel info;
     private final OuterFrame parent;
 
-    public GamePanel(Difficulty difficulty, OuterFrame parentComponent) {
+    public GamePanel(Difficulty difficulty, byte optionFlags, OuterFrame parentComponent) {
         rows = difficulty.getRows();
         cols = difficulty.getColumns();
         gamePanel = new JPanel(new BorderLayout());
-        game = new Game(difficulty, new UpdateTracker());
+        game = new Game(difficulty, optionFlags);
         info = new InfoPanel(this, game);
         parent = parentComponent;
         board = new CellBoardPanel(rows, cols, game, this);
@@ -117,12 +117,27 @@ public class GamePanel {
         return game;
     }
 
+    public void toggleOption(int optionFlag) {
+        if (optionFlag == Game.AVOID_FIRST_CLICK)
+            game.toggleAvoidAroundFirstClick();
+        else if (optionFlag == Game.CLICK_SURROUNDING_REVEALED)
+            game.toggleClickRevealedEnabled();
+        else if (optionFlag == Game.QUESTION_MARKS_ENABLED) {
+            game.toggleMarksEnabled();
+            refreshBoard();
+        }
+    }
+
     //  Called when the smiley icon is clicked, the "New" menu option is
     //      clicked, or the F2 key is pressed.
     public void reset() {
-        game = new Game(game.getDifficulty(), new UpdateTracker());
+        game = new Game(game);
         board.reset(game);
         info.reset(game);
+    }
+
+    private void refreshBoard() {
+        board.forceRefresh();
     }
 
     public JPanel getGamePanel() {

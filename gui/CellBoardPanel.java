@@ -55,6 +55,10 @@ public class CellBoardPanel {
             getClass().getResource("/resources/revealedMine.png")));
     private final ImageIcon revealedExploded = new ImageIcon(Objects.requireNonNull(
             getClass().getResource("/resources/revealedExploded.png")));
+    private final ImageIcon questionMarked = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/marked.png")));
+    private final ImageIcon questionMarkedClicked = new ImageIcon(Objects.requireNonNull(
+            getClass().getResource("/resources/markedClicked.png")));
 
     private final JPanel board;
     private final int rows, cols;
@@ -94,6 +98,10 @@ public class CellBoardPanel {
         for (int i=0; i<rows; i++)
             for (int j=0; j<cols; j++)
                 buttons[i][j].setIcon(unrevealed);
+    }
+
+    public void forceRefresh() {
+        updateCells(game.getUpdateTracker());
     }
 
     //  This method adds both an ActionListener and a MouseAdapter to a cell
@@ -168,18 +176,26 @@ public class CellBoardPanel {
                 }
                 if (e.getButton() != MouseEvent.BUTTON1)
                     return;
-                if (game.getViewState(row, col) == Cell.UNREVEALED) {
-                    clicked.addUpdate(new Posn(row, col));
-                    buttons[row][col].setIcon(revealedBlank);
-                } else if (game.getViewState(row, col) == countFlaggedSurrounding()) {
+                boolean alreadyUpdated = updateClicked(row, col);
+                if (game.getClickRevealedEnabled() && !alreadyUpdated &&
+                        game.getViewState(row, col) == countFlaggedSurrounding()) {
                     for (int i=row-1; i<=row+1; i++)
                         for (int j=col-1; j<=col+1; j++)
-                            if (isValidCell(i, j) && game.getViewState(i, j) == Cell.UNREVEALED) {
-                                buttons[i][j].setIcon(revealedBlank);
-                                clicked.addUpdate(new Posn(i, j));
-                            }
+                            if (isValidCell(i, j))
+                                updateClicked(i, j);
                 }
                 parent.getInfoPanel().setSmileyShocked();
+            }
+
+            private boolean updateClicked(int r, int c) {
+                if (game.getViewState(r, c) == Cell.UNREVEALED)
+                    buttons[r][c].setIcon(revealedBlank);
+                else if (game.getViewState(r, c) == Cell.QUESTION_MARKED)
+                    buttons[r][c].setIcon(questionMarkedClicked);
+                else
+                    return false;
+                clicked.addUpdate(new Posn(r, c));
+                return true;
             }
 
             //  Most times this method is called, nothing will be done, as the
@@ -295,6 +311,8 @@ public class CellBoardPanel {
                 icon = revealedMine; break;
             case Cell.EXPLODED_MINE:
                 icon = revealedExploded; break;
+            case Cell.QUESTION_MARKED:
+                icon = questionMarked; break;
             default:
                 icon = unrevealed;
         }

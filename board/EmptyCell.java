@@ -37,6 +37,7 @@ public class EmptyCell extends Cell {
     public boolean clickCell() {
         if (!flagged)
             revealed = true;
+        questionMarked = false;
         return false;
     }
 
@@ -47,6 +48,8 @@ public class EmptyCell extends Cell {
             return FALSE_FLAGGED;
         if (flagged)
             return FLAGGED;
+        if (questionMarked)
+            return QUESTION_MARKED;
         if (!revealed)
             return UNREVEALED;
         if (minesAdjacent == 0)
@@ -62,6 +65,8 @@ public class EmptyCell extends Cell {
             return "N";
         if (flagged)
             return "F";
+        if (questionMarked)
+            return "?";
         if (!revealed)
             return "-";
         if (minesAdjacent == 0)

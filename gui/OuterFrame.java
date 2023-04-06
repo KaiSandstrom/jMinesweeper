@@ -37,7 +37,7 @@ public class OuterFrame {
         frame.setIconImage(mineIcon.getImage());
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent windowEvent){
+            public void windowClosing(WindowEvent windowEvent) {
                 state.saveToFile();
                 System.exit(0);
             }
@@ -48,18 +48,22 @@ public class OuterFrame {
         intermediate = new JRadioButtonMenuItem("Intermediate");
         expert = new JRadioButtonMenuItem("Expert");
         custom = new JRadioButtonMenuItem("Custom...");
-        if (state.getSelected().toString().equals("Beginner"))
+        if (state.getSelected().toString().equals("Beginner")) {
             beginner.setSelected(true);
-        else if (state.getSelected().toString().equals("Intermediate"))
+            selected = beginner;
+        } else if (state.getSelected().toString().equals("Intermediate")) {
             intermediate.setSelected(true);
-        else if (state.getSelected().toString().equals("Expert"))
+            selected = intermediate;
+        } else if (state.getSelected().toString().equals("Expert")) {
             expert.setSelected(true);
-        else
+            selected = expert;
+        } else {
             custom.setSelected(true);
+            selected = custom;
+        }
         bestTimes = new JMenuItem("Best Times...");
         initializeMenus();
-
-        gamePanel = new GamePanel(state.getSelected(), this);
+        gamePanel = new GamePanel(state.getSelected(), state.getOptionFlags(), this);
         frame.add(gamePanel.getGamePanel());
         frame.pack();
         frame.setLocationRelativeTo(null);
@@ -71,10 +75,13 @@ public class OuterFrame {
     private void initializeMenus() {
         JMenu gameMenu = new JMenu("Game");
         gameMenu.setMnemonic(KeyEvent.VK_G);
+        JMenu optionsMenu = new JMenu("Options");
+        optionsMenu.setMnemonic(KeyEvent.VK_O);
         JMenu helpMenu = new JMenu("Help");
         helpMenu.setMnemonic(KeyEvent.VK_H);
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(gameMenu);
+        menuBar.add(optionsMenu);
         menuBar.add(helpMenu);
 
         JMenuItem newGame = new JMenuItem("New");
@@ -100,6 +107,25 @@ public class OuterFrame {
         gameMenu.addSeparator();
         gameMenu.add(bestTimes);
 
+        JCheckBoxMenuItem avoidFirst = new JCheckBoxMenuItem("No mines surrounding first click");
+        JCheckBoxMenuItem clickSurrounding = new JCheckBoxMenuItem("Click revealed cells w/ adjacent flags");
+        JCheckBoxMenuItem questionMarks = new JCheckBoxMenuItem("Question marks");
+        avoidFirst.setMnemonic(KeyEvent.VK_F);
+        clickSurrounding.setMnemonic(KeyEvent.VK_C);
+        questionMarks.setMnemonic(KeyEvent.VK_Q);
+        avoidFirst.addActionListener(new OptionsListener(avoidFirst, Game.AVOID_FIRST_CLICK));
+        clickSurrounding.addActionListener(new OptionsListener(clickSurrounding, Game.CLICK_SURROUNDING_REVEALED));
+        questionMarks.addActionListener(new OptionsListener(questionMarks, Game.QUESTION_MARKS_ENABLED));
+        optionsMenu.add(avoidFirst);
+        optionsMenu.add(clickSurrounding);
+        optionsMenu.add(questionMarks);
+        if (state.getAvoidAroundFirstClick())
+            avoidFirst.setSelected(true);
+        if (state.getClickSurroundingRevealed())
+            clickSurrounding.setSelected(true);
+        if (state.getQuestionMarksEnabled())
+            questionMarks.setSelected(true);
+
         JMenuItem about = new JMenuItem("About jMinesweeper...");
         about.setMnemonic(KeyEvent.VK_A);
         about.addActionListener(new AboutListener());
@@ -121,7 +147,7 @@ public class OuterFrame {
         frame.setSize(newSize);
         frame.setLocation(newLocation);
         frame.remove(gamePanel.getGamePanel());
-        gamePanel = new GamePanel(difficulty, this);
+        gamePanel = new GamePanel(difficulty, state.getOptionFlags(), this);
         frame.add(gamePanel.getGamePanel());
         frame.pack();
     }
@@ -232,6 +258,27 @@ public class OuterFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             gamePanel.reset();
+        }
+    }
+
+    private class OptionsListener implements ActionListener {
+        private final JCheckBoxMenuItem item;
+        private final int optionFlag;
+
+        public OptionsListener(JCheckBoxMenuItem item, int optionFlag) {
+            this.item = item;
+            this.optionFlag = optionFlag;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (optionFlag == Game.AVOID_FIRST_CLICK)
+                state.setAvoidAroundFirstClick(item.isSelected());
+            else if (optionFlag == Game.CLICK_SURROUNDING_REVEALED)
+                state.setClickSurroundingRevealed(item.isSelected());
+            else if (optionFlag == Game.QUESTION_MARKS_ENABLED)
+                state.setQuestionMarksEnabled(item.isSelected());
+            gamePanel.toggleOption(optionFlag);
         }
     }
 

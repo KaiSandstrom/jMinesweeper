@@ -1,6 +1,7 @@
 package game;
 
-import board.*;
+import board.Board;
+import board.Cell;
 
 public class Game {
 
@@ -19,25 +20,43 @@ public class Game {
     public static final int OVER_WIN = 2;
     public static final int OVER_LOSS = 3;
 
+    public static final int AVOID_FIRST_CLICK = 1;
+    public static final int CLICK_SURROUNDING_REVEALED = 2;
+    public static final int QUESTION_MARKS_ENABLED = 4;
+
     private final Board board;
     private final UpdateTracker updateTracker;
     private final Difficulty difficulty;
     private int gameState;
     private int minesMinusFlags;
+    private boolean marksEnabled;
+    private boolean avoidAroundFirstClick;
+    private boolean clickRevealedEnabled;
 
-    public Game(Difficulty diff, UpdateTracker tracker) {
+    public Game(Difficulty diff, byte optionFlags) {
         difficulty = diff;
-        board = new Board(diff.getRows(), diff.getColumns(), tracker);
+        updateTracker = new UpdateTracker();
+        board = new Board(diff.getRows(), diff.getColumns(), updateTracker);
         minesMinusFlags = diff.getMines();
-        updateTracker = tracker;
+        avoidAroundFirstClick = ((optionFlags & AVOID_FIRST_CLICK) != 0);
+        clickRevealedEnabled = ((optionFlags & CLICK_SURROUNDING_REVEALED) != 0);
+        marksEnabled = ((optionFlags & QUESTION_MARKS_ENABLED) != 0);
+        gameState = NOT_STARTED;
+    }
+
+    public Game(Game g) {
+        difficulty = g.difficulty;
+        updateTracker = new UpdateTracker();
+        board = new Board(difficulty.getRows(), difficulty.getColumns(), updateTracker);
+        minesMinusFlags = difficulty.getMines();
+        avoidAroundFirstClick = g.avoidAroundFirstClick;
+        clickRevealedEnabled = g.clickRevealedEnabled;
+        marksEnabled = g.marksEnabled;
+        gameState = NOT_STARTED;
     }
 
     public int getGameState() {
         return gameState;
-    }
-
-    public Difficulty getDifficulty() {
-        return difficulty;
     }
 
     public int getMinesRemaining() {
@@ -46,6 +65,24 @@ public class Game {
 
     public UpdateTracker getUpdateTracker() {
         return updateTracker;
+    }
+
+    public void toggleMarksEnabled() {
+        marksEnabled = !marksEnabled;
+        if (!marksEnabled)
+            board.clearQuestionMarks();
+    }
+
+    public void toggleAvoidAroundFirstClick() {
+        avoidAroundFirstClick = !avoidAroundFirstClick;
+    }
+
+    public void toggleClickRevealedEnabled() {
+        clickRevealedEnabled = !clickRevealedEnabled;
+    }
+
+    public boolean getClickRevealedEnabled() {
+        return clickRevealedEnabled;
     }
 
     private void updateWinCondition() {
@@ -64,10 +101,10 @@ public class Game {
         if (gameState > IN_PROGRESS) // Game over
             return;
         if (gameState == NOT_STARTED) {
-            board.populateBoard(row, col, minesMinusFlags);
+            board.populateBoard(row, col, minesMinusFlags, avoidAroundFirstClick);
             gameState = IN_PROGRESS;
         }
-        if (board.leftClickCell(row, col)) {
+        if (board.leftClickCell(row, col, clickRevealedEnabled)) {
             board.setRevealed();
             gameState = OVER_LOSS;
         }
@@ -85,10 +122,10 @@ public class Game {
         if (gameState > IN_PROGRESS) // Game over
             return;
         if (gameState == NOT_STARTED) {
-            board.populateBoard(-2, -2, minesMinusFlags);
+            board.populateBoard(-2, -2, minesMinusFlags, avoidAroundFirstClick);
             gameState = IN_PROGRESS;
         }
-        int rClickResult = board.rightClickCell(row, col);
+        int rClickResult = board.rightClickCell(row, col, marksEnabled);
         if (rClickResult == Cell.FLAG_SET)
             minesMinusFlags--;
         else if (rClickResult == Cell.FLAG_CLEARED)

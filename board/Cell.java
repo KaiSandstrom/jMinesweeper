@@ -17,6 +17,7 @@ public abstract class Cell {
     public static final int FLAG_SET = 0;
     public static final int FLAG_CLEARED = 1;
     public static final int FLAG_UNCHANGED = 2;
+    public static final int QUESTION_MARK_CLEARED = 3;
 
     public static final int REVEALED_BLANK = 0;
     public static final int REVEALED_1 = 1;
@@ -32,9 +33,11 @@ public abstract class Cell {
     public static final int FALSE_FLAGGED = 11;
     public static final int REVEALED_MINE = 12;
     public static final int EXPLODED_MINE = 13;
+    public static final int QUESTION_MARKED = 14;
 
     protected boolean revealed;
     protected boolean flagged;
+    protected boolean questionMarked;
 
     public Cell() {
         this.revealed = false;
@@ -49,6 +52,10 @@ public abstract class Cell {
         return flagged;
     }
 
+    public boolean isQuestionMarked() {
+        return questionMarked;
+    }
+
     public void setRevealed() {
         revealed = true;
     }
@@ -58,13 +65,23 @@ public abstract class Cell {
     //      method to determine whether to increment or decrement the number
     //      of unflagged mines, or keep it the same if an already-revealed cell
     //      was right-clicked.
-    public int toggleFlagged() {
+    public int toggleFlagged(boolean marksEnabled) {
         if (revealed)
             return FLAG_UNCHANGED;
+        if (questionMarked) {
+            questionMarked = false;
+            return QUESTION_MARK_CLEARED;
+        }
+        if (flagged && marksEnabled)
+            questionMarked = true;
         flagged = !flagged;
         if (flagged)
             return FLAG_SET;
         return FLAG_CLEARED;
+    }
+
+    public void clearQuestionMark() {
+        questionMarked = false;
     }
 
     // MineCell returns true, EmptyCell returns false. Used when populating

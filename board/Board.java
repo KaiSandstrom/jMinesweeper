@@ -29,13 +29,13 @@ public class Board {
     //      click is not on a mine or adjacent to a mine. This method uses the
     //      rowPos and colPos arguments to avoid placing mines on or adjacent to
     //      the first-clicked cell.
-    public void populateBoard(int rowPos, int colPos, int totalMines) {
+    public void populateBoard(int rowPos, int colPos, int totalMines, boolean avoidAround) {
         int currentMines = 0;
         while (currentMines < totalMines) {
             int randomRow = (int)(Math.random()*nRows);
             int randomCol = (int)(Math.random()*nCols);
             if (board[randomRow][randomCol] == null &&
-                    (!(randomRow>=rowPos-1 && randomRow<=rowPos+1 && randomCol>=colPos-1 && randomCol<=colPos+1))) {
+                    validMineLocation(rowPos, colPos, randomRow, randomCol, avoidAround)) {
                 board[randomRow][randomCol] = new MineCell();
                 currentMines++;
             }
@@ -45,6 +45,13 @@ public class Board {
                 if (board[row][col] == null)
                     board[row][col] = new EmptyCell();
         addAdjacent();
+    }
+
+    private boolean validMineLocation(int cellR, int cellC, int mineR, int mineC, boolean avoidAround) {
+        if (avoidAround)
+            return (!(mineR>=cellR-1 && mineR<=cellR+1 && mineC>=cellC-1 && mineC<=cellC+1));
+        else
+            return (cellR != mineR && cellC != mineC);
     }
 
     //  This method is called immediately after initially populating the board
@@ -98,8 +105,8 @@ public class Board {
     //  Toggles the isFlagged field of the given cell, and returns a value
     //      describing whether the value was toggled off, toggled on, or
     //      not changed.
-    public int rightClickCell(int row, int col) {
-        int status = board[row][col].toggleFlagged();
+    public int rightClickCell(int row, int col, boolean marksEnabled) {
+        int status = board[row][col].toggleFlagged(marksEnabled);
         if (status != Cell.FLAG_UNCHANGED)
             updateTracker.addUpdate(new Posn(row, col));
         return status;
@@ -116,8 +123,10 @@ public class Board {
     //      cells. If the player has placed adjacent flags incorrectly and
     //      this operation results in a mine being clicked, leftClickCell
     //      returns true and the game is lost.
-    public boolean leftClickCell(int row, int col) {
+    public boolean leftClickCell(int row, int col, boolean clickRevealed) {
         boolean wasRevealed = board[row][col].isRevealed();
+        if (wasRevealed && !clickRevealed)
+            return false;
         if (board[row][col].clickCell()) {
             updateTracker.addUpdate(new Posn(row, col));
             return true;
@@ -213,11 +222,20 @@ public class Board {
     public void setRevealed() {
         for (int i=0; i<nRows; i++)
             for (int j=0; j<nCols; j++) {
-                if (board[i][j] instanceof MineCell || board[i][j].isFlagged()) {
+                if (board[i][j].isMine() || board[i][j].isFlagged()) {
                     board[i][j].setRevealed();
                     updateTracker.addUpdate(new Posn(i, j));
                 }
             }
+    }
+
+    public void clearQuestionMarks() {
+        for (int i=0; i<nRows; i++)
+            for (int j=0; j<nCols; j++)
+                if (board[i][j].isQuestionMarked()) {
+                    board[i][j].clearQuestionMark();
+                    updateTracker.addUpdate(new Posn(i, j));
+                }
     }
 
 }
