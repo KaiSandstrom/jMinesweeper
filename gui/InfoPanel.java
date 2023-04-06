@@ -1,11 +1,13 @@
 package gui;
 
 import game.Game;
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+import javax.swing.JButton;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Color;
+import java.awt.GridLayout;
+import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
@@ -68,12 +70,9 @@ public class InfoPanel {
         infoPanel.add(smileyHolder);
 
         //  ActionListener processes successful left clicks
-        smiley.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                gamePanel.reset();
-                smiley.setIcon(smileyNormal);
-            }
+        smiley.addActionListener(e -> {
+            gamePanel.reset();
+            smiley.setIcon(smileyNormal);
         });
 
         //  MouseAdapter adds visual feedback for left clicks.

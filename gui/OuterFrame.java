@@ -2,7 +2,6 @@ package gui;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 
 import game.*;
 import java.awt.*;
@@ -248,18 +247,13 @@ public class OuterFrame {
                             "Have suggestions? Found a bug?<br>Feel free to open an issue!" +
                             "</html>";
             JEditorPane msgContainer = new JEditorPane("text/html", message);
-            msgContainer.addHyperlinkListener(new HyperlinkListener()
-            {
-                @Override
-                public void hyperlinkUpdate(HyperlinkEvent e)
-                {
-                    if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
-                        try {
-                            Desktop.getDesktop().browse(e.getURL().toURI());
-                        } catch (URISyntaxException | IOException ex) {
-                            JOptionPane.showMessageDialog(msgContainer, "Error: Could not open link.");
-                        }
-                }
+            msgContainer.addHyperlinkListener(e1 -> {
+                if (e1.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
+                    try {
+                        Desktop.getDesktop().browse(e1.getURL().toURI());
+                    } catch (URISyntaxException | IOException ex) {
+                        JOptionPane.showMessageDialog(msgContainer, "Error: Could not open link.");
+                    }
             });
             msgContainer.setEditable(false);
             msgContainer.setBackground(frame.getBackground());
@@ -321,21 +315,21 @@ public class OuterFrame {
                 custom.setSelected(false);
                 JOptionPane.showMessageDialog(frame,
                         "Custom field is the same as Beginner. Starting new Beginner game...\n ",
-                        "", JOptionPane.PLAIN_MESSAGE);
+                        "", JOptionPane.WARNING_MESSAGE);
                 beginner.doClick();
                 return;
             } else if (newDiff.equals(Difficulty.INTERMEDIATE)) {
                 custom.setSelected(false);
                 JOptionPane.showMessageDialog(frame,
                         "Custom field is the same as Intermediate. Starting new Intermediate game...\n ",
-                        "", JOptionPane.PLAIN_MESSAGE);
+                        "", JOptionPane.WARNING_MESSAGE);
                 intermediate.doClick();
                 return;
             } else if (newDiff.equals(Difficulty.EXPERT)) {
                 custom.setSelected(false);
                 JOptionPane.showMessageDialog(frame,
                         "Custom field is the same as Expert. Starting new Expert game...\n ",
-                        "", JOptionPane.PLAIN_MESSAGE);
+                        "", JOptionPane.WARNING_MESSAGE);
                 expert.doClick();
                 return;
             }
@@ -363,23 +357,23 @@ public class OuterFrame {
                 mines = Integer.parseInt(getMines.getText());
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(frame, "Invalid inputs:\n\nAll inputs must be whole numbers.\n ",
-                        "", JOptionPane.PLAIN_MESSAGE);
-                return false;
+                        "", JOptionPane.ERROR_MESSAGE);
+                return prompt();
             }
             if (!isValidScreenSize(rows, cols)) {
                 Dimension maxSize = getMaxBoardSize();
                 reason = "Custom board is too big to fit on the screen.\n\nLargest possible board for your screen:\n" +
                         "Height: " + (int)maxSize.getHeight() + "\nWidth:  " + (int)maxSize.getWidth() + "\n ";
             } else if (cols < 9 || rows < 2)
-                reason = "Custom board must have at least 2 rows and 8 columns.\n ";
+                reason = "Custom board must have at least 2 rows and 9 columns.\n ";
             else if (mines > (cols * rows)-9)
                 reason = "Too many mines. There must be at least 9 non-mine cells on the board.\n ";
             else if (mines < 1)
                 reason = "There must be at least one mine on the board.\n ";
             if (reason != null) {
                 JOptionPane.showMessageDialog(frame, "Invalid inputs:\n\n" + reason,
-                        "", JOptionPane.PLAIN_MESSAGE);
-                return false;
+                        "", JOptionPane.ERROR_MESSAGE);
+                return prompt();
             }
             if (mines > 999) {
                 String insert;
@@ -390,7 +384,7 @@ public class OuterFrame {
                 JOptionPane.showMessageDialog(frame, "This board has more than 999 mines.\n\nSince the left " +
                                 "numeric display in the info panel can\nonly display numbers up to 999, it will " +
                                 "display a\ndashed line until" + insert + "been flagged.\n ",
-                        "", JOptionPane.PLAIN_MESSAGE);
+                        "", JOptionPane.WARNING_MESSAGE);
             }
             return true;
         }
@@ -503,7 +497,7 @@ public class OuterFrame {
         //      displays the new (blank) table.
         private void promptClear() {
             int result = JOptionPane.showConfirmDialog(frame, "Are you sure you want to reset your high " +
-                            "scores?\n This cannot be undone.", "Reset Scores?", JOptionPane.YES_NO_OPTION,
+                            "scores?\nThis cannot be undone.", "Reset Scores?", JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE);
             if (result == JOptionPane.YES_OPTION) {
                 state.clearScores();
