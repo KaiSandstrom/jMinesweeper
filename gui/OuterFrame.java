@@ -22,6 +22,7 @@ public class OuterFrame {
 
     private final JFrame frame = new JFrame();
     private final JRadioButtonMenuItem beginner, intermediate, expert, custom;
+    private JRadioButtonMenuItem selected;
     private final JMenuItem bestTimes;
     private GamePanel gamePanel;
     private final SaveState state;
@@ -200,6 +201,7 @@ public class OuterFrame {
                 expert.setSelected(false);
                 custom.setSelected(false);
                 item.setSelected(true);
+                selected = item;
                 resetFrame(textToDifficulty());
             //  If the item has become unselected, the user clicked the
             //      currently-selected option, and no reset should be
@@ -291,6 +293,12 @@ public class OuterFrame {
             prompts.add(getMines);
         }
 
+        private void loadParams() {
+            getHeight.setText(state.getLastCustomEntry()[0]);
+            getWidth.setText(state.getLastCustomEntry()[1]);
+            getMines.setText(state.getLastCustomEntry()[2]);
+        }
+
         //  The three fields are set to 0 at the very beginning of
         //      actionPerformed, and are set in the prompt() call immediately
         //      after. This prompt() call handles all user input and input
@@ -304,12 +312,14 @@ public class OuterFrame {
             rows = cols = mines = 0;
             if (!prompt()) {
                 custom.setSelected(false);
+                selected.setSelected(true);
                 return;
             }
             beginner.setSelected(false);
             intermediate.setSelected(false);
             expert.setSelected(false);
             custom.setSelected(true);
+            selected = custom;
             Difficulty newDiff = new Difficulty(rows, cols, mines);
             if (newDiff.equals(Difficulty.BEGINNER)) {
                 custom.setSelected(false);
@@ -347,7 +357,6 @@ public class OuterFrame {
         private boolean prompt() {
             int result = JOptionPane.showConfirmDialog(frame, prompts, "Custom Field",
                     JOptionPane.OK_CANCEL_OPTION);
-            state.setLastCustomEntry(new String[]{getHeight.getText(), getWidth.getText(), getMines.getText()});
             if (result != JOptionPane.OK_OPTION)
                 return false;
             String reason = null;
@@ -358,6 +367,7 @@ public class OuterFrame {
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(frame, "Invalid inputs:\n\nAll inputs must be whole numbers.\n ",
                         "", JOptionPane.ERROR_MESSAGE);
+                loadParams();
                 return prompt();
             }
             if (!isValidScreenSize(rows, cols)) {
@@ -373,6 +383,7 @@ public class OuterFrame {
             if (reason != null) {
                 JOptionPane.showMessageDialog(frame, "Invalid inputs:\n\n" + reason,
                         "", JOptionPane.ERROR_MESSAGE);
+                loadParams();
                 return prompt();
             }
             if (mines > 999) {
@@ -386,6 +397,7 @@ public class OuterFrame {
                                 "display a\ndashed line until" + insert + "been flagged.\n ",
                         "", JOptionPane.WARNING_MESSAGE);
             }
+            state.setLastCustomEntry(new String[]{getHeight.getText(), getWidth.getText(), getMines.getText()});
             return true;
         }
 
