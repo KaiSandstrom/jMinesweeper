@@ -9,7 +9,7 @@ public class Difficulty implements Serializable, Comparable<Difficulty> {
     //  Three static final Difficulties are defined, representing the three
     //      default difficulties that come with the game.
 
-    public static final Difficulty BEGINNER = new Difficulty(10, 10, 9);
+    public static final Difficulty BEGINNER = new Difficulty(9, 9, 10);
     public static final Difficulty INTERMEDIATE = new Difficulty(16, 16, 40);
     public static final Difficulty EXPERT = new Difficulty(16, 30, 99);
 
