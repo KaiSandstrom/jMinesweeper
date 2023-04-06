@@ -23,7 +23,7 @@ public class UpdateTracker implements Iterable<Posn> {
     //      will be empty when iteration is complete.
     @Override
     public Iterator<Posn> iterator() {
-        return new Iterator<>() {
+        return new Iterator<Posn>() {
 
             @Override
             public boolean hasNext() {

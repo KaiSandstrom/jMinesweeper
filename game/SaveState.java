@@ -54,7 +54,8 @@ public class SaveState implements Serializable, Iterable<String[]> {
     public static SaveState loadFromFile()  {
         try {
             FileInputStream file = new FileInputStream("jMinesweeperSaveData");
-            try (file; ObjectInputStream in = new ObjectInputStream(file)) {
+            try {
+                ObjectInputStream in = new ObjectInputStream(file);
                 return (SaveState) in.readObject();
             } catch (ClassNotFoundException e) {
                 //  Should never happen
@@ -128,7 +129,7 @@ public class SaveState implements Serializable, Iterable<String[]> {
     //      defined in the compareTo method in Difficulty.
     @Override
     public Iterator<String[]> iterator() {
-        return new Iterator<>() {
+        return new Iterator<String[]>() {
 
             private final HashSet<Difficulty> visited = new HashSet<>();
             private final ArrayList<Difficulty> keys = new ArrayList<>(scores.keySet());
