@@ -1,7 +1,16 @@
 package game;
 
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Collections;
 
 public class SaveState implements Serializable, Iterable<String[]> {
 
@@ -20,8 +29,7 @@ public class SaveState implements Serializable, Iterable<String[]> {
     private final HashMap<Difficulty, SaveData> scores;
 
     //  Simple private wrapper struct for player name and score. This is used
-    //      in order to provide a single object type to be the values in a
-    //      HashMap.
+    //      in order to provide a single object type to be stored in a HashMap.
     private static class SaveData implements Serializable {
         String playerName;
         int score;
@@ -36,7 +44,7 @@ public class SaveState implements Serializable, Iterable<String[]> {
     //      serialized SaveState from a file or creates a new one with
     //      default values using this private constructor.
     private SaveState() {
-        scores = new HashMap<Difficulty, SaveData>();
+        scores = new HashMap<>();
         selected = Difficulty.INTERMEDIATE;
         lastCustomEntry = new String[]{"", "", ""};
     }
@@ -45,7 +53,6 @@ public class SaveState implements Serializable, Iterable<String[]> {
     //      does not exist.
     public static SaveState loadFromFile()  {
         try {
-            SaveState state;
             FileInputStream file = new FileInputStream("jMinesweeperSaveData");
             try (file; ObjectInputStream in = new ObjectInputStream(file)) {
                 return (SaveState) in.readObject();

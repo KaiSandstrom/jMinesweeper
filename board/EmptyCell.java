@@ -19,10 +19,16 @@ public class EmptyCell extends Cell {
         minesAdjacent = 0;
     }
 
+    @Override
+    public boolean isMine() {
+        return false;
+    }
+
     public int getMinesAdjacent() {
         return minesAdjacent;
     }
 
+    @Override
     public void incMinesAdjacent() {
         minesAdjacent++;
     }
@@ -61,7 +67,7 @@ public class EmptyCell extends Cell {
         if (minesAdjacent == 0)
             return ".";
         else
-            return "" + minesAdjacent;
+            return Integer.toString(minesAdjacent);
     }
 
 }

@@ -71,8 +71,8 @@ public class Difficulty implements Serializable, Comparable<Difficulty> {
     //  Used for displaying high scores for custom difficulties in order of
     //      difficulty. Difficulty is defined as the ratio of mines to total
     //      cells. The higher this ratio, the more difficult the board. This
-    //      ratio may be changed later to slightly favor larger boards with
-    //      the same ratio.
+    //      ratio may be changed later based on testing of difficulty of
+    //      larger vs smaller boards with the same ratio.
     @Override
     public int compareTo(Difficulty that) {
         double diffValThis = (double)this.nMines / (this.nRows * this.nCols);

@@ -1,9 +1,14 @@
 package gui;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+
 import game.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Objects;
 
 public class OuterFrame {
@@ -234,8 +239,33 @@ public class OuterFrame {
     private class AboutListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            JOptionPane.showMessageDialog(frame, "jMinesweeper\nBy Kai Sandstrom\n2022",
-                    "About jMinesweeper", JOptionPane.PLAIN_MESSAGE, mineIcon);
+            String message = "<html>jMinesweeper<br><br>A faithful re-creation of the original Windows<br>" +
+                            "Minesweeper, written in Java using Swing<br><br>" +
+                            "2022-2023<br>By Kai Sandstrom<br><br>" +
+                            "Source code available here:<br>" +
+                            "<a href=\"https://github.com/KaiSandstrom/jMinesweeper\">" +
+                            "https://github.com/KaiSandstrom/jMinesweeper</a><br><br>" +
+                            "Have suggestions? Found a bug?<br>Feel free to open an issue!" +
+                            "</html>";
+            JEditorPane msgContainer = new JEditorPane("text/html", message);
+            msgContainer.addHyperlinkListener(new HyperlinkListener()
+            {
+                @Override
+                public void hyperlinkUpdate(HyperlinkEvent e)
+                {
+                    if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
+                        try {
+                            Desktop.getDesktop().browse(e.getURL().toURI());
+                        } catch (URISyntaxException | IOException ex) {
+                            JOptionPane.showMessageDialog(msgContainer, "Error: Could not open link.");
+                        }
+                }
+            });
+            msgContainer.setEditable(false);
+            msgContainer.setBackground(frame.getBackground());
+            msgContainer.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+            msgContainer.setFont(new Font("Dialog", Font.BOLD, 12));
+            JOptionPane.showMessageDialog(frame, msgContainer, "About jMinesweeper", JOptionPane.PLAIN_MESSAGE, mineIcon);
         }
     }
 

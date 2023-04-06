@@ -67,6 +67,14 @@ public abstract class Cell {
         return FLAG_CLEARED;
     }
 
+    // MineCell returns true, EmptyCell returns false. Used when populating
+    //      board to determine which cells are mines.
+    public abstract boolean isMine();
+
+    // When an EmptyCell calls this method, the number of adjacent mines will
+    //      be incremented. For a MineCell this is a no-op.
+    public abstract void incMinesAdjacent();
+
     //  clickCell will return true if called by a MineCell, and false if called
     //      by an EmptyCell. This return value indicates whether the click
     //      resulted in a loss.

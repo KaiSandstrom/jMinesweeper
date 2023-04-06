@@ -4,15 +4,15 @@ import board.*;
 
 public class Game {
 
-    //  A Game object contains a board, a running count of mines minus flags,
+    //  A Game object contains a Board, a running count of mines minus flags,
     //      a gameState that is either in progress, over (win), or over (loss),
     //      and a flag indicating that the board has not yet been initialized.
     //      It also has an UpdateTracker, which keeps track of which cells have
     //      been changed since the board was last drawn in the GUI.
 
     //  The Game's public methods provide an interface for all operations that
-    //      a user interface needs to access -- starting a new game,
-    //      left-clicking a cell, and right-clicking a cell.
+    //      a UI needs to access -- starting a new game, left-clicking a cell,
+    //      and right-clicking a cell.
 
     public static final int NOT_STARTED = 0;
     public static final int IN_PROGRESS = 1;
@@ -76,11 +76,11 @@ public class Game {
 
     // Called whenever a cell is right-clicked. If the board is empty, the
     //      board is populated. Invalid row and column indexes are given, so
-    //      no cell is avoided when the game starts with a right click. The
-    //      return value of the Board's rightClickCell method is used to
-    //      determine how to modify the numRemaining variable. If all mines are
-    //      flagged and all non-flagged cells are revealed, the game state
-    //      flag is set accordingly.
+    //      board-populating algorithm does not avoid any cells when the game
+    //      starts with a right-click. The return value of the Board's
+    //      rightClickCell method determines how to modify the numRemaining
+    //      variable. If the player has flagged all mines and revealed all
+    //      non-flagged cells, the game state flag is set accordingly.
     public void rightClickCell(int row, int col) {
         if (gameState > IN_PROGRESS) // Game over
             return;

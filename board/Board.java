@@ -26,9 +26,9 @@ public class Board {
     //      contain a Cell object, either a MineCell or an EmptyCell. The cells
     //      will be fully initialized and ready for play. It is called upon the
     //      player's first click -- this is done in order ensure that the first
-    //      click is not on a mine or adjacent to a mine. The rowPos and colPos
-    //      arguments are used to avoid placing mines adjacent to the first
-    //      click.
+    //      click is not on a mine or adjacent to a mine. This method uses the
+    //      rowPos and colPos arguments to avoid placing mines on or adjacent to
+    //      the first-clicked cell.
     public void populateBoard(int rowPos, int colPos, int totalMines) {
         int currentMines = 0;
         while (currentMines < totalMines) {
@@ -54,11 +54,11 @@ public class Board {
     private void addAdjacent() {
         for (int row=0; row<nRows; row++)
             for (int col=0; col<nCols; col++)
-                if (board[row][col] instanceof MineCell)
+                if (board[row][col].isMine())
                     for (int i=row-1; i<=row+1; i++)
                         for (int j=col-1; j<=col+1; j++)
-                            if (i>=0 && j>=0 && i<nRows && j<nCols && (board[i][j] instanceof EmptyCell))
-                                ((EmptyCell)board[i][j]).incMinesAdjacent();
+                            if (isValidCell(i, j))
+                                board[i][j].incMinesAdjacent();
     }
 
     //  Takes row and column indexes and returns a boolean describing whether
@@ -81,10 +81,11 @@ public class Board {
         return true;
     }
 
-    //  Determines the number of flags adjacent to a given cell and returns
-    //      the count as an integer. This method is used to determine when
-    //      a revealed cell with the appropriate number of flagged cells has
-    //      been clicked.
+    //  Returns the number of flagged cells adjacent to a given cell.
+    //      This method is used when clicking a revealed cell, to determine
+    //      whether adjacent unflagged cells should be revealed. If the number
+    //      of adjacent flagged cells equals the number shown on the revealed
+    //      cell, the adjacent cells are clicked.
     private int getFlagsAdjacent(int row, int col) {
         int totalFlagged = 0;
         for (int i=row-1; i<=row+1; i++)
@@ -106,15 +107,15 @@ public class Board {
 
     //  Clicks the given cell, and returns a boolean describing whether a mine
     //      was clicked. If a non-revealed cell with no adjacent mines is
-    //      clicked, all adjacent cells with the same property are recursively
-    //      clicked until the revealed area is bordered entirely by cells with
-    //      mines adjacent, or the edge of the board.
-    //      If a revealed cell with adjacent mines is clicked, and the number
-    //      flagged cells surrounding it is equal to the number of mines
-    //      adjacent, all non-flagged non-revealed cells adjacent to that cell
-    //      are revealed. If the flags were placed incorrectly and a mine is
-    //      clicked, leftClickCell returns true, indicating that a mine was
-    //      clicked and the game is over.
+    //      clicked, all adjacent cells are recursively clicked until the
+    //      revealed area is bordered entirely by cells adjacent to mines, or
+    //      by the edge of the board. If the player clicks a revealed cell with
+    //      adjacent mines, and the number of flagged cells surrounding it is
+    //      equal to the number of mines adjacent to it, a call to
+    //      clickSurrounding() reveals all adjacent unflagged, unrevealed
+    //      cells. If the player has placed adjacent flags incorrectly and
+    //      this operation results in a mine being clicked, leftClickCell
+    //      returns true and the game is lost.
     public boolean leftClickCell(int row, int col) {
         boolean wasRevealed = board[row][col].isRevealed();
         if (board[row][col].clickCell()) {
@@ -133,9 +134,9 @@ public class Board {
         return false;
     }
 
-    // This method reveals the cell specified by the given row and col indexes,
-    //      and if the given cell is not adjacent to any mines, this method is
-    //      recursively called for all cells adjacent to it.
+    // Reveals the cell specified by the given row and col indexes, and if the
+    //      given cell is not adjacent to any mines, recursively calls itself
+    //      for all unrevealed cells adjacent to the cell.
     private void chainClickCells(int row, int col) {
         if (board[row][col].isFlagged())
             return;
@@ -182,33 +183,33 @@ public class Board {
     //  Used for debugging and model/controller testing before development
     //      of the GUI. Will be left in for documentation purposes.
     public String toString() {
-        String output = "     ";
+        StringBuilder output = new StringBuilder("     ");
         for (int i=0; i<nCols; i++)
-            output += i/10 + " ";
-        output += "\n     ";
+            output.append(i / 10).append(" ");
+        output.append("\n     ");
         for (int i=0; i<nCols; i++)
-            output += i%10 + " ";
-        output += "\n\n";
+            output.append(i % 10).append(" ");
+        output.append("\n\n");
         for (int i=0; i<nRows; i++) {
             String rowNumString;
             if (i >= 10)
-                rowNumString = "" + i + "   ";
+                rowNumString = i + "   ";
             else
                 rowNumString = " " + i + "   ";
-            output += rowNumString;
+            output.append(rowNumString);
             for (int j = 0; j < nCols; j++)
                 if (board[i][j] == null)
-                    output += "- ";
+                    output.append("- ");
                 else
-                    output += board[i][j].toString() + " ";
-            output += "\n";
+                    output.append(board[i][j].toString()).append(" ");
+            output.append("\n");
         }
-        return output;
+        return output.toString();
     }
 
     //  Sets all mines and falsely-flagged cells to be revealed. This is used
-    //      when a mine is clicked on, and the mines are is shown to the player
-    //      upon game over.
+    //      when a mine is clicked, and the mines are shown to the player upon
+    //      game over.
     public void setRevealed() {
         for (int i=0; i<nRows; i++)
             for (int j=0; j<nCols; j++) {

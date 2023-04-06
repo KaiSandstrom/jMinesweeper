@@ -3,12 +3,12 @@ package board;
 public class MineCell extends Cell {
 
     //  A MineCell is a Minesweeper board cell that contains a mine.
-    //      If a MineCell is clicked using clickCell, true is returned,
+    //      If a MineCell is clicked using clickCell, clickCell returns true,
     //      signaling to the Game that the game has been lost.
 
-    //  A MineCell has one additional field not present in it superclass:
+    //  A MineCell has one additional field not present in its superclass:
     //      boolean exploded. This field is used only to keep track of which
-    //      mine was clicked on resulting in a game over, and the "exploded"
+    //      specific mine was clicked to lose the game, and the "exploded"
     //      mine is displayed using a different image when the game is over.
 
     private boolean exploded;
@@ -17,6 +17,18 @@ public class MineCell extends Cell {
         super();
         this.exploded = false;
     }
+
+    @Override
+    public boolean isMine() {
+        return true;
+    }
+
+    // No-op: Only meaningful when called by an EmptyCell. Included in the
+    //      Cell abstract class and in MineCell purely to avoid the use of
+    //      instanceof, or less readable means of identifying MineCells, such
+    //      as implementing getMinesAdjacent() to return -1.
+    @Override
+    public void incMinesAdjacent() {}
 
     @Override
     public boolean clickCell() {

@@ -8,7 +8,7 @@ public class Launcher {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                OuterFrame frame = new OuterFrame();
+                new OuterFrame();
             }
         });
     }

@@ -5,8 +5,6 @@ import game.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
@@ -103,27 +101,24 @@ public class CellBoardPanel {
     //      whereas the MouseAdapter processes right clicks and adds visual
     //      feedback for right clicks.
     private void addCellClickHandler(int row, int col) {
-        buttons[row][col].addActionListener(new ActionListener() {
-            //  This new ActionListener fires when a cell has been successfully
-            //      left-clicked. It calls the Game's left click method on the
-            //      cell in question, and makes a call to updateCells to redraw
-            //      the icons for the affected cells. Depending on the game
-            //      state before and after the click, the timer may be started
-            //      or halted, and the OuterFrame may be notified to check for
-            //      a win.
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int prevState = game.getGameState();
-                game.leftClickCell(row, col);
-                updateCells(game.getUpdateTracker());
-                parent.getInfoPanel().updateSmiley();
-                if (prevState == Game.NOT_STARTED && game.getGameState() == Game.IN_PROGRESS)
-                    parent.getInfoPanel().startTimer();
-                else if (prevState == Game.IN_PROGRESS && game.getGameState() > Game.IN_PROGRESS)
-                    parent.getInfoPanel().haltTimer();
-                if (game.getGameState() == Game.OVER_WIN)
-                    parent.processWin();
-            }
+    //  This ActionListener fires when a cell has been successfully
+    //      left-clicked. It calls the Game's left click method on the
+    //      cell in question, and makes a call to updateCells to redraw
+    //      the icons for the affected cells. Depending on the game
+    //      state before and after the click, the timer may be started
+    //      or halted, and the OuterFrame may be notified to check for
+    //      a win.
+        buttons[row][col].addActionListener(e -> {
+            int prevState = game.getGameState();
+            game.leftClickCell(row, col);
+            updateCells(game.getUpdateTracker());
+            parent.getInfoPanel().updateSmiley();
+            if (prevState == Game.NOT_STARTED && game.getGameState() == Game.IN_PROGRESS)
+                parent.getInfoPanel().startTimer();
+            else if (prevState == Game.IN_PROGRESS && game.getGameState() > Game.IN_PROGRESS)
+                parent.getInfoPanel().haltTimer();
+            if (game.getGameState() == Game.OVER_WIN)
+                parent.processWin();
         });
 
         //  This MouseAdapter applies visual feedback for left clicks, and
@@ -157,8 +152,8 @@ public class CellBoardPanel {
             //      added. If a revealed cell with the correct number of
             //      adjacent flags is clicked, all adjacent non-flagged
             //      unrevealed cells are displayed as clicked and added to the
-            //      UpdateTracker. The smiley icon is also set to the "shocked"
-            //      expression.
+            //      UpdateTracker. A left click anywhere in the board panel
+            //      sets the smiley icon to the "shocked" expression.
             //  If right click: rightClicked boolean is set to true. It will be
             //      setback to false either when the mouse leaves the cell
             //      (aborted click), or when the right button is released

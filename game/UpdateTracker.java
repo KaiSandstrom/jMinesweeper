@@ -18,7 +18,7 @@ public class UpdateTracker implements Iterable<Posn> {
     }
 
     //  The UpdateTracker is designed to be iterated through in an enhanced
-    //      for loop in the GUI. The iterator deletes an item from the
+    //      for loop in the GUI. The iterator removes an item from the
     //      ArrayList each time next() is called, ensuring that the ArrayList
     //      will be empty when iteration is complete.
     @Override
