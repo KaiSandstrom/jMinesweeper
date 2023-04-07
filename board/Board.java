@@ -80,11 +80,13 @@ public class Board {
     // Used to check a win condition in Game. If a call to this method returns
     //      true, and the correct number of flags have been placed, the game
     //      is won.
-    public boolean allUnflaggedRevealed() {
-        for (int i=0; i<nRows; i++)
-            for(int j=0; j<nCols; j++)
-                if (!board[i][j].isFlagged() && !board[i][j].isRevealed())
-                    return false;
+    public boolean checkWin(int minesMinusFlags) {
+        int unrevealed = 0;
+        for (Cell[] row : board)
+            for(Cell c : row)
+                if (!c.isFlagged() && !c.isRevealed())
+                    if (++unrevealed > minesMinusFlags)
+                        return false;
         return true;
     }
 
@@ -234,6 +236,16 @@ public class Board {
             for (int j=0; j<nCols; j++)
                 if (board[i][j].isQuestionMarked()) {
                     board[i][j].clearQuestionMark();
+                    updateTracker.addUpdate(new Posn(i, j));
+                }
+    }
+
+    public void flagAllUnrevealed() {
+        for (int i=0; i<nRows; i++)
+            for (int j=0; j<nCols; j++)
+                if (!(board[i][j].isFlagged() || board[i][j].isRevealed())) {
+                    board[i][j].clearQuestionMark();
+                    board[i][j].toggleFlagged(false);
                     updateTracker.addUpdate(new Posn(i, j));
                 }
     }

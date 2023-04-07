@@ -44,12 +44,12 @@ public class MineCell extends Cell {
     public int getViewState() {
         if (flagged)
             return FLAGGED;
-        if (questionMarked)
-            return QUESTION_MARKED;
         if (exploded)
             return EXPLODED_MINE;
         if(revealed)
             return REVEALED_MINE;
+        if (questionMarked)
+            return QUESTION_MARKED;
         return UNREVEALED;
     }
 
@@ -58,12 +58,12 @@ public class MineCell extends Cell {
     public String toString() {
         if (flagged)
             return "F";
-        if (questionMarked)
-            return "?";
         if (exploded)
             return "X";
         if (revealed)
             return "*";
+        if (questionMarked)
+            return "?";
         return "-";
     }
 }

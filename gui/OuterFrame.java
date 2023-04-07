@@ -110,21 +110,27 @@ public class OuterFrame {
         JCheckBoxMenuItem avoidFirst = new JCheckBoxMenuItem("No mines surrounding first click");
         JCheckBoxMenuItem clickSurrounding = new JCheckBoxMenuItem("Click revealed cells w/ adjacent flags");
         JCheckBoxMenuItem questionMarks = new JCheckBoxMenuItem("Question marks");
+        JCheckBoxMenuItem autoFlag = new JCheckBoxMenuItem("Auto-flag last cells");
         avoidFirst.setMnemonic(KeyEvent.VK_F);
         clickSurrounding.setMnemonic(KeyEvent.VK_C);
         questionMarks.setMnemonic(KeyEvent.VK_Q);
+        autoFlag.setMnemonic(KeyEvent.VK_A);
         avoidFirst.addActionListener(new OptionsListener(avoidFirst, Game.AVOID_FIRST_CLICK));
         clickSurrounding.addActionListener(new OptionsListener(clickSurrounding, Game.CLICK_SURROUNDING_REVEALED));
         questionMarks.addActionListener(new OptionsListener(questionMarks, Game.QUESTION_MARKS_ENABLED));
+        autoFlag.addActionListener(new OptionsListener(autoFlag, Game.AUTO_FLAG_LAST));
         optionsMenu.add(avoidFirst);
         optionsMenu.add(clickSurrounding);
         optionsMenu.add(questionMarks);
+        optionsMenu.add(autoFlag);
         if (state.getAvoidAroundFirstClick())
             avoidFirst.setSelected(true);
         if (state.getClickSurroundingRevealed())
             clickSurrounding.setSelected(true);
         if (state.getQuestionMarksEnabled())
             questionMarks.setSelected(true);
+        if (state.getAutoFlagLastCells())
+            autoFlag.setSelected(true);
 
         JMenuItem about = new JMenuItem("About jMinesweeper...");
         about.setMnemonic(KeyEvent.VK_A);
@@ -278,6 +284,8 @@ public class OuterFrame {
                 state.setClickSurroundingRevealed(item.isSelected());
             else if (optionFlag == Game.QUESTION_MARKS_ENABLED)
                 state.setQuestionMarksEnabled(item.isSelected());
+            else if (optionFlag == Game.AUTO_FLAG_LAST)
+                state.setAutoFlagLastCells(item.isSelected());
             gamePanel.toggleOption(optionFlag);
         }
     }

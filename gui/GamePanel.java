@@ -125,6 +125,14 @@ public class GamePanel {
         else if (optionFlag == Game.QUESTION_MARKS_ENABLED) {
             game.toggleMarksEnabled();
             refreshBoard();
+        } else if (optionFlag == Game.AUTO_FLAG_LAST) {
+            game.toggleAutoFlagLastCells();
+            if (game.getGameState() == Game.OVER_WIN) {
+                refreshBoard();
+                info.updateMineCount();
+                info.updateSmiley();
+                info.haltTimer();
+            }
         }
     }
 
@@ -157,6 +165,7 @@ public class GamePanel {
     //      processed.
     public void processWin() {
         parent.processWin(info.getTimeCount());
+        info.updateMineCount();
     }
 
 }

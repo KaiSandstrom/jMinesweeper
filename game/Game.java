@@ -24,6 +24,8 @@ public class Game {
     public static final int CLICK_SURROUNDING_REVEALED = 2;
     public static final int QUESTION_MARKS_ENABLED = 4;
 
+    public static final int AUTO_FLAG_LAST = 8;
+
     private final Board board;
     private final UpdateTracker updateTracker;
     private final Difficulty difficulty;
@@ -32,6 +34,7 @@ public class Game {
     private boolean marksEnabled;
     private boolean avoidAroundFirstClick;
     private boolean clickRevealedEnabled;
+    private boolean autoFlagLastCells;
 
     public Game(Difficulty diff, byte optionFlags) {
         difficulty = diff;
@@ -41,6 +44,7 @@ public class Game {
         avoidAroundFirstClick = ((optionFlags & AVOID_FIRST_CLICK) != 0);
         clickRevealedEnabled = ((optionFlags & CLICK_SURROUNDING_REVEALED) != 0);
         marksEnabled = ((optionFlags & QUESTION_MARKS_ENABLED) != 0);
+        autoFlagLastCells = ((optionFlags & AUTO_FLAG_LAST) != 0);
         gameState = NOT_STARTED;
     }
 
@@ -52,6 +56,7 @@ public class Game {
         avoidAroundFirstClick = g.avoidAroundFirstClick;
         clickRevealedEnabled = g.clickRevealedEnabled;
         marksEnabled = g.marksEnabled;
+        autoFlagLastCells = g.autoFlagLastCells;
         gameState = NOT_STARTED;
     }
 
@@ -69,7 +74,7 @@ public class Game {
 
     public void toggleMarksEnabled() {
         marksEnabled = !marksEnabled;
-        if (!marksEnabled)
+        if (!marksEnabled && gameState != NOT_STARTED)
             board.clearQuestionMarks();
     }
 
@@ -81,14 +86,24 @@ public class Game {
         clickRevealedEnabled = !clickRevealedEnabled;
     }
 
+    public void toggleAutoFlagLastCells() {
+        autoFlagLastCells = !autoFlagLastCells;
+        updateWinCondition();
+    }
+
     public boolean getClickRevealedEnabled() {
         return clickRevealedEnabled;
     }
 
     private void updateWinCondition() {
-        if (board.allUnflaggedRevealed() && minesMinusFlags == 0) {
+        if (gameState == NOT_STARTED || gameState == OVER_LOSS || (!autoFlagLastCells && minesMinusFlags != 0))
+            return;
+        if (board.checkWin(minesMinusFlags)) {
             gameState = OVER_WIN;
-        }
+        } else
+            return;
+        minesMinusFlags = 0;
+        board.flagAllUnrevealed();
     }
 
     //  Called whenever a cell is left-clicked. If the board is empty, the
