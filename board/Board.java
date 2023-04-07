@@ -6,9 +6,15 @@ import game.UpdateTracker;
 public class Board {
 
     //  A Board has an array of Cells, and also stores the numbers of rows and
-    //      columns as fields, for use in methods. The methods perform all
-    //      necessary operations on the cells in the board, and are described
-    //      in detail before their declarations.
+    //      columns as fields, for use in methods. Board also has an
+    //      UpdateTracker, which keeps track of all cells that need to have
+    //      their icons updated by the GUI. The methods perform all necessary
+    //      operations on the cells in the board, and are described in detail
+    //      before their declarations.
+
+    public static final int NO_CHORD = 0;
+    public static final int REVEAL_CHORD = 1;
+    public static final int FLAG_CHORD = 2;
 
     private final Cell[][] board;
     private final int nRows, nCols;
@@ -21,21 +27,23 @@ public class Board {
         updateTracker = tracker;
     }
 
-    //  Takes a number of mines, and the location of the first click.
-    //      After this method completes execution, every spot on the board will
-    //      contain a Cell object, either a MineCell or an EmptyCell. The cells
-    //      will be fully initialized and ready for play. It is called upon the
-    //      player's first click -- this is done in order ensure that the first
-    //      click is not on a mine or adjacent to a mine. This method uses the
-    //      rowPos and colPos arguments to avoid placing mines on or adjacent to
-    //      the first-clicked cell.
-    public void populateBoard(int rowPos, int colPos, int totalMines, boolean avoidAround) {
+    //  Takes a number of mines, an option flag boolean, and the location of
+    //      the first click. After this method completes execution, every spot
+    //      on the board will contain a Cell object, either a MineCell or an
+    //      EmptyCell. The cells will be fully initialized and ready for play.
+    //      It is called upon the player's first click -- this is done in order
+    //      to ensure that the first click is not on a mine. If the boolean
+    //      argument firstAlwaysBlank is true, the first click will also not be
+    //      adjacent to any mines. This method uses the rowPos and colPos
+    //      arguments to avoid placing mines on and/or adjacent to the
+    //      first-clicked cell.
+    public void populateBoard(int rowPos, int colPos, int totalMines, boolean firstAlwaysBlank) {
         int currentMines = 0;
         while (currentMines < totalMines) {
             int randomRow = (int)(Math.random()*nRows);
             int randomCol = (int)(Math.random()*nCols);
             if (board[randomRow][randomCol] == null &&
-                    validMineLocation(rowPos, colPos, randomRow, randomCol, avoidAround)) {
+                    validMineLocation(rowPos, colPos, randomRow, randomCol, firstAlwaysBlank)) {
                 board[randomRow][randomCol] = new MineCell();
                 currentMines++;
             }
@@ -47,8 +55,10 @@ public class Board {
         addAdjacent();
     }
 
-    private boolean validMineLocation(int cellR, int cellC, int mineR, int mineC, boolean avoidAround) {
-        if (avoidAround)
+    // Returns true if the provided mine location is a valid mine placement
+    //      based on the first-clicked cell location and boolean flag
+    private boolean validMineLocation(int cellR, int cellC, int mineR, int mineC, boolean firstAlwaysBlank) {
+        if (firstAlwaysBlank)
             return (!(mineR>=cellR-1 && mineR<=cellR+1 && mineC>=cellC-1 && mineC<=cellC+1));
         else
             return (cellR != mineR && cellC != mineC);
@@ -91,10 +101,10 @@ public class Board {
     }
 
     //  Returns the number of flagged cells adjacent to a given cell.
-    //      This method is used when clicking a revealed cell, to determine
-    //      whether adjacent unflagged cells should be revealed. If the number
-    //      of adjacent flagged cells equals the number shown on the revealed
-    //      cell, the adjacent cells are clicked.
+    //      This method is used when chord clicking, to determine whether
+    //      adjacent unflagged cells should be revealed. If the number of
+    //      adjacent flagged cells equals the number shown on the revealed
+    //      cell, the adjacent cells will be clicked.
     private int getFlagsAdjacent(int row, int col) {
         int totalFlagged = 0;
         for (int i=row-1; i<=row+1; i++)
@@ -102,6 +112,33 @@ public class Board {
                 if (isValidCell(i, j) && board[i][j].isFlagged())
                     totalFlagged++;}
         return totalFlagged;
+    }
+
+    // Returns the number of unrevealed unflagged cells adjacent to a given
+    //      cell, including question marked cells. Used when flagging using
+    //      chord-clicking is enabled. if the total number of unrevealed cells
+    //      adjacent to the given revealed cell is equal to the number shown on
+    //      the cell, the remaining unflagged unrevealed cells will be flagged.
+    private int getUnrevealedUnflaggedAdjacent(int row, int col) {
+        int totalUnrevealedUnflagged = 0;
+        for (int i=row-1; i<=row+1; i++)
+            for (int j=col-1; j<=col+1; j++) {
+                if (isValidCell(i, j) && !board[i][j].isRevealed() && !board[i][j].isFlagged())
+                    totalUnrevealedUnflagged++;}
+        return totalUnrevealedUnflagged;
+    }
+
+    // Checks whether a valid chord click can be performed on the cell at the
+    //      given row/col position.
+    public int checkChord(int row, int col) {
+        if (!board[row][col].isRevealed())
+            return NO_CHORD;
+        int flags = getFlagsAdjacent(row, col);
+        if (((EmptyCell)board[row][col]).getMinesAdjacent() == getUnrevealedUnflaggedAdjacent(row, col) + flags)
+            return FLAG_CHORD;
+        if (((EmptyCell)board[row][col]).getMinesAdjacent() == flags)
+            return REVEAL_CHORD;
+        return NO_CHORD;
     }
 
     //  Toggles the isFlagged field of the given cell, and returns a value
@@ -115,32 +152,27 @@ public class Board {
     }
 
     //  Clicks the given cell, and returns a boolean describing whether a mine
-    //      was clicked. If a non-revealed cell with no adjacent mines is
-    //      clicked, all adjacent cells are recursively clicked until the
-    //      revealed area is bordered entirely by cells adjacent to mines, or
-    //      by the edge of the board. If the player clicks a revealed cell with
-    //      adjacent mines, and the number of flagged cells surrounding it is
-    //      equal to the number of mines adjacent to it, a call to
-    //      clickSurrounding() reveals all adjacent unflagged, unrevealed
+    //      was clicked. If the player clicks a non-revealed cell with no
+    //      adjacent mines, all adjacent cells are recursively clicked until
+    //      the revealed area is bordered entirely by cells adjacent to mines,
+    //      or by the edge of the board. If chord-clicking with left click is
+    //      enabled and the cell is a valid chord click position, a call to
+    //      chordClickCell() reveals all adjacent unflagged, unrevealed
     //      cells. If the player has placed adjacent flags incorrectly and
     //      this operation results in a mine being clicked, leftClickCell
     //      returns true and the game is lost.
-    public boolean leftClickCell(int row, int col, boolean clickRevealed) {
-        boolean wasRevealed = board[row][col].isRevealed();
-        if (wasRevealed && !clickRevealed)
+    public boolean leftClickCell(int row, int col) {
+        if (board[row][col].isRevealed() || board[row][col].isFlagged())
             return false;
         if (board[row][col].clickCell()) {
             updateTracker.addUpdate(new Posn(row, col));
             return true;
         }
-        if (board[row][col].isFlagged())
-            return false;
         int minesAdjacent = ((EmptyCell)board[row][col]).getMinesAdjacent();
-        if (minesAdjacent == 0 && !wasRevealed) {
+        if (minesAdjacent == 0) {
             chainClickCells(row, col);
             return false;
-        } else if (wasRevealed && minesAdjacent != 0 && minesAdjacent == getFlagsAdjacent(row, col))
-            return clickSurrounding(row, col);
+        }
         updateTracker.addUpdate(new Posn(row, col));
         return false;
     }
@@ -166,21 +198,36 @@ public class Board {
     //      number of adjacent mines. If a mine is clicked in this process, the
     //      method returns true, indicating that the game is over. If a mine is
     //      not clicked, the method returns false.
-    private boolean clickSurrounding(int row, int col) {
+    public boolean chordClickLeft(int row, int col) {
         boolean clickedMine = false;
-        for (int i=row-1; i<=row+1; i++)
-            for (int j=col-1; j<=col+1; j++)
-                if(isValidCell(i, j) && !board[i][j].isFlagged() &&
-                        !board[i][j].isRevealed()) {
-                    if (clickedMine && board[i][j] instanceof MineCell)
+        for (int i = row - 1; i <= row + 1; i++)
+            for (int j = col - 1; j <= col + 1; j++)
+                if (isValidCell(i, j)) {
+                    if (clickedMine && board[i][j].isMine())
                         continue;
                     clickedMine = (board[i][j].clickCell() || clickedMine);
-                    if (board[i][j] instanceof EmptyCell && ((EmptyCell)board[i][j]).getMinesAdjacent() == 0)
-                        chainClickCells(i,j);
+                    if (!board[i][j].isMine() && ((EmptyCell) board[i][j]).getMinesAdjacent() == 0)
+                        chainClickCells(i, j);
                     else
                         updateTracker.addUpdate(new Posn(i, j));
                 }
         return clickedMine;
+    }
+
+    // This method flags all unrevealed cells adjacent to the cell at the given
+    //      position. It returns the number of cells newly-flagged in this
+    //      process as an integer.
+    public int chordClickRight(int row, int col) {
+        int count = 0;
+        for (int i = row - 1; i <= row + 1; i++)
+            for (int j = col - 1; j <= col + 1; j++)
+                if (isValidCell(i, j) && (board[i][j].getViewState() == Cell.UNREVEALED ||
+                        board[i][j].getViewState() == Cell.QUESTION_MARKED)) {
+                    board[i][j].clearQuestionMark();
+                    rightClickCell(i, j, false);
+                    count++;
+                }
+        return count;
     }
 
     //  Used by the GUI to determine which image to display for the cell at the
@@ -231,6 +278,9 @@ public class Board {
             }
     }
 
+    // Turns all question-marked cells into normal unrevealed cells. This is
+    //      done when question marks are disabled while a game is in progress
+    //      and there are already question marks on the board.
     public void clearQuestionMarks() {
         for (int i=0; i<nRows; i++)
             for (int j=0; j<nCols; j++)
@@ -240,6 +290,10 @@ public class Board {
                 }
     }
 
+    // Flags all remaining unrevealed (or question-marked) cells on the board.
+    //      Used when the auto-flag option is set and the game is nearly won.
+    //      A call to this method flags all remaining cells (that are confirmed
+    //      beforehand to be mines), and the game ends in a win.
     public void flagAllUnrevealed() {
         for (int i=0; i<nRows; i++)
             for (int j=0; j<nCols; j++)

@@ -107,30 +107,36 @@ public class OuterFrame {
         gameMenu.addSeparator();
         gameMenu.add(bestTimes);
 
-        JCheckBoxMenuItem avoidFirst = new JCheckBoxMenuItem("No mines surrounding first click");
-        JCheckBoxMenuItem clickSurrounding = new JCheckBoxMenuItem("Click revealed cells w/ adjacent flags");
+        JCheckBoxMenuItem firstBlank = new JCheckBoxMenuItem("First click always blank");
+        JCheckBoxMenuItem leftChord = new JCheckBoxMenuItem("Chord with left click");
+        JCheckBoxMenuItem flagChord = new JCheckBoxMenuItem("Enable flag chording");
         JCheckBoxMenuItem questionMarks = new JCheckBoxMenuItem("Question marks");
         JCheckBoxMenuItem autoFlag = new JCheckBoxMenuItem("Auto-flag last cells");
-        avoidFirst.setMnemonic(KeyEvent.VK_F);
-        clickSurrounding.setMnemonic(KeyEvent.VK_C);
+        firstBlank.setMnemonic(KeyEvent.VK_C);
+        leftChord.setMnemonic(KeyEvent.VK_L);
+        flagChord.setMnemonic(KeyEvent.VK_F);
         questionMarks.setMnemonic(KeyEvent.VK_Q);
         autoFlag.setMnemonic(KeyEvent.VK_A);
-        avoidFirst.addActionListener(new OptionsListener(avoidFirst, Game.AVOID_FIRST_CLICK));
-        clickSurrounding.addActionListener(new OptionsListener(clickSurrounding, Game.CLICK_SURROUNDING_REVEALED));
+        firstBlank.addActionListener(new OptionsListener(firstBlank, Game.FIRST_ALWAYS_BLANK));
+        leftChord.addActionListener(new OptionsListener(leftChord, Game.LEFT_CLICK_CHORD));
+        flagChord.addActionListener(new OptionsListener(flagChord, Game.FLAG_CHORD_ENABLED));
         questionMarks.addActionListener(new OptionsListener(questionMarks, Game.QUESTION_MARKS_ENABLED));
         autoFlag.addActionListener(new OptionsListener(autoFlag, Game.AUTO_FLAG_LAST));
-        optionsMenu.add(avoidFirst);
-        optionsMenu.add(clickSurrounding);
+        optionsMenu.add(firstBlank);
+        optionsMenu.add(leftChord);
+        optionsMenu.add(flagChord);
         optionsMenu.add(questionMarks);
         optionsMenu.add(autoFlag);
-        if (state.getAvoidAroundFirstClick())
-            avoidFirst.setSelected(true);
-        if (state.getClickSurroundingRevealed())
-            clickSurrounding.setSelected(true);
+        if (state.getFirstBlank())
+            firstBlank.setSelected(true);
+        if (state.getLeftChord())
+            leftChord.setSelected(true);
         if (state.getQuestionMarksEnabled())
             questionMarks.setSelected(true);
-        if (state.getAutoFlagLastCells())
+        if (state.getAutoFlag())
             autoFlag.setSelected(true);
+        if (state.getFlagChord())
+            flagChord.setSelected(true);
 
         JMenuItem about = new JMenuItem("About jMinesweeper...");
         about.setMnemonic(KeyEvent.VK_A);
@@ -278,14 +284,16 @@ public class OuterFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (optionFlag == Game.AVOID_FIRST_CLICK)
-                state.setAvoidAroundFirstClick(item.isSelected());
-            else if (optionFlag == Game.CLICK_SURROUNDING_REVEALED)
-                state.setClickSurroundingRevealed(item.isSelected());
+            if (optionFlag == Game.FIRST_ALWAYS_BLANK)
+                state.setFirstBlank(item.isSelected());
+            else if (optionFlag == Game.LEFT_CLICK_CHORD)
+                state.setLeftChord(item.isSelected());
             else if (optionFlag == Game.QUESTION_MARKS_ENABLED)
                 state.setQuestionMarksEnabled(item.isSelected());
             else if (optionFlag == Game.AUTO_FLAG_LAST)
-                state.setAutoFlagLastCells(item.isSelected());
+                state.setAutoFlag(item.isSelected());
+            else if (optionFlag == Game.FLAG_CHORD_ENABLED)
+                state.setFlagChord(item.isSelected());
             gamePanel.toggleOption(optionFlag);
         }
     }
@@ -295,7 +303,8 @@ public class OuterFrame {
     private class AboutListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String message = "<html>jMinesweeper<br><br>A faithful re-creation of the original Windows<br>" +
+            String message = "<html>jMinesweeper<br>Version 1.3.0<br><br>" +
+                            "A faithful re-creation of the original Windows<br>" +
                             "Minesweeper, written in Java using Swing<br><br>" +
                             "2022-2023<br>By Kai Sandstrom<br><br>" +
                             "Source code available here:<br>" +

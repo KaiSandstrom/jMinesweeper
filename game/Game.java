@@ -7,9 +7,10 @@ public class Game {
 
     //  A Game object contains a Board, a running count of mines minus flags,
     //      a gameState that is either in progress, over (win), or over (loss),
-    //      and a flag indicating that the board has not yet been initialized.
-    //      It also has an UpdateTracker, which keeps track of which cells have
-    //      been changed since the board was last drawn in the GUI.
+    //      a flag indicating that the board has not yet been initialized, and
+    //      several option flags that determine game behavior. It also has an
+    //      UpdateTracker, which keeps track of which cells have been changed
+    //      since the board was last drawn in the GUI.
 
     //  The Game's public methods provide an interface for all operations that
     //      a UI needs to access -- starting a new game, left-clicking a cell,
@@ -20,11 +21,11 @@ public class Game {
     public static final int OVER_WIN = 2;
     public static final int OVER_LOSS = 3;
 
-    public static final int AVOID_FIRST_CLICK = 1;
-    public static final int CLICK_SURROUNDING_REVEALED = 2;
+    public static final int FIRST_ALWAYS_BLANK = 1;
+    public static final int LEFT_CLICK_CHORD = 2;
     public static final int QUESTION_MARKS_ENABLED = 4;
-
     public static final int AUTO_FLAG_LAST = 8;
+    public static final int FLAG_CHORD_ENABLED = 16;
 
     private final Board board;
     private final UpdateTracker updateTracker;
@@ -32,31 +33,37 @@ public class Game {
     private int gameState;
     private int minesMinusFlags;
     private boolean marksEnabled;
-    private boolean avoidAroundFirstClick;
-    private boolean clickRevealedEnabled;
+    private boolean firstAlwaysBlank;
+    private boolean leftClickChord;
     private boolean autoFlagLastCells;
+    private boolean flagChordEnabled;
 
+    // Used when first starting the game and after changing difficulty.
     public Game(Difficulty diff, byte optionFlags) {
         difficulty = diff;
         updateTracker = new UpdateTracker();
         board = new Board(diff.getRows(), diff.getColumns(), updateTracker);
         minesMinusFlags = diff.getMines();
-        avoidAroundFirstClick = ((optionFlags & AVOID_FIRST_CLICK) != 0);
-        clickRevealedEnabled = ((optionFlags & CLICK_SURROUNDING_REVEALED) != 0);
+        firstAlwaysBlank = ((optionFlags & FIRST_ALWAYS_BLANK) != 0);
+        leftClickChord = ((optionFlags & LEFT_CLICK_CHORD) != 0);
         marksEnabled = ((optionFlags & QUESTION_MARKS_ENABLED) != 0);
         autoFlagLastCells = ((optionFlags & AUTO_FLAG_LAST) != 0);
+        flagChordEnabled = ((optionFlags & FLAG_CHORD_ENABLED) != 0);
         gameState = NOT_STARTED;
     }
 
+    // Used when starting a new game with the same difficulty as the previous
+    //      game.
     public Game(Game g) {
         difficulty = g.difficulty;
         updateTracker = new UpdateTracker();
         board = new Board(difficulty.getRows(), difficulty.getColumns(), updateTracker);
         minesMinusFlags = difficulty.getMines();
-        avoidAroundFirstClick = g.avoidAroundFirstClick;
-        clickRevealedEnabled = g.clickRevealedEnabled;
+        firstAlwaysBlank = g.firstAlwaysBlank;
+        leftClickChord = g.leftClickChord;
         marksEnabled = g.marksEnabled;
         autoFlagLastCells = g.autoFlagLastCells;
+        flagChordEnabled = g.flagChordEnabled;
         gameState = NOT_STARTED;
     }
 
@@ -72,29 +79,47 @@ public class Game {
         return updateTracker;
     }
 
+    // Extra code in this option toggle clears all existing question marks when
+    //      the option is disabled. The check for a not-yet-started game
+    //      prevents a NullPointerException.
     public void toggleMarksEnabled() {
         marksEnabled = !marksEnabled;
         if (!marksEnabled && gameState != NOT_STARTED)
             board.clearQuestionMarks();
     }
 
-    public void toggleAvoidAroundFirstClick() {
-        avoidAroundFirstClick = !avoidAroundFirstClick;
+    public void toggleFirstAlwaysBlank() {
+        firstAlwaysBlank = !firstAlwaysBlank;
     }
 
-    public void toggleClickRevealedEnabled() {
-        clickRevealedEnabled = !clickRevealedEnabled;
+    public void toggleLeftClickChord() {
+        leftClickChord = !leftClickChord;
     }
 
+    public void toggleFlagChordEnabled() {
+        flagChordEnabled = !flagChordEnabled;
+    }
+
+    //  When auto-flagging is enabled, in addition to the simple toggle, the
+    //      game must check if the board is ready for auto-flagging without
+    //      any new clicks. More info in the updateWinCondition comments.
     public void toggleAutoFlagLastCells() {
         autoFlagLastCells = !autoFlagLastCells;
-        updateWinCondition();
+        if (autoFlagLastCells)
+            updateWinCondition();
     }
 
-    public boolean getClickRevealedEnabled() {
-        return clickRevealedEnabled;
+    public boolean getLeftClickChord() {
+        return leftClickChord;
     }
 
+    public boolean getFlagChordEnabled() {
+        return flagChordEnabled;
+    }
+
+    // Checks if the game is won and sets the game state accordingly. If
+    //      the auto-flagging option is enabled, the call to board.checkWin()
+    //      will flag the remaining unflagged cells.
     private void updateWinCondition() {
         if (gameState == NOT_STARTED || gameState == OVER_LOSS || (!autoFlagLastCells && minesMinusFlags != 0))
             return;
@@ -107,19 +132,22 @@ public class Game {
     }
 
     //  Called whenever a cell is left-clicked. If the board is empty, the
-    //      board is populated, passing the row and column coordinates of this
-    //      first click along to the populateBoard method in order to avoid
-    //      placing mines adjacent to the first cell clicked. After checking
-    //      for an empty board, the cell is clicked, and this method sets the
-    //      game state flag accordingly.
+    //      board is populated, passing the row and column coordinates of
+    //      this first click along to the populateBoard method in order to
+    //      avoid placing mines in and/or adjacent to the first cell clicked.
+    //      After checking for an empty board, the cell is clicked, and this
+    //      method sets the game state flag accordingly.
     public void leftClickCell(int row, int col) {
         if (gameState > IN_PROGRESS) // Game over
             return;
         if (gameState == NOT_STARTED) {
-            board.populateBoard(row, col, minesMinusFlags, avoidAroundFirstClick);
+            board.populateBoard(row, col, minesMinusFlags, firstAlwaysBlank);
             gameState = IN_PROGRESS;
         }
-        if (board.leftClickCell(row, col, clickRevealedEnabled)) {
+        if (leftClickChord && board.checkChord(row, col) != Board.NO_CHORD) {
+            chordClickCell(row, col);
+            return;
+        } else if (board.leftClickCell(row, col)) {
             board.setRevealed();
             gameState = OVER_LOSS;
         }
@@ -137,7 +165,7 @@ public class Game {
         if (gameState > IN_PROGRESS) // Game over
             return;
         if (gameState == NOT_STARTED) {
-            board.populateBoard(-2, -2, minesMinusFlags, avoidAroundFirstClick);
+            board.populateBoard(-2, -2, minesMinusFlags, firstAlwaysBlank);
             gameState = IN_PROGRESS;
         }
         int rClickResult = board.rightClickCell(row, col, marksEnabled);
@@ -145,6 +173,27 @@ public class Game {
             minesMinusFlags--;
         else if (rClickResult == Cell.FLAG_CLEARED)
             minesMinusFlags++;
+        updateWinCondition();
+    }
+
+    // Called from the GUI whenever a chord click is performed, or from
+    //      leftClickCell if leftClickChord is set. Checks the state of the
+    //      cell at the given position, the state of its neighbors, and the
+    //      game option flags its surrounding cells, and depending on these,
+    //      either does nothing or invokes the board's left or right chord
+    //      click methods. Sets game state according to the result.
+    public void chordClickCell(int row, int col) {
+        if (gameState > IN_PROGRESS)
+            return;
+        int chordType = board.checkChord(row, col);
+        if (chordType == Board.NO_CHORD)
+            return;
+        if (flagChordEnabled && chordType == Board.FLAG_CHORD)
+            minesMinusFlags -= board.chordClickRight(row, col);
+        else if (chordType == Board.REVEAL_CHORD && board.chordClickLeft(row, col)) {
+            board.setRevealed();
+            gameState = OVER_LOSS;
+        }
         updateWinCondition();
     }
 

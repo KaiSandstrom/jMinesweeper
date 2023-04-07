@@ -16,8 +16,8 @@ public class SaveState implements Serializable, Iterable<String[]> {
 
     //  A SaveState stores all persistent information that should be recovered
     //      from a file when the game application is opened, including the
-    //      last-played difficulty, the previous custom board options, and,
-    //      perhaps most importantly, a high score table.
+    //      last-played difficulty, the previous custom board options, the
+    //      option flags, and, perhaps most importantly, a high score table.
 
     //  SaveState implements Iterable, returning an array of Strings
     //      representing the three displayed entries for each line-entry in the
@@ -27,9 +27,10 @@ public class SaveState implements Serializable, Iterable<String[]> {
     private Difficulty selected;
     private String[] lastCustomEntry;
     private boolean questionMarks;
-    private boolean clickSurrounding;
-    private boolean avoidFirstClickMines;
-    private boolean autoFlagLastCells;
+    private boolean leftChord;
+    private boolean firstBlank;
+    private boolean autoFlag;
+    private boolean flagChord;
     private final HashMap<Difficulty, SaveData> scores;
 
     //  Simple private wrapper struct for player name and score. This is used
@@ -52,9 +53,10 @@ public class SaveState implements Serializable, Iterable<String[]> {
         selected = Difficulty.INTERMEDIATE;
         lastCustomEntry = new String[]{"", "", ""};
         questionMarks = false;
-        avoidFirstClickMines = true;
-        clickSurrounding = true;
-        autoFlagLastCells = true;
+        firstBlank = true;
+        leftChord = true;
+        autoFlag = true;
+        flagChord = false;
     }
 
     //  Load a saved SaveState from file, or create a new SaveState if the file
@@ -89,7 +91,7 @@ public class SaveState implements Serializable, Iterable<String[]> {
         }
     }
 
-    //  These next 9 public methods are simple getters, setters, and
+    //  These next 20 or so public methods are simple getters, setters, and
     //      manipulators, working on the data stored in a SaveState.
 
     public int size() {
@@ -133,49 +135,62 @@ public class SaveState implements Serializable, Iterable<String[]> {
         scores.clear();
     }
 
-    public byte getOptionFlags() {
-        byte retVal = 0;
-        if (avoidFirstClickMines)
-            retVal |= 1;
-        if (clickSurrounding)
-            retVal |= 2;
-        if (questionMarks)
-            retVal |= 4;
-        if (autoFlagLastCells)
-            retVal |= 8;
-        return retVal;
+    public boolean getFirstBlank() {
+        return firstBlank;
     }
 
-    public boolean getAvoidAroundFirstClick() {
-        return avoidFirstClickMines;
-    }
-
-    public boolean getClickSurroundingRevealed() {
-        return clickSurrounding;
+    public boolean getLeftChord() {
+        return leftChord;
     }
 
     public boolean getQuestionMarksEnabled() {
         return questionMarks;
     }
 
-    public boolean getAutoFlagLastCells() {
-        return autoFlagLastCells;
+    public boolean getAutoFlag() {
+        return autoFlag;
     }
 
-    public void setAvoidAroundFirstClick(boolean val) {
-        avoidFirstClickMines = val;
+    public boolean getFlagChord() {
+        return flagChord;
     }
 
-    public void setClickSurroundingRevealed(boolean val) {
-        clickSurrounding = val;
+    public void setFirstBlank(boolean val) {
+        firstBlank = val;
+    }
+
+    public void setLeftChord(boolean val) {
+        leftChord = val;
     }
 
     public void setQuestionMarksEnabled(boolean val) {
         questionMarks = val;
     }
 
-    public void setAutoFlagLastCells(boolean val) {
-        autoFlagLastCells = val;
+    public void setAutoFlag(boolean val) {
+        autoFlag = val;
+    }
+
+    public void setFlagChord(boolean val) {
+        flagChord = val;
+    }
+
+    // The option flags are returned from the SaveState as a packed bit field
+    //      in order to pass one value to the Game's constructor instead of
+    //      five separate boolean values.
+    public byte getOptionFlags() {
+        byte retVal = 0;
+        if (firstBlank)
+            retVal |= Game.FIRST_ALWAYS_BLANK;
+        if (leftChord)
+            retVal |= Game.LEFT_CLICK_CHORD;
+        if (questionMarks)
+            retVal |= Game.QUESTION_MARKS_ENABLED;
+        if (autoFlag)
+            retVal |= Game.AUTO_FLAG_LAST;
+        if (flagChord)
+            retVal |= Game.FLAG_CHORD_ENABLED;
+        return retVal;
     }
 
     //  Iterator returns score table entries in the order of difficulty, as

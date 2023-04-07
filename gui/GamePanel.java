@@ -117,11 +117,14 @@ public class GamePanel {
         return game;
     }
 
+    //  Toggles the Game's game option flag corresponding to the int parameter
     public void toggleOption(int optionFlag) {
-        if (optionFlag == Game.AVOID_FIRST_CLICK)
-            game.toggleAvoidAroundFirstClick();
-        else if (optionFlag == Game.CLICK_SURROUNDING_REVEALED)
-            game.toggleClickRevealedEnabled();
+        if (optionFlag == Game.FIRST_ALWAYS_BLANK)
+            game.toggleFirstAlwaysBlank();
+        else if (optionFlag == Game.LEFT_CLICK_CHORD)
+            game.toggleLeftClickChord();
+        else if (optionFlag == Game.FLAG_CHORD_ENABLED)
+            game.toggleFlagChordEnabled();
         else if (optionFlag == Game.QUESTION_MARKS_ENABLED) {
             game.toggleMarksEnabled();
             refreshBoard();
@@ -144,6 +147,8 @@ public class GamePanel {
         info.reset(game);
     }
 
+    //  Refreshes the board's icons. Used when a menu generates updates instead
+    //      of a board click.
     private void refreshBoard() {
         board.forceRefresh();
     }

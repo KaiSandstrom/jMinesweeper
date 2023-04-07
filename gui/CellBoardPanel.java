@@ -19,13 +19,14 @@ public class CellBoardPanel {
     //  A CellBoardPanel has a reference to the Game object, in order to make
     //      calls invoking game logic, and a reference to the parent GamePanel.
     //      The reference to the parent GamePanel is used to update the smiley,
-    //      mine counter, and timer in the InfoPanel. Originally, the plan was
-    //      to add another mouseListener to the entire GamePanel, but that
-    //      mouseListener wasn't registering any clicks. This reference to the
-    //      parent GamePanel is also used to pass a call back to the OuterFrame
-    //      to check for a high score when the game is won.
+    //      mine counter, and timer in the InfoPanel, as well as to pass a call
+    //      back to the OuterFrame to check for a high score when the game is
+    //      won.
 
     //  JButtons associated with the individual Cells are stored in a 2D array.
+
+    //  Three boolean values track which mouse buttons have been pressed, and
+    //      whether a chord click has been activated.
 
     private final ImageIcon unrevealed = new ImageIcon(Objects.requireNonNull(
             getClass().getResource("/resources/unrevealed.png")));
@@ -66,6 +67,8 @@ public class CellBoardPanel {
     private final JButton[][] buttons;
     private Game game;
 
+    private boolean leftClicked, rightClicked, chordActivated;
+
     public CellBoardPanel(int nRows, int nCols, Game g, GamePanel parentComponent) {
         rows = nRows;
         cols = nCols;
@@ -73,6 +76,9 @@ public class CellBoardPanel {
         game = g;
         parent = parentComponent;
         board = new JPanel(new GridLayout(rows, cols, 0, 0));
+        leftClicked = false;
+        rightClicked = false;
+        chordActivated = false;
         initialize();
     }
 
@@ -100,44 +106,18 @@ public class CellBoardPanel {
                 buttons[i][j].setIcon(unrevealed);
     }
 
+    //  Used in the parent GamePanel to update the board's view state when
+    //      an update is triggered from a menu instead of a board click
     public void forceRefresh() {
         updateCells(game.getUpdateTracker());
     }
 
-    //  This method adds both an ActionListener and a MouseAdapter to a cell
-    //      button. The ActionListener processes successful left clicks,
-    //      whereas the MouseAdapter processes right clicks and adds visual
-    //      feedback for right clicks.
+    //  This method adds a MouseAdapter to a cell button. Due to the added
+    //      complexity of the chord click operation, there is no ActionListener
+    //      for handling left clicks -- the MouseAdapter's methods update the
+    //      CellBoardPanel click state variables and take the appropriate
+    //      action.
     private void addCellClickHandler(int row, int col) {
-    //  This ActionListener fires when a cell has been successfully
-    //      left-clicked. It calls the Game's left click method on the
-    //      cell in question, and makes a call to updateCells to redraw
-    //      the icons for the affected cells. Depending on the game
-    //      state before and after the click, the timer may be started
-    //      or halted, and the OuterFrame may be notified to check for
-    //      a win.
-        buttons[row][col].addActionListener(e -> {
-            int prevState = game.getGameState();
-            game.leftClickCell(row, col);
-            updateCells(game.getUpdateTracker());
-            parent.getInfoPanel().updateSmiley();
-            if (prevState == Game.NOT_STARTED && game.getGameState() == Game.IN_PROGRESS)
-                parent.getInfoPanel().startTimer();
-            else if (prevState == Game.IN_PROGRESS && game.getGameState() > Game.IN_PROGRESS)
-                parent.getInfoPanel().haltTimer();
-            if (game.getGameState() == Game.OVER_WIN)
-                parent.processWin();
-        });
-
-        //  This MouseAdapter applies visual feedback for left clicks, and
-        //      is responsible for handling right clicks. Since the
-        //      MouseAdapter's mouseClicked method is only called when the
-        //      mouse button is pressed and released without moving at all,
-        //      it's not a viable way of reliably detecting clicks.
-        //      ActionListener can handle left clicks, but for right clicks,
-        //      it's necessary to use mousePressed and mouseReleased, and
-        //      ensure tha these methods were called with the cursor over
-        //      the same cell.
         buttons[row][col].addMouseListener(new MouseAdapter() {
 
             //  Special UpdateTracker used to keep track of which cells have
@@ -147,38 +127,44 @@ public class CellBoardPanel {
             //      previously displayed as "pressed" must be reset.
             private final UpdateTracker clicked = new UpdateTracker();
 
-            //  When this boolean is set to true, the right mouse button has
-            //      been pressed and the cursor is still on the cell. If this
-            //      variable is set to true when the button is released, a
-            //      valid right click has occurred.
-            private boolean rightClicked = false;
-
-            //  If left click: Changes clicked cells' display state to
-            //      "pressed" (same as revealed blank), and places them in the
-            //      local UpdateTracker for use by the next two methods. If a
-            //      single unrevealed cell is clicked, that single cell is
-            //      added. If a revealed cell with the correct number of
-            //      adjacent flags is clicked, all adjacent non-flagged
-            //      unrevealed cells are displayed as clicked and added to the
-            //      UpdateTracker. A left click anywhere in the board panel
-            //      sets the smiley icon to the "shocked" expression.
-            //  If right click: rightClicked boolean is set to true. It will be
-            //      setback to false either when the mouse leaves the cell
-            //      (aborted click), or when the right button is released
-            //      (successful click).
+            //  When any of the three mouse buttons are pressed, one or more of
+            //      the three boolean click state variables are manipulated.
+            //      left and right clicks set leftClicked and rightClicked
+            //      respectively, and a middle click sets chordActivated. Left,
+            //      right, and chord are all mutually exclusive, as pressing
+            //      left or right while the other is already activated will
+            //      clear both and set chordActivated, and setting
+            //      chordActivated with a middle click will also clear both
+            //      others.
+            //  When the player makes a valid left click or valid right click,
+            //      one or more cells will be added to the clicked
+            //      updateTracker and displayed as pressed. A chord click
+            //      activated with both left and right or with the middle
+            //      button will show all adjacent unrevealed cells as pressed,
+            //      unless chord-flagging is enabled and the click is a valid
+            //      chord-flag. When chord-clicking with the left mouse button,
+            //      adjacent cells will only be shown as pressed if the
+            //      click will generate a valid chord click.
             @Override
             public void mousePressed(MouseEvent e) {
                 if (game.getGameState() > Game.IN_PROGRESS)
                     return;
-                if (e.getButton() == MouseEvent.BUTTON3) {
+                if (e.getButton() == MouseEvent.BUTTON1)
+                    leftClicked = true;
+                else if (e.getButton() == MouseEvent.BUTTON3)
                     rightClicked = true;
-                    return;
+                if (e.getButton() == MouseEvent.BUTTON2 || (leftClicked && rightClicked)) {
+                    chordActivated = true;
+                    leftClicked = false;
+                    rightClicked = false;
                 }
-                if (e.getButton() != MouseEvent.BUTTON1)
+                if (game.getViewState(row, col) == Cell.FLAGGED || rightClicked)
                     return;
                 boolean alreadyUpdated = updateClicked(row, col);
-                if (game.getClickRevealedEnabled() && !alreadyUpdated &&
-                        game.getViewState(row, col) == countFlaggedSurrounding()) {
+                int flags = countFlaggedSurrounding();
+                if (!alreadyUpdated &&
+                        (!game.getFlagChordEnabled()||!(countClickableSurrounding()==game.getViewState(row,col)-flags))
+                        && (chordActivated || (game.getLeftClickChord() && game.getViewState(row, col) == flags))) {
                     for (int i=row-1; i<=row+1; i++)
                         for (int j=col-1; j<=col+1; j++)
                             if (isValidCell(i, j))
@@ -187,6 +173,69 @@ public class CellBoardPanel {
                 parent.getInfoPanel().setSmileyShocked();
             }
 
+            //  Most times this method is called, nothing will be done, as the
+            //      cursor is simply gliding across the window. When the mouse
+            //      has been dragged out of a cell after pressing a button,
+            //      however, no matter what combination of left, right, and
+            //      middle, this indicates an aborted click and the previous
+            //      state must be restored. In the case of a left click or
+            //      chord click, this means updating the cells at the
+            //      coordinates stored in clicked back to unrevealed (or
+            //      question-marked). In all cases, the click variables are
+            //      reset to false.
+            @Override
+            public void mouseExited(MouseEvent e) {
+                leftClicked = false;
+                rightClicked = false;
+                chordActivated = false;
+                updateCells(clicked);
+                parent.getInfoPanel().updateSmiley();
+            }
+
+            //  If one of the click state variables is set, then an entire
+            //      click operation has been performed with the cursor inside
+            //      one cell, and a Game method must be invoked. If some click
+            //      must be performed, updateCells first resets the icons of
+            //      the cells in clicked to their pre-clicked state. This
+            //      ensures that an invalid chord click does not leave cells
+            //      pressed. Next, the appropriate Game click method is called
+            //      and its click state variable is reset to false. Finally,
+            //      the board and info panel are updated according to the
+            //      results of the click.
+            public void mouseReleased(MouseEvent e) {
+                if (game.getGameState() == Game.OVER_WIN || game.getGameState() == Game.OVER_LOSS)
+                    return;
+                if (!(leftClicked || rightClicked || chordActivated))
+                    return;
+                updateCells(clicked);
+                if (game.getGameState() == Game.NOT_STARTED)
+                    if (!chordActivated)
+                        parent.getInfoPanel().startTimer();
+                    else
+                        return;
+                if (leftClicked) {
+                    game.leftClickCell(row, col);
+                    leftClicked = false;
+                } else if (rightClicked) {
+                    game.rightClickCell(row, col);
+                    rightClicked = false;
+                } else if (chordActivated) {
+                    game.chordClickCell(row, col);
+                    chordActivated = false;
+                }
+                parent.getInfoPanel().updateMineCount();
+                updateCells(game.getUpdateTracker());
+                parent.getInfoPanel().updateSmiley();
+                if (game.getGameState() > Game.IN_PROGRESS)
+                    parent.getInfoPanel().haltTimer();
+                if (game.getGameState() == Game.OVER_WIN)
+                    parent.processWin();
+            }
+
+            //  Sets a cell's icon to the pressed state if appropriate, and
+            //      returns a boolean describing whether the operation was
+            //      successful. Successfully-pressed cells are added to
+            //      the clicked UpdateTracker.
             private boolean updateClicked(int r, int c) {
                 if (game.getViewState(r, c) == Cell.UNREVEALED)
                     buttons[r][c].setIcon(revealedBlank);
@@ -198,60 +247,31 @@ public class CellBoardPanel {
                 return true;
             }
 
-            //  Most times this method is called, nothing will be done, as the
-            //      cursor is simply gliding across the window. When the mouse
-            //      has been dragged out of a cell after pressing a button,
-            //      however, whether left or right, this indicates an aborted
-            //      click and the previous state must be restored. In the case
-            //      of a left click, this is done by updating the cells at the
-            //      coordinates stored in clicked back to unrevealed, and in
-            //      the case of a right click, this is done by resetting
-            //      rightClicked to false.
-            @Override
-            public void mouseExited(MouseEvent e) {
-                rightClicked = false;
-                updateCells(clicked);
-                parent.getInfoPanel().updateSmiley();
-            }
-
-            //  For left click: When the mouse is finally released, the
-            //      UpdateTracker can be cleared, as if the mouse is still on
-            //      the initially clicked cell, the view state will be updated
-            //      by the ActionListener. If the mouse was already dragged
-            //      away, mouseExited was already called, and clicked is empty.
-            //  For right click: If rightClicked is true, this means a
-            //      successful right click has been performed. This click must
-            //      be invoked in the Game object and the affected cells' icons
-            //      must be updated. If the right click results in a win, the
-            //      timer is halted and a call is passed back up to the
-            //      OuterFrame to check for a high score.
-            public void mouseReleased(MouseEvent e) {
-                clicked.clear();
-                if (rightClicked) {
-                    if (game.getGameState() == Game.NOT_STARTED)
-                        parent.getInfoPanel().startTimer();
-                    game.rightClickCell(row, col);
-                    parent.getInfoPanel().updateMineCount();
-                    updateCells(game.getUpdateTracker());
-                    parent.getInfoPanel().updateSmiley();
-                    rightClicked = false;
-                    if (game.getGameState() == Game.OVER_WIN) {
-                        parent.getInfoPanel().haltTimer();
-                        parent.processWin();
-                    }
-                }
-            }
-
             //  Private method to count the number of flagged cells surrounding
             //      the current cell. This is used to determine whether the
             //      cells surrounding a clicked revealed cell should be
-            //      displayed as clicked, as they should only be shown as
-            //      clicked if the click will result in cells being revealed.
+            //      displayed as clicked, as in some cases they should only be
+            //      shown as clicked if the click will result in cells being
+            //      revealed.
             private int countFlaggedSurrounding() {
                 int count = 0;
                 for (int i=row-1; i<=row+1; i++)
                     for (int j=col-1; j<=col+1; j++)
                         if (isValidCell(i, j) && game.getViewState(i, j) == Cell.FLAGGED)
+                            count++;
+                return count;
+            }
+
+            //  Counts the number of "clickable" (unrevealed or question marked) cells
+            //      surrounding the cell at a given position. Used to determine whether
+            //      a flag-chord click is being performed, as a chord click does not
+            //      show cells as pressed when a flag chord is being performed.
+            private int countClickableSurrounding() {
+                int count = 0;
+                for (int i=row-1; i<=row+1; i++)
+                    for (int j=col-1; j<=col+1; j++)
+                        if (isValidCell(i, j) && (game.getViewState(i, j) == Cell.UNREVEALED ||
+                                game.getViewState(i, j) == Cell.QUESTION_MARKED))
                             count++;
                 return count;
             }

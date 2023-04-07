@@ -3,11 +3,8 @@ package board;
 public abstract class Cell {
 
     //  This abstract class lays out the common elements that all cells share,
-    //      whether mine or clear. All cells are either revealed or hidden, and
-    //      are either flagged or unflagged. In a future update, a third state,
-    //      "questionMarked," will be added, as this third state was present in
-    //      the original Microsoft Minesweeper. It will be optional, and turned
-    //      off by default.
+    //      whether mine or clear. All cells are either revealed or hidden,
+    //      hidden cells are either blank, flagged, or question marked.
 
     //  The non-abstract public methods are for the most part getters and
     //      setters. toggleFlagged is a bit more involved, as it returns a
