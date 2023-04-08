@@ -2,8 +2,9 @@ package gui;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
-
-import game.*;
+import game.Game;
+import game.Difficulty;
+import game.SaveState;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -48,19 +49,20 @@ public class OuterFrame {
         intermediate = new JRadioButtonMenuItem("Intermediate");
         expert = new JRadioButtonMenuItem("Expert");
         custom = new JRadioButtonMenuItem("Custom...");
-        if (state.getSelected().toString().equals("Beginner")) {
-            beginner.setSelected(true);
+        if (state.getSelected().toString().equals("Beginner"))
             selected = beginner;
-        } else if (state.getSelected().toString().equals("Intermediate")) {
-            intermediate.setSelected(true);
+        else if (state.getSelected().toString().equals("Intermediate"))
             selected = intermediate;
-        } else if (state.getSelected().toString().equals("Expert")) {
-            expert.setSelected(true);
+        else if (state.getSelected().toString().equals("Expert"))
             selected = expert;
-        } else {
-            custom.setSelected(true);
+        else
             selected = custom;
-        }
+        selected.setSelected(true);
+        ButtonGroup difficulties = new ButtonGroup();
+        difficulties.add(beginner);
+        difficulties.add(intermediate);
+        difficulties.add(expert);
+        difficulties.add(custom);
         bestTimes = new JMenuItem("Best Times...");
         initializeMenus();
         gamePanel = new GamePanel(state.getSelected(), state.getOptionFlags(), this);
@@ -228,24 +230,11 @@ public class OuterFrame {
         }
         @Override
         public void actionPerformed(ActionEvent e) {
-            //  If the item has become selected, the previously-selected option
-            //      must be unselected before resetting the panel. Since we
-            //      don't have an easy reference to the previously-selected
-            //      option, it's easiest to unselect all three and re-select
-            //      the one this ActionListener is processing.
+            //  If the item has become selected, set the selected item
+            //      reference to this item and reset the board.
             if (item.isSelected()) {
-                beginner.setSelected(false);
-                intermediate.setSelected(false);
-                expert.setSelected(false);
-                custom.setSelected(false);
-                item.setSelected(true);
                 selected = item;
                 resetFrame(textToDifficulty());
-            //  If the item has become unselected, the user clicked the
-            //      currently-selected option, and no reset should be
-            //      performed. The element is set back to selected.
-            } else {
-                item.setSelected(true);
             }
         }
 
@@ -260,87 +249,14 @@ public class OuterFrame {
         }
     }
 
-    //  Resets the game panel object to start a new game of the same difficulty
-    //      when the New option is chosen or F2 is pressed. Note that this is
-    //      different from resetPanel. In this case, a call is made to the
-    //      GamePanel object to reset for a new game, whereas in resetPanel,
-    //      the GamePanel is thrown out and replaced with a new GamePanel for
-    //      a different difficulty.
-    private class NewGameListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            gamePanel.reset();
-        }
-    }
-
-    private class OptionsListener implements ActionListener {
-        private final JCheckBoxMenuItem item;
-        private final int optionFlag;
-
-        public OptionsListener(JCheckBoxMenuItem item, int optionFlag) {
-            this.item = item;
-            this.optionFlag = optionFlag;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (optionFlag == Game.FIRST_ALWAYS_BLANK)
-                state.setFirstBlank(item.isSelected());
-            else if (optionFlag == Game.LEFT_CLICK_CHORD)
-                state.setLeftChord(item.isSelected());
-            else if (optionFlag == Game.QUESTION_MARKS_ENABLED)
-                state.setQuestionMarksEnabled(item.isSelected());
-            else if (optionFlag == Game.AUTO_FLAG_LAST)
-                state.setAutoFlag(item.isSelected());
-            else if (optionFlag == Game.FLAG_CHORD_ENABLED)
-                state.setFlagChord(item.isSelected());
-            gamePanel.toggleOption(optionFlag);
-        }
-    }
-
-    //  Displays a simple dialogue box with credit information when the
-    //      "About jMinesweeper..." option is chosen.
-    private class AboutListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            String message = "<html>jMinesweeper<br>Version 1.3.0<br><br>" +
-                            "A faithful re-creation of the original Windows<br>" +
-                            "Minesweeper, written in Java using Swing<br><br>" +
-                            "2022-2023<br>By Kai Sandstrom<br><br>" +
-                            "Source code available here:<br>" +
-                            "<a href=\"https://github.com/KaiSandstrom/jMinesweeper\">" +
-                            "https://github.com/KaiSandstrom/jMinesweeper</a><br><br>" +
-                            "Have suggestions? Found a bug?<br>Feel free to open an issue!" +
-                            "</html>";
-            JEditorPane msgContainer = new JEditorPane("text/html", message);
-            msgContainer.addHyperlinkListener(e1 -> {
-                if (e1.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
-                    try {
-                        Desktop.getDesktop().browse(e1.getURL().toURI());
-                    } catch (URISyntaxException | IOException ex) {
-                        JOptionPane.showMessageDialog(msgContainer, "Error: Could not open link.");
-                    }
-            });
-            msgContainer.setEditable(false);
-            msgContainer.setBackground(frame.getBackground());
-            msgContainer.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
-            msgContainer.setFont(new Font("Dialog", Font.BOLD, 12));
-            JOptionPane.showMessageDialog(frame, msgContainer, "About jMinesweeper", JOptionPane.PLAIN_MESSAGE, mineIcon);
-        }
-    }
-
     //  ActionListener for the custom board menu option. This ActionListener
     //      displays a popup to input values, checks these values to make sure
     //      they describe a valid board, give error feedback if they don't,
     //      and reset the game panel if they do.
     private class CustomDiffListener implements ActionListener {
 
-        //  These are made fields so that the private methods can access them.
         int rows, cols, mines;
 
-        //  The prompts panel and its components are made final fields so that
-        //      the program will remember previous inputs from the same
-        //      session.
         final JPanel prompts;
         final JTextField getWidth, getHeight, getMines;
 
@@ -375,32 +291,24 @@ public class OuterFrame {
         public void actionPerformed(ActionEvent e) {
             rows = cols = mines = 0;
             if (!prompt()) {
-                custom.setSelected(false);
                 selected.setSelected(true);
                 return;
             }
-            beginner.setSelected(false);
-            intermediate.setSelected(false);
-            expert.setSelected(false);
-            custom.setSelected(true);
             selected = custom;
             Difficulty newDiff = new Difficulty(rows, cols, mines);
             if (newDiff.equals(Difficulty.BEGINNER)) {
-                custom.setSelected(false);
                 JOptionPane.showMessageDialog(frame,
                         "Custom field is the same as Beginner. Starting new Beginner game...\n ",
                         "", JOptionPane.WARNING_MESSAGE);
                 beginner.doClick();
                 return;
             } else if (newDiff.equals(Difficulty.INTERMEDIATE)) {
-                custom.setSelected(false);
                 JOptionPane.showMessageDialog(frame,
                         "Custom field is the same as Intermediate. Starting new Intermediate game...\n ",
                         "", JOptionPane.WARNING_MESSAGE);
                 intermediate.doClick();
                 return;
             } else if (newDiff.equals(Difficulty.EXPERT)) {
-                custom.setSelected(false);
                 JOptionPane.showMessageDialog(frame,
                         "Custom field is the same as Expert. Starting new Expert game...\n ",
                         "", JOptionPane.WARNING_MESSAGE);
@@ -485,6 +393,82 @@ public class OuterFrame {
                     (frame.getHeight() - gamePanel.getGamePanel().getHeight()));
             int maxCols = getMaxColsFromWidthInPixels((int)bounds.getWidth());
             return new Dimension(maxCols, maxRows);
+        }
+    }
+
+    //  Resets the game panel object to start a new game of the same difficulty
+    //      when the New option is chosen or F2 is pressed. Note that this is
+    //      different from resetPanel. In this case, a call is made to the
+    //      GamePanel object to reset for a new game, whereas in resetPanel,
+    //      the GamePanel is thrown out and replaced with a new GamePanel for
+    //      a different difficulty.
+    private class NewGameListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            gamePanel.reset();
+        }
+    }
+
+    //  Each option menu item has an OptionsListener that has itself and its
+    //      associated option flag as final fields. When an OptionsListener
+    //      fires, the proper option (determined by checking the value of
+    //      optionFlag) is set in the SaveState, and a call to toggleOption in
+    //      gamePanel handles the setting of the option in the state of the
+    //      current game.
+    private class OptionsListener implements ActionListener {
+        private final JCheckBoxMenuItem item;
+        private final int optionFlag;
+
+        public OptionsListener(JCheckBoxMenuItem item, int optionFlag) {
+            this.item = item;
+            this.optionFlag = optionFlag;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (optionFlag == Game.FIRST_ALWAYS_BLANK)
+                state.setFirstBlank(item.isSelected());
+            else if (optionFlag == Game.LEFT_CLICK_CHORD)
+                state.setLeftChord(item.isSelected());
+            else if (optionFlag == Game.QUESTION_MARKS_ENABLED)
+                state.setQuestionMarksEnabled(item.isSelected());
+            else if (optionFlag == Game.AUTO_FLAG_LAST)
+                state.setAutoFlag(item.isSelected());
+            else if (optionFlag == Game.FLAG_CHORD_ENABLED)
+                state.setFlagChord(item.isSelected());
+            gamePanel.toggleOption(optionFlag);
+        }
+    }
+
+    //  Displays a dialogue box with credit information when the
+    //      "About jMinesweeper..." option is chosen.
+    private class AboutListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String message = "<html>jMinesweeper<br>Version 1.3.0<br><br>" +
+                            "A faithful re-creation of the original Windows<br>" +
+                            "Minesweeper, written in Java using Swing<br><br>" +
+                            "2022-2023<br>By Kai Sandstrom<br><br>" +
+                            "Source code available here:<br>" +
+                            "<a href=\"https://github.com/KaiSandstrom/jMinesweeper\">" +
+                            "https://github.com/KaiSandstrom/jMinesweeper</a><br><br>" +
+                            "Have suggestions? Found a bug?<br>Feel free to open an issue!" +
+                            "</html>";
+            JEditorPane msgContainer = new JEditorPane("text/html", message);
+            msgContainer.addHyperlinkListener(e1 -> {
+                if (e1.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
+                    try {
+                        Desktop.getDesktop().browse(e1.getURL().toURI());
+                    } catch (URISyntaxException | IOException ex) {
+                        JOptionPane.showMessageDialog(msgContainer, "Error: Could not open link.");
+                    }
+            });
+            msgContainer.setEditable(false);
+            msgContainer.setBackground(frame.getBackground());
+            msgContainer.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+            msgContainer.setFont(new Font("Dialog", Font.BOLD, 12));
+            JOptionPane.showMessageDialog(frame, msgContainer,
+                    "About jMinesweeper", JOptionPane.PLAIN_MESSAGE, mineIcon);
         }
     }
 
@@ -609,6 +593,7 @@ public class OuterFrame {
                 2*GamePanel.borderEdgeVert.getIconHeight())) / GamePanel.borderEdgeVert.getIconHeight();
     }
 
+    //  Determines proper frame Dimension from Difficulty.
     private Dimension getNewSize(Difficulty diff) {
         int newX = getWidthInPixels(diff.getColumns());
         int topBarHeight = frame.getHeight() - gamePanel.getGamePanel().getHeight();
