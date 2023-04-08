@@ -31,33 +31,87 @@ particular part of the UI.
 
 ## Rules of the Game
 
-The goal in a game of jMinesweeper is simple: Flag all mines, and reveal every
-cell that isn't a mine. Left click to reveal a cell, and right click to flag a
-cell as a mine. If you left-click on a mine, you lose the game.
+A Minesweeper board consists of an array of squares. Each cell in the grid is
+either safe (clear, empty) or is a mine. All cells start out hidden. 
+Left-clicking on a cell reveals it, and if a mine is revealed, the game is
+lost. A left-click to start the game is always guaranteed to not lose the game,
+and if the "First click always blank" option is enabled, it is guaranteed that
+there is no mine adjacent to the first click. If the first click is a right
+click, any subsequent left click may reveal a mine.
 
-Each non-mine cell that's revealed displays how many mines are adjacent to it.
-If the revealed cell is blank, there are no mines adjacent to it. Otherwise,
-the number displayed on the cell is the number of adjacent mines. Use these
-numbers to determine which cells are mines and which cells are safe. In some
-situations, it isn't possible to find out which cells are mines without
-guessing. The game is won when every mine is marked as flagged and every
-non-mine is revealed.
+Revealed non-mine cells may display a number. The number on the cell tells you
+how many mines are adjacent to the cell (horizontally, vertically, and 
+diagonally). This number can range from 1 to 8. If there are no mines
+adjacent to a cell, no number is displayed. Clicking on a cell with no mines
+next to it will also reveal all of its neighbors, and if any of those neighbors
+are not next to any mines, the process repeats.
+
+The goal of the game is to reveal every safe cell, leaving only mines on the
+board. Determine which cells are mines and which cells are safe using the
+numbers on the revealed cells. You can mark cells that you're sure are mines
+by right-clicking on them. This will change the cells' icons to flags. Flagged
+cells cannot be clicked until the flag is removed. Optionally, you can also
+mark cells with question marks to indicate that the cell may be a mine, but you
+aren't certain. Question marks are purely a visual aid. Cells marked with
+question marks behave exactly the same as blank hidden cells. When question
+marks are enabled, right-clicking a cell cycles between flag, question mark,
+and blank. When they are disabled, right-clicking simply toggles the flag on
+and off.
+
+When a revealed cell has the same number of flags next to it as the number
+shown on the cell, you may quickly reveal all other non-flagged adjacent cells
+by performing a chord click. The chord click is performed by pressing the left
+and right mouse buttons at the same time, or by clicking the middle mouse
+button if present. If your flags were placed incorrectly, the chord click may
+result in a mine being clicked, losing the game. There is an option in the game
+to enable chord clicking by simply left-clicking on revealed cells instead of
+requiring multiple buttons at once or a third button, useful for devices with
+only one mouse button.
+
+Optionally, the chord click can also be used to set flags by clicking on a
+revealed cell with the same number of hidden neighbors as the number shown
+on the cell. This is toggled in the options menu. If left-click chord clicking
+is enabled, the left click works with chord flagging as well.
 
 ## Implementation-Specific Features
 
-The mines are placed on the board randomly after the first click is made. If
-the first click is a left click, no mines are placed in the region immediately 
-surrounding the first click, ensuring that the first click reveals more than 
-one cell. The minimum number of cells revealed by the first click is 4, which
-occurs when the click is made in a corner, and each of the three cells adjacent
-to this click is itself adjacent to a mine.
+While jMinesweeper is designed to behave almost identically to the original
+version bundled with Windows by default, it has several options that were not
+present in the original. These options can be toggled mid-game in the options
+menu.
 
-If a revealed cell is adjacent to the same number of flags as its displayed
-number, its adjacent non-flagged cells can all be revealed at once by clicking
-on the revealed cell in question. If the appropriate number of flags have not
-been set adjacent to the cell, the click will have no effect (and won't even
-give visual feedback on-click), and if the flags are set incorrectly, a mine
-will be clicked resulting in a loss.
+In the original minesweeper, while the player's first click was guaranteed to
+not be a mine, the first click could still only reveal one cell. Most cases,
+guessing was required after only one click. jMinesweeper has the option
+"First click always blank". When this option is enabled, the first click is 
+guaranteed to reveal a blank cell with no number, revealing all of its neighbor
+cells along with it. The minimum number of cells revealed by the first click is
+4, which occurs when the click is made in a corner, and each of the three cells 
+adjacent to this click is itself adjacent to a mine.
+
+jMinesweeper also has an option to perform the chord-click operation by 
+left-clicking an already-revealed cell. Present in many modern online and
+mobile versions of the game, this option is off by default in jMinesweeper, 
+in order to match the behavior of the original Windows version.
+
+jMinesweeper also optionally supports placing flags using the chord click
+operation when the number of hidden cells adjacent to a revealed cell matches
+the number of adjacent mines. Like left-click chording, this feature is present
+in some modern versions of the game but absent in the original, so it's
+disabled by default.
+
+A feature present in the original Windows Minesweeper but uncommonly used by
+players and absent from some modern versions, jMinesweeper supports marking
+cells with question marks. Question marks can be disabled in the options menu,
+and disabling question marks while there are question marks on the board turns
+all existing question marks into blank hidden cells. To match the behavior of
+the original, question marks are on by default.
+
+Finally, the auto-flag that happens when the player reveals the last non-mine
+cell can be turned off by unchecking the "Auto-flag last cells" option,
+forcing the player to flag every cell before the game is won. By default, 
+auto-flagging is enabled, as nearly every version of the game displays this
+endgame behavior.
 
 ## Known Bugs
 
@@ -81,3 +135,5 @@ In the most recent update, an extra pack() call was added, which makes the
 frame the right size but in the wrong location. I have no idea how a call to
 pack() could retroactively change the position of a JFrame to where it was
 previously, but that seems to be what's happening.
+
+Please open an issue if you encounter a new bug!
