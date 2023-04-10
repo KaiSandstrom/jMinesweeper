@@ -141,6 +141,7 @@ public class InfoPanel {
         mineCount.setGame(g);
         mineCount.setNums();
         timeCount.clearTimer();
+        smiley.setIcon(smileyNormal);
     }
 
     //  Invoked by CellBoardPanel when a successful right click has been

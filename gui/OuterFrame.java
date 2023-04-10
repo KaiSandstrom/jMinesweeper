@@ -445,7 +445,7 @@ public class OuterFrame {
     private class AboutListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String message = "<html>jMinesweeper<br>Version 1.3.0<br><br>" +
+            String message = "<html>jMinesweeper<br>Version 1.3.1<br><br>" +
                             "A faithful re-creation of the original Windows<br>" +
                             "Minesweeper, written in Java using Swing<br><br>" +
                             "2022-2023<br>By Kai Sandstrom<br><br>" +

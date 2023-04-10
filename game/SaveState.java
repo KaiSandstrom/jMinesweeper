@@ -52,9 +52,9 @@ public class SaveState implements Serializable, Iterable<String[]> {
         scores = new HashMap<>();
         selected = Difficulty.INTERMEDIATE;
         lastCustomEntry = new String[]{"", "", ""};
-        questionMarks = false;
-        firstBlank = true;
-        leftChord = true;
+        questionMarks = true;
+        firstBlank = false;
+        leftChord = false;
         autoFlag = true;
         flagChord = false;
     }
