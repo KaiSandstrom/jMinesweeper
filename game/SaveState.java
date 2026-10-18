@@ -197,7 +197,7 @@ public class SaveState implements Serializable, Iterable<String[]> {
     //      defined in the compareTo method in Difficulty.
     @Override
     public Iterator<String[]> iterator() {
-        return new Iterator<String[]>() {
+        return new Iterator<>() {
 
             private final HashSet<Difficulty> visited = new HashSet<>();
             private final ArrayList<Difficulty> keys = new ArrayList<>(scores.keySet());

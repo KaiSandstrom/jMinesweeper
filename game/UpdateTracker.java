@@ -32,7 +32,7 @@ public class UpdateTracker implements Iterable<Posn> {
 
             @Override
             public Posn next() {
-                return updated.remove(0);
+                return updated.removeFirst();
             }
         };
     }
