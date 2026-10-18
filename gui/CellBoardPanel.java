@@ -303,40 +303,23 @@ public class CellBoardPanel {
     //  Simple switch statement to map viewState values to their associated
     //      ImageIcons.
     private ImageIcon getIconFromViewState(int viewState) {
-        ImageIcon icon;
-        switch (viewState) {
-            case Cell.REVEALED_BLANK:
-                icon = revealedBlank; break;
-            case Cell.REVEALED_1:
-                icon = revealedNumber1; break;
-            case Cell.REVEALED_2:
-                icon = revealedNumber2; break;
-            case Cell.REVEALED_3:
-                icon = revealedNumber3; break;
-            case Cell.REVEALED_4:
-                icon = revealedNumber4; break;
-            case Cell.REVEALED_5:
-                icon = revealedNumber5; break;
-            case Cell.REVEALED_6:
-                icon = revealedNumber6; break;
-            case Cell.REVEALED_7:
-                icon = revealedNumber7; break;
-            case Cell.REVEALED_8:
-                icon = revealedNumber8; break;
-            case Cell.FLAGGED:
-                icon = flagged; break;
-            case Cell.FALSE_FLAGGED:
-                icon = falseFlagged; break;
-            case Cell.REVEALED_MINE:
-                icon = revealedMine; break;
-            case Cell.EXPLODED_MINE:
-                icon = revealedExploded; break;
-            case Cell.QUESTION_MARKED:
-                icon = questionMarked; break;
-            default:
-                icon = unrevealed;
-        }
-        return icon;
+        return switch (viewState) {
+            case Cell.REVEALED_BLANK -> revealedBlank;
+            case Cell.REVEALED_1 -> revealedNumber1;
+            case Cell.REVEALED_2 -> revealedNumber2;
+            case Cell.REVEALED_3 -> revealedNumber3;
+            case Cell.REVEALED_4 -> revealedNumber4;
+            case Cell.REVEALED_5 -> revealedNumber5;
+            case Cell.REVEALED_6 -> revealedNumber6;
+            case Cell.REVEALED_7 -> revealedNumber7;
+            case Cell.REVEALED_8 -> revealedNumber8;
+            case Cell.FLAGGED -> flagged;
+            case Cell.FALSE_FLAGGED -> falseFlagged;
+            case Cell.REVEALED_MINE -> revealedMine;
+            case Cell.EXPLODED_MINE -> revealedExploded;
+            case Cell.QUESTION_MARKED -> questionMarked;
+            default -> unrevealed;
+        };
     }
 
 }

@@ -15,24 +15,6 @@ public abstract class NumericDisplay {
     //  The two subclasses of NumericDisplay inherit the setNumsFromInt method,
     //      which takes an int, and if possible, modifies the numeric display
     //      JPanel to reflect the given int.
-
-    private final ImageIcon numsBorderTop = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/numsBorderTop.png")));
-    private final ImageIcon numsBorderBottom = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/numsBorderBottom.png")));
-    private final ImageIcon numsBorderLeft = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/numsBorderLeft.png")));
-    private final ImageIcon numsBorderRight = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/numsBorderRight.png")));
-    private final ImageIcon numsBorderCornerTL = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/numsBorderCornerTL.png")));
-    private final ImageIcon numsBorderCornerTR = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/numsBorderCornerTR.png")));
-    private final ImageIcon numsBorderCornerBR = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/numsBorderCornerBR.png")));
-    private final ImageIcon numsBorderCornerBL = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/numsBorderCornerBL.png")));
-
     private final ImageIcon numDisplayNeg = new ImageIcon(Objects.requireNonNull(
             getClass().getResource("/resources/numDisplayNeg.png")));
     private final ImageIcon numDisplay0 = new ImageIcon(Objects.requireNonNull(
@@ -63,18 +45,34 @@ public abstract class NumericDisplay {
     //      zeroes.
     public NumericDisplay() {
         JPanel north = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        ImageIcon numsBorderCornerTL = new ImageIcon(Objects.requireNonNull(
+                getClass().getResource("/resources/numsBorderCornerTL.png")));
         north.add(new JLabel(numsBorderCornerTL));
+        ImageIcon numsBorderTop = new ImageIcon(Objects.requireNonNull(
+                getClass().getResource("/resources/numsBorderTop.png")));
         north.add(new JLabel(numsBorderTop));
+        ImageIcon numsBorderCornerTR = new ImageIcon(Objects.requireNonNull(
+                getClass().getResource("/resources/numsBorderCornerTR.png")));
         north.add(new JLabel(numsBorderCornerTR));
         outer.add(north, BorderLayout.NORTH);
 
+        ImageIcon numsBorderLeft = new ImageIcon(Objects.requireNonNull(
+                getClass().getResource("/resources/numsBorderLeft.png")));
         outer.add(new JLabel(numsBorderLeft), BorderLayout.WEST);
 
+        ImageIcon numsBorderRight = new ImageIcon(Objects.requireNonNull(
+                getClass().getResource("/resources/numsBorderRight.png")));
         outer.add(new JLabel(numsBorderRight), BorderLayout.EAST);
 
         JPanel south = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        ImageIcon numsBorderCornerBL = new ImageIcon(Objects.requireNonNull(
+                getClass().getResource("/resources/numsBorderCornerBL.png")));
         south.add(new JLabel(numsBorderCornerBL));
+        ImageIcon numsBorderBottom = new ImageIcon(Objects.requireNonNull(
+                getClass().getResource("/resources/numsBorderBottom.png")));
         south.add(new JLabel(numsBorderBottom));
+        ImageIcon numsBorderCornerBR = new ImageIcon(Objects.requireNonNull(
+                getClass().getResource("/resources/numsBorderCornerBR.png")));
         south.add(new JLabel(numsBorderCornerBR));
         outer.add(south, BorderLayout.SOUTH);
 
@@ -116,30 +114,18 @@ public abstract class NumericDisplay {
     //  Simple switch statement wrapper to map digits to icons.
     private ImageIcon intToIcon(int num) {
         num = Math.abs(num);
-        ImageIcon result;
-        switch (num) {
-            case 1:
-                result = numDisplay1; break;
-            case 2:
-                result = numDisplay2; break;
-            case 3:
-                result = numDisplay3; break;
-            case 4:
-                result = numDisplay4; break;
-            case 5:
-                result = numDisplay5; break;
-            case 6:
-                result = numDisplay6; break;
-            case 7:
-                result = numDisplay7; break;
-            case 8:
-                result = numDisplay8; break;
-            case 9:
-                result = numDisplay9; break;
-            default:
-                result = numDisplay0;
-        }
-        return result;
+        return switch (num) {
+            case 1 -> numDisplay1;
+            case 2 -> numDisplay2;
+            case 3 -> numDisplay3;
+            case 4 -> numDisplay4;
+            case 5 -> numDisplay5;
+            case 6 -> numDisplay6;
+            case 7 -> numDisplay7;
+            case 8 -> numDisplay8;
+            case 9 -> numDisplay9;
+            default -> numDisplay0;
+        };
     }
 
 

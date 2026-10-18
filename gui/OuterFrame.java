@@ -211,7 +211,7 @@ public class OuterFrame {
         content.add(nameInput);
         JOptionPane.showConfirmDialog(frame, content, "New High Score", JOptionPane.DEFAULT_OPTION);
         String name = nameInput.getText();
-        if (name.equals(""))
+        if (name.isEmpty())
             name = "Anonymous";
         state.addScore(current, name, newScore);
         state.saveToFile();
@@ -232,7 +232,7 @@ public class OuterFrame {
         public void actionPerformed(ActionEvent e) {
             //  If the item has become selected, set the selected item
             //      reference to this item and reset the board.
-            if (item.isSelected()) {
+            if (item.isSelected() && !textToDifficulty().equals(state.getSelected())) {
                 selected = item;
                 resetFrame(textToDifficulty());
             }
@@ -299,19 +299,19 @@ public class OuterFrame {
             if (newDiff.equals(Difficulty.BEGINNER)) {
                 JOptionPane.showMessageDialog(frame,
                         "Custom field is the same as Beginner. Starting new Beginner game...\n ",
-                        "", JOptionPane.WARNING_MESSAGE);
+                        "", JOptionPane.INFORMATION_MESSAGE);
                 beginner.doClick();
                 return;
             } else if (newDiff.equals(Difficulty.INTERMEDIATE)) {
                 JOptionPane.showMessageDialog(frame,
                         "Custom field is the same as Intermediate. Starting new Intermediate game...\n ",
-                        "", JOptionPane.WARNING_MESSAGE);
+                        "", JOptionPane.INFORMATION_MESSAGE);
                 intermediate.doClick();
                 return;
             } else if (newDiff.equals(Difficulty.EXPERT)) {
                 JOptionPane.showMessageDialog(frame,
                         "Custom field is the same as Expert. Starting new Expert game...\n ",
-                        "", JOptionPane.WARNING_MESSAGE);
+                        "", JOptionPane.INFORMATION_MESSAGE);
                 expert.doClick();
                 return;
             }
@@ -342,6 +342,8 @@ public class OuterFrame {
                 loadParams();
                 return prompt();
             }
+            if (new Difficulty(rows, cols, mines).equals(state.getSelected()))
+                return false;
             if (!isValidScreenSize(rows, cols)) {
                 Dimension maxSize = getMaxBoardSize();
                 reason = "Custom board is too big to fit on the screen.\n\nLargest possible board for your screen:\n" +
@@ -448,12 +450,18 @@ public class OuterFrame {
             String message = "<html>jMinesweeper<br>Version 1.3.1<br><br>" +
                             "A faithful re-creation of the original Windows<br>" +
                             "Minesweeper, written in Java using Swing<br><br>" +
-                            "2022-2023<br>By Kai Sandstrom<br><br>" +
+                            "2022-2026<br>By Kai Sandstrom<br><br>" +
                             "Source code available here:<br>" +
                             "<a href=\"https://github.com/KaiSandstrom/jMinesweeper\">" +
                             "https://github.com/KaiSandstrom/jMinesweeper</a><br><br>" +
                             "Have suggestions? Found a bug?<br>Feel free to open an issue!" +
                             "</html>";
+            JEditorPane msgContainer = getJEditorPane(message);
+            JOptionPane.showMessageDialog(frame, msgContainer,
+                    "About jMinesweeper", JOptionPane.PLAIN_MESSAGE, mineIcon);
+        }
+
+        private JEditorPane getJEditorPane(String message) {
             JEditorPane msgContainer = new JEditorPane("text/html", message);
             msgContainer.addHyperlinkListener(e1 -> {
                 if (e1.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
@@ -467,8 +475,7 @@ public class OuterFrame {
             msgContainer.setBackground(frame.getBackground());
             msgContainer.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
             msgContainer.setFont(new Font("Dialog", Font.BOLD, 12));
-            JOptionPane.showMessageDialog(frame, msgContainer,
-                    "About jMinesweeper", JOptionPane.PLAIN_MESSAGE, mineIcon);
+            return msgContainer;
         }
     }
 
