@@ -61,7 +61,7 @@ public class Board {
         if (firstAlwaysBlank)
             return (!(mineR>=cellR-1 && mineR<=cellR+1 && mineC>=cellC-1 && mineC<=cellC+1));
         else
-            return (cellR != mineR && cellC != mineC);
+            return (cellR != mineR || cellC != mineC);
     }
 
     //  This method is called immediately after initially populating the board
@@ -97,7 +97,7 @@ public class Board {
                 if (!c.isFlagged() && !c.isRevealed())
                     if (++unrevealed > minesMinusFlags)
                         return false;
-        return true;
+        return (unrevealed == minesMinusFlags);
     }
 
     //  Returns the number of flagged cells adjacent to a given cell.
