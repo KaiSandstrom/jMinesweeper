@@ -563,9 +563,13 @@ public class OuterFrame {
         //      information, and if confirmed, clears the high score table and
         //      displays the new (blank) table.
         private void promptClear() {
-            int result = JOptionPane.showConfirmDialog(frame, "Are you sure you want to reset your high " +
+            Object[] options = {
+                    UIManager.getString("OptionPane.yesButtonText"),
+                    UIManager.getString("OptionPane.noButtonText")
+            };
+            int result = JOptionPane.showOptionDialog(frame, "Are you sure you want to reset your high " +
                             "scores?\nThis cannot be undone.", "Reset Scores?", JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE);
+                    JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
             if (result == JOptionPane.YES_OPTION) {
                 state.clearScores();
             }
