@@ -270,15 +270,16 @@ public class CellBoardPanel {
                 int count = 0;
                 for (int i=row-1; i<=row+1; i++)
                     for (int j=col-1; j<=col+1; j++)
-                        if (isValidCell(i, j) && (game.getViewState(i, j) == Cell.UNREVEALED ||
-                                game.getViewState(i, j) == Cell.QUESTION_MARKED))
+                        if (isValidCell(i,j) &&
+                                (game.getViewState(i,j) == Cell.UNREVEALED ||
+                                game.getViewState(i,j) == Cell.QUESTION_MARKED))
                             count++;
                 return count;
             }
 
             //  Simple shorthand to make if statements cleaner
             private boolean isValidCell(int i, int j) {
-                return (i>=0 && j>=0 && i<rows && j<cols);
+                return (i>=0 && j>=0 &&i<rows && j<cols);
             }
         });
     }
@@ -296,7 +297,7 @@ public class CellBoardPanel {
         for (Posn pos : updateTracker) {
             int r = pos.row();
             int c = pos.col();
-            buttons[r][c].setIcon(getIconFromViewState(game.getViewState(r, c)));
+            buttons[r][c].setIcon(getIconFromViewState(game.getViewState(r,c)));
         }
     }
 

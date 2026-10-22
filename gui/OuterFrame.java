@@ -16,7 +16,8 @@ public class OuterFrame {
     //  OuterFrame stores and modifies a JFrame, which is the game window.
     //      This JFrame contains one element, a JPanel returned by a GamePanel
     //      object. The JFrame also has JMenus to set the difficulty, reset the
-    //      game, and display an info/credits box.
+    //      game, view high scores, set options, and display an
+    //      info/credits box.
 
     private final ImageIcon mineIcon = new ImageIcon(Objects.requireNonNull(
             getClass().getResource("/resources/mineIcon.png")));
@@ -65,7 +66,8 @@ public class OuterFrame {
         difficulties.add(custom);
         bestTimes = new JMenuItem("Best Times...");
         initializeMenus();
-        gamePanel = new GamePanel(state.getSelected(), state.getOptionFlags(), this);
+        gamePanel = new GamePanel(state.getSelected(),
+                state.getOptionFlags(),this);
         frame.add(gamePanel.getGamePanel());
         frame.pack();
         frame.setLocationRelativeTo(null);
@@ -109,21 +111,31 @@ public class OuterFrame {
         gameMenu.addSeparator();
         gameMenu.add(bestTimes);
 
-        JCheckBoxMenuItem firstBlank = new JCheckBoxMenuItem("First click always blank");
-        JCheckBoxMenuItem leftChord = new JCheckBoxMenuItem("Chord with left click");
-        JCheckBoxMenuItem flagChord = new JCheckBoxMenuItem("Enable flag chording");
-        JCheckBoxMenuItem questionMarks = new JCheckBoxMenuItem("Question marks");
-        JCheckBoxMenuItem autoFlag = new JCheckBoxMenuItem("Auto-flag last cells");
+        JCheckBoxMenuItem firstBlank = new JCheckBoxMenuItem(
+                "First click always blank");
+        JCheckBoxMenuItem leftChord = new JCheckBoxMenuItem(
+                "Chord with left click");
+        JCheckBoxMenuItem flagChord = new JCheckBoxMenuItem(
+                "Enable flag chording");
+        JCheckBoxMenuItem questionMarks = new JCheckBoxMenuItem(
+                "Question marks");
+        JCheckBoxMenuItem autoFlag = new JCheckBoxMenuItem(
+                "Auto-flag last cells");
         firstBlank.setMnemonic(KeyEvent.VK_C);
         leftChord.setMnemonic(KeyEvent.VK_L);
         flagChord.setMnemonic(KeyEvent.VK_F);
         questionMarks.setMnemonic(KeyEvent.VK_Q);
         autoFlag.setMnemonic(KeyEvent.VK_A);
-        firstBlank.addActionListener(new OptionsListener(firstBlank, Game.FIRST_ALWAYS_BLANK));
-        leftChord.addActionListener(new OptionsListener(leftChord, Game.LEFT_CLICK_CHORD));
-        flagChord.addActionListener(new OptionsListener(flagChord, Game.FLAG_CHORD_ENABLED));
-        questionMarks.addActionListener(new OptionsListener(questionMarks, Game.QUESTION_MARKS_ENABLED));
-        autoFlag.addActionListener(new OptionsListener(autoFlag, Game.AUTO_FLAG_LAST));
+        firstBlank.addActionListener(new OptionsListener(firstBlank,
+                Game.FIRST_ALWAYS_BLANK));
+        leftChord.addActionListener(new OptionsListener(leftChord,
+                Game.LEFT_CLICK_CHORD));
+        flagChord.addActionListener(new OptionsListener(flagChord,
+                Game.FLAG_CHORD_ENABLED));
+        questionMarks.addActionListener(new OptionsListener(questionMarks,
+                Game.QUESTION_MARKS_ENABLED));
+        autoFlag.addActionListener(new OptionsListener(autoFlag,
+                Game.AUTO_FLAG_LAST));
         optionsMenu.add(firstBlank);
         optionsMenu.add(leftChord);
         optionsMenu.add(flagChord);
@@ -209,7 +221,8 @@ public class OuterFrame {
         content.add(new JLabel(current.toString()));
         content.add(new JLabel("Please enter your name:"));
         content.add(nameInput);
-        JOptionPane.showConfirmDialog(frame, content, "New High Score", JOptionPane.DEFAULT_OPTION);
+        JOptionPane.showConfirmDialog(frame, content, "New High Score",
+                JOptionPane.DEFAULT_OPTION);
         String name = nameInput.getText();
         if (name.isEmpty())
             name = "Anonymous";
@@ -232,7 +245,8 @@ public class OuterFrame {
         public void actionPerformed(ActionEvent e) {
             //  If the item has become selected, set the selected item
             //      reference to this item and reset the board.
-            if (item.isSelected() && !textToDifficulty().equals(state.getSelected())) {
+            if (item.isSelected() && !textToDifficulty().equals(
+                    state.getSelected())) {
                 selected = item;
                 resetFrame(textToDifficulty());
             }
@@ -298,19 +312,22 @@ public class OuterFrame {
             Difficulty newDiff = new Difficulty(rows, cols, mines);
             if (newDiff.equals(Difficulty.BEGINNER)) {
                 JOptionPane.showMessageDialog(frame,
-                        "Custom field is the same as Beginner. Starting new Beginner game...\n ",
+                        "Custom field is the same as Beginner. Starting " +
+                                "new Beginner game...\n ",
                         "", JOptionPane.INFORMATION_MESSAGE);
                 beginner.doClick();
                 return;
             } else if (newDiff.equals(Difficulty.INTERMEDIATE)) {
                 JOptionPane.showMessageDialog(frame,
-                        "Custom field is the same as Intermediate. Starting new Intermediate game...\n ",
+                        "Custom field is the same as Intermediate. Starting " +
+                                "new Intermediate game...\n ",
                         "", JOptionPane.INFORMATION_MESSAGE);
                 intermediate.doClick();
                 return;
             } else if (newDiff.equals(Difficulty.EXPERT)) {
                 JOptionPane.showMessageDialog(frame,
-                        "Custom field is the same as Expert. Starting new Expert game...\n ",
+                        "Custom field is the same as Expert. Starting " +
+                                "new Expert game...\n ",
                         "", JOptionPane.INFORMATION_MESSAGE);
                 expert.doClick();
                 return;
@@ -319,15 +336,16 @@ public class OuterFrame {
         }
 
         //  The prompt method returns true if the user-input values describe a
-        //      valid board, and false otherwise. User input is collected via
-        //      JTextFields in a JOptionPane. Various checks are performed to
-        //      verify that the values describe a valid board, and various
-        //      descriptive error messages are provided in separate
-        //      JOptionPanes if they are invalid. Finally, if the user input
-        //      more than 1000 mines, a warning is displayed, as the mine
-        //      counter display has a maximum value of 999.
+        //      valid board that is not the current board, and false otherwise.
+        //      User input is collected via JTextFields in a JOptionPane.
+        //      Various checks are performed to verify that the values describe
+        //      a valid board, and various descriptive error messages are
+        //      provided in separate JOptionPanes if they are invalid. Finally,
+        //      if the user input more than 1000 mines, a warning is displayed,
+        //      as the mine counter display has a maximum value of 999.
         private boolean prompt() {
-            int result = JOptionPane.showConfirmDialog(frame, prompts, "Custom Field",
+            int result = JOptionPane.showConfirmDialog(frame, prompts,
+                    "Custom Field",
                     JOptionPane.OK_CANCEL_OPTION);
             if (result != JOptionPane.OK_OPTION)
                 return false;
@@ -337,7 +355,9 @@ public class OuterFrame {
                 rows = Integer.parseInt(getHeight.getText());
                 mines = Integer.parseInt(getMines.getText());
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(frame, "Invalid inputs:\n\nAll inputs must be whole numbers.\n ",
+                JOptionPane.showMessageDialog(frame,
+                        "Invalid inputs:\n\n" +
+                                "All inputs must be whole numbers.\n ",
                         "", JOptionPane.ERROR_MESSAGE);
                 loadParams();
                 return prompt();
@@ -346,17 +366,22 @@ public class OuterFrame {
                 return false;
             if (!isValidScreenSize(rows, cols)) {
                 Dimension maxSize = getMaxBoardSize();
-                reason = "Custom board is too big to fit on the screen.\n\nLargest possible board for your screen:\n" +
-                        "Height: " + (int)maxSize.getHeight() + "\nWidth:  " + (int)maxSize.getWidth() + "\n ";
+                reason = "Custom board is too big to fit on the screen.\n\n" +
+                        "Largest possible board for your screen:\n" +
+                        "Height: " + (int)maxSize.getHeight() + "\nWidth:  " +
+                        (int)maxSize.getWidth() + "\n ";
             } else if (cols < 9 || rows < 2)
-                reason = "Custom board must have at least 2 rows and 9 columns.\n ";
+                reason = "Custom board must have at least " +
+                        "2 rows and 9 columns.\n ";
             else if (mines > (cols * rows)-9)
-                reason = "Too many mines. There must be at least 9 non-mine cells on the board.\n ";
+                reason = "Too many mines. There must be at least 9 non-mine " +
+                        "cells on the board.\n ";
             else if (mines < 1)
                 reason = "There must be at least one mine on the board.\n ";
             if (reason != null) {
-                JOptionPane.showMessageDialog(frame, "Invalid inputs:\n\n" + reason,
-                        "", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame,
+                        "Invalid inputs:\n\n" + reason, "",
+                        JOptionPane.ERROR_MESSAGE);
                 loadParams();
                 return prompt();
             }
@@ -366,30 +391,37 @@ public class OuterFrame {
                     insert = " 1 mine has ";
                 else
                     insert = " " + (mines - 999) + " mines have ";
-                JOptionPane.showMessageDialog(frame, "This board has more than 999 mines.\n\nSince the left " +
-                                "numeric display in the info panel can\nonly display numbers up to 999, it will " +
-                                "display a\ndashed line until" + insert + "been flagged.\n ",
+                JOptionPane.showMessageDialog(frame, "This board has " +
+                                "more than 999 mines.\n\nSince the left " +
+                                "numeric display in the info panel can\nonly " +
+                                "display numbers up to 999, it will display " +
+                                "a\ndashed line until" + insert + "been " +
+                                "flagged.\n ",
                         "", JOptionPane.WARNING_MESSAGE);
             }
-            state.setLastCustomEntry(new String[]{getHeight.getText(), getWidth.getText(), getMines.getText()});
+            state.setLastCustomEntry(new String[]{getHeight.getText(),
+                    getWidth.getText(), getMines.getText()});
             return true;
         }
 
         //  Private method to check that a board with a given number of rows
         //      and columns can fit on the system's screen.
         private boolean isValidScreenSize(int rows, int cols) {
-            GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            GraphicsEnvironment env =
+                    GraphicsEnvironment.getLocalGraphicsEnvironment();
             Rectangle bounds = env.getMaximumWindowBounds();
             int newWidth = getWidthInPixels(cols);
             int newHeight = getHeightInPixels(rows) +
                     (frame.getHeight() - gamePanel.getGamePanel().getHeight());
-            return (newWidth <= bounds.getWidth()) && (newHeight <= bounds.getHeight());
+            return (newWidth <= bounds.getWidth()) &&
+                    (newHeight <= bounds.getHeight());
         }
 
         //  Private method that returns the maximum number of rows and columns
         //      that can fit on the screen.
         private Dimension getMaxBoardSize() {
-            GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            GraphicsEnvironment env =
+                    GraphicsEnvironment.getLocalGraphicsEnvironment();
             Rectangle bounds = env.getMaximumWindowBounds();
             int maxRows = getMaxRowsFromHeightInPixels((int)bounds.getHeight() -
                     (frame.getHeight() - gamePanel.getGamePanel().getHeight()));
@@ -448,32 +480,35 @@ public class OuterFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             String message = "<html>jMinesweeper<br>Version 1.3.2<br><br>" +
-                            "A faithful re-creation of the original Windows<br>" +
-                            "Minesweeper, written in Java using Swing<br><br>" +
-                            "2022-2026<br>By Kai Sandstrom<br><br>" +
-                            "Source code available here:<br>" +
-                            "<a href=\"https://github.com/KaiSandstrom/jMinesweeper\">" +
-                            "https://github.com/KaiSandstrom/jMinesweeper</a><br><br>" +
-                            "Have suggestions? Found a bug?<br>Feel free to open an issue!" +
-                            "</html>";
+                    "A faithful re-creation of the original Windows<br>" +
+                    "Minesweeper, written in Java using Swing<br><br>2022-" +
+                    "2026<br>By Kai Sandstrom<br><br>Source code available " +
+                    "here:<br><a href=\"https://github.com/KaiSandstrom/" +
+                    "jMinesweeper\">https://github.com/KaiSandstrom/" +
+                    "jMinesweeper</a><br><br>Have suggestions? Found a bug?" +
+                    "<br>Feel free to open an issue!</html>";
             JEditorPane msgContainer = getJEditorPane(message);
             JOptionPane.showMessageDialog(frame, msgContainer,
                     "About jMinesweeper", JOptionPane.PLAIN_MESSAGE, mineIcon);
         }
 
         private JEditorPane getJEditorPane(String message) {
-            JEditorPane msgContainer = new JEditorPane("text/html", message);
+            JEditorPane msgContainer = new JEditorPane("text/html",
+                    message);
             msgContainer.addHyperlinkListener(e1 -> {
-                if (e1.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
+                if (e1.getEventType().equals(
+                        HyperlinkEvent.EventType.ACTIVATED))
                     try {
                         Desktop.getDesktop().browse(e1.getURL().toURI());
                     } catch (URISyntaxException | IOException ex) {
-                        JOptionPane.showMessageDialog(msgContainer, "Error: Could not open link.");
+                        JOptionPane.showMessageDialog(msgContainer,
+                                "Error: Could not open link.");
                     }
             });
             msgContainer.setEditable(false);
             msgContainer.setBackground(frame.getBackground());
-            msgContainer.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+            msgContainer.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES,
+                    Boolean.TRUE);
             msgContainer.setFont(new Font("Dialog", Font.BOLD, 12));
             return msgContainer;
         }
@@ -490,10 +525,13 @@ public class OuterFrame {
         public void actionPerformed(ActionEvent e) {
             JPanel scores = getScoresPanel();
             String[] choices = {"Reset Scores", "Close"};
-            ImageIcon smallerIcon = new ImageIcon(mineIcon.getImage().getScaledInstance(
-                    64, 64, Image.SCALE_REPLICATE));
-            int result = JOptionPane.showOptionDialog(frame, scores, "Best Times", JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE, smallerIcon, choices, choices[1]);
+            ImageIcon smallerIcon = new ImageIcon(
+                    mineIcon.getImage().getScaledInstance(64, 64,
+                            Image.SCALE_REPLICATE));
+            int result = JOptionPane.showOptionDialog(frame, scores,
+                    "Best Times", JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE, smallerIcon, choices,
+                    choices[1]);
             if (result == JOptionPane.YES_OPTION)
                 promptClear();
         }
@@ -550,7 +588,9 @@ public class OuterFrame {
                 scores.add(new JSeparator());
             }
             for (String[] report : state) {
-                if (report[0].equals("Beginner") || report[0].equals("Intermediate") || report[0].equals("Expert"))
+                if (report[0].equals("Beginner") ||
+                        report[0].equals("Intermediate") ||
+                        report[0].equals("Expert"))
                     continue;
                 scores.add(new JLabel(report[0]));
                 scores.add(new JLabel(report[1]));
@@ -567,9 +607,13 @@ public class OuterFrame {
                     UIManager.getString("OptionPane.yesButtonText"),
                     UIManager.getString("OptionPane.noButtonText")
             };
-            int result = JOptionPane.showOptionDialog(frame, "Are you sure you want to reset your high " +
-                            "scores?\nThis cannot be undone.", "Reset Scores?", JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+            int result = JOptionPane.showOptionDialog(frame,
+                    "Are you sure you want to reset your high " +
+                            "scores?\nThis cannot be undone.",
+                    "Reset Scores?",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null, options, options[1]);
             if (result == JOptionPane.YES_OPTION) {
                 state.clearScores();
             }
@@ -594,20 +638,23 @@ public class OuterFrame {
     //  Returns the number of columns that can fit into a board of a
     //      theoretical width in pixels.
     private int getMaxColsFromWidthInPixels(int pix) {
-        return (pix - (2 + 2*(GamePanel.borderCornerTL.getIconWidth()))) / GamePanel.borderEdgeHoriz.getIconWidth();
+        return (pix - (2 + 2*(GamePanel.borderCornerTL.getIconWidth()))) /
+                GamePanel.borderEdgeHoriz.getIconWidth();
     }
 
     //  Returns the number of rows that can fit into a board of a theoretical
     //      height in pixels.
     private int getMaxRowsFromHeightInPixels(int pix) {
         return (pix - (2 + 3*(GamePanel.borderCornerTL.getIconHeight()) +
-                2*GamePanel.borderEdgeVert.getIconHeight())) / GamePanel.borderEdgeVert.getIconHeight();
+                2*GamePanel.borderEdgeVert.getIconHeight())) /
+                GamePanel.borderEdgeVert.getIconHeight();
     }
 
     //  Determines proper frame Dimension from Difficulty.
     private Dimension getNewSize(Difficulty diff) {
         int newX = getWidthInPixels(diff.getColumns());
-        int topBarHeight = frame.getHeight() - gamePanel.getGamePanel().getHeight();
+        int topBarHeight = frame.getHeight() -
+                gamePanel.getGamePanel().getHeight();
         int newY = getHeightInPixels(diff.getRows()) + topBarHeight;
         return new Dimension(newX, newY);
     }

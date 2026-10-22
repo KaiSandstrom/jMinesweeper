@@ -19,16 +19,21 @@ public class InfoPanel {
     //      the number of unflagged mines remaining, the smiley icon that
     //      serves as a reset button, and the timer.
 
-    private final ImageIcon smileyNormal = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/smileyNormal.png")));
-    private final ImageIcon smileyPressed = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/smileyPressed.png")));
-    private final ImageIcon smileyShocked = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/smileyShocked.png")));
-    private final ImageIcon smileyDead = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/smileyDead.png")));
-    private final ImageIcon smileyCool = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/smileyCool.png")));
+    private final ImageIcon smileyNormal =
+            new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/resources/smileyNormal.png")));
+    private final ImageIcon smileyPressed =
+            new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/resources/smileyPressed.png")));
+    private final ImageIcon smileyShocked =
+            new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/resources/smileyShocked.png")));
+    private final ImageIcon smileyDead =
+            new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/resources/smileyDead.png")));
+    private final ImageIcon smileyCool =
+            new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/resources/smileyCool.png")));
 
     private final JPanel infoPanel;
     private final GamePanel gamePanel;
@@ -50,12 +55,14 @@ public class InfoPanel {
     //  Initializes the three elements in the InfoPanel and places them in the
     //      correct locations.
     private void initialize() {
-        JPanel mineCountHolder = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 8));
+        JPanel mineCountHolder = new JPanel(
+                new FlowLayout(FlowLayout.LEFT, 6, 8));
         mineCountHolder.add(mineCount.getPanel());
         mineCountHolder.setBackground(new Color(198, 198, 198));
         infoPanel.add(mineCountHolder);
         initSmiley();
-        JPanel timeCountHolder = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 8));
+        JPanel timeCountHolder = new JPanel(
+                new FlowLayout(FlowLayout.RIGHT, 6, 8));
         timeCountHolder.add(timeCount.getPanel());
         timeCountHolder.setBackground(new Color(198, 198, 198));
         infoPanel.add(timeCountHolder);
@@ -64,7 +71,8 @@ public class InfoPanel {
     //  Initializes the smiley button, including listeners for mouse events.
     private void initSmiley() {
         smiley.setBorder(new EmptyBorder(0, 0, 0, 0));
-        JPanel smileyHolder = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 6));
+        JPanel smileyHolder = new JPanel(
+                new FlowLayout(FlowLayout.CENTER, 0, 6));
         smileyHolder.add(smiley);
         smileyHolder.setBackground(new Color(198, 198, 198));
         infoPanel.add(smileyHolder);

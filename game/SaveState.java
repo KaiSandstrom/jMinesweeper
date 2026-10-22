@@ -80,7 +80,8 @@ public class SaveState implements Serializable, Iterable<String[]> {
     //  Save SaveState to file.
     public void saveToFile() {
         try {
-            FileOutputStream file = new FileOutputStream("jMinesweeperSaveData");
+            FileOutputStream file =
+                    new FileOutputStream("jMinesweeperSaveData");
             ObjectOutputStream out = new ObjectOutputStream(file);
             out.writeObject(this);
             out.close();
@@ -107,7 +108,8 @@ public class SaveState implements Serializable, Iterable<String[]> {
     }
 
     public String[] getScoreReport(Difficulty diff) {
-        return new String[]{diff.toString(), scores.get(diff).score+" seconds", scores.get(diff).playerName};
+        return new String[]{diff.toString(), scores.get(diff).score+" seconds",
+                scores.get(diff).playerName};
     }
 
     public void addScore(Difficulty diff, String name, int score) {
@@ -200,7 +202,8 @@ public class SaveState implements Serializable, Iterable<String[]> {
         return new Iterator<>() {
 
             private final HashSet<Difficulty> visited = new HashSet<>();
-            private final ArrayList<Difficulty> keys = new ArrayList<>(scores.keySet());
+            private final ArrayList<Difficulty> keys =
+                    new ArrayList<>(scores.keySet());
 
             @Override
             public boolean hasNext() {
@@ -209,7 +212,8 @@ public class SaveState implements Serializable, Iterable<String[]> {
 
             @Override
             public String[] next() {
-                Difficulty key = keys.remove(keys.indexOf(Collections.min(keys)));
+                Difficulty key = keys.remove(
+                        keys.indexOf(Collections.min(keys)));
                 visited.add(key);
                 return getScoreReport(key);
             }

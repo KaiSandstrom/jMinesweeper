@@ -57,7 +57,8 @@ public class Game {
     public Game(Game g) {
         difficulty = g.difficulty;
         updateTracker = new UpdateTracker();
-        board = new Board(difficulty.getRows(), difficulty.getColumns(), updateTracker);
+        board = new Board(difficulty.getRows(), difficulty.getColumns(),
+                updateTracker);
         minesMinusFlags = difficulty.getMines();
         firstAlwaysBlank = g.firstAlwaysBlank;
         leftClickChord = g.leftClickChord;
@@ -118,10 +119,12 @@ public class Game {
     }
 
     // Checks if the game is won and sets the game state accordingly. If
-    //      the auto-flagging option is enabled, the call to board.checkWin()
-    //      will flag the remaining unflagged cells.
+    //      the auto-flagging option is enabled, all flags are placed correctly,
+    //      and all remaining unrevealed cells are mines, all remaining
+    //      unrevealed cells are flagged.
     private void updateWinCondition() {
-        if (gameState == NOT_STARTED || gameState == OVER_LOSS || (!autoFlagLastCells && minesMinusFlags != 0))
+        if (gameState == NOT_STARTED || gameState == OVER_LOSS ||
+                (!autoFlagLastCells && minesMinusFlags != 0))
             return;
         if (board.checkWin(minesMinusFlags)) {
             gameState = OVER_WIN;
@@ -190,7 +193,8 @@ public class Game {
             return;
         if (flagChordEnabled && chordType == Board.FLAG_CHORD)
             minesMinusFlags -= board.chordClickRight(row, col);
-        else if (chordType == Board.REVEAL_CHORD && board.chordClickLeft(row, col)) {
+        else if (chordType == Board.REVEAL_CHORD &&
+                board.chordClickLeft(row, col)) {
             board.setRevealed();
             gameState = OVER_LOSS;
         }

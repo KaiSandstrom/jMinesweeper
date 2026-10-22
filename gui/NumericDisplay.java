@@ -15,8 +15,9 @@ public abstract class NumericDisplay {
     //  The two subclasses of NumericDisplay inherit the setNumsFromInt method,
     //      which takes an int, and if possible, modifies the numeric display
     //      JPanel to reflect the given int.
-    private final ImageIcon numDisplayNeg = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/numDisplayNeg.png")));
+    private final ImageIcon numDisplayNeg =
+            new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/resources/numDisplayNeg.png")));
     private final ImageIcon numDisplay0 = new ImageIcon(Objects.requireNonNull(
             getClass().getResource("/resources/numDisplay0.png")));
     private final ImageIcon numDisplay1 = new ImageIcon(Objects.requireNonNull(

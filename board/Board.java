@@ -37,13 +37,15 @@ public class Board {
     //      adjacent to any mines. This method uses the rowPos and colPos
     //      arguments to avoid placing mines on and/or adjacent to the
     //      first-clicked cell.
-    public void populateBoard(int rowPos, int colPos, int totalMines, boolean firstAlwaysBlank) {
+    public void populateBoard(int rowPos, int colPos, int totalMines,
+                              boolean firstAlwaysBlank) {
         int currentMines = 0;
         while (currentMines < totalMines) {
             int randomRow = (int)(Math.random()*nRows);
             int randomCol = (int)(Math.random()*nCols);
             if (board[randomRow][randomCol] == null &&
-                    validMineLocation(rowPos, colPos, randomRow, randomCol, firstAlwaysBlank)) {
+                    validMineLocation(rowPos, colPos, randomRow, randomCol,
+                            firstAlwaysBlank)) {
                 board[randomRow][randomCol] = new MineCell();
                 currentMines++;
             }
@@ -57,9 +59,11 @@ public class Board {
 
     // Returns true if the provided mine location is a valid mine placement
     //      based on the first-clicked cell location and boolean flag
-    private boolean validMineLocation(int cellR, int cellC, int mineR, int mineC, boolean firstAlwaysBlank) {
+    private boolean validMineLocation(int cellR, int cellC, int mineR,
+                                      int mineC, boolean firstAlwaysBlank) {
         if (firstAlwaysBlank)
-            return (!(mineR>=cellR-1 && mineR<=cellR+1 && mineC>=cellC-1 && mineC<=cellC+1));
+            return (!(mineR>=cellR-1 && mineR<=cellR+1 &&
+                    mineC>=cellC-1 && mineC<=cellC+1));
         else
             return (cellR != mineR || cellC != mineC);
     }
@@ -123,7 +127,8 @@ public class Board {
         int totalUnrevealedUnflagged = 0;
         for (int i=row-1; i<=row+1; i++)
             for (int j=col-1; j<=col+1; j++) {
-                if (isValidCell(i, j) && !board[i][j].isRevealed() && !board[i][j].isFlagged())
+                if (isValidCell(i, j) && !board[i][j].isRevealed() &&
+                        !board[i][j].isFlagged())
                     totalUnrevealedUnflagged++;}
         return totalUnrevealedUnflagged;
     }
@@ -134,7 +139,8 @@ public class Board {
         if (!board[row][col].isRevealed())
             return NO_CHORD;
         int flags = getFlagsAdjacent(row, col);
-        if (((EmptyCell)board[row][col]).getMinesAdjacent() == getUnrevealedUnflaggedAdjacent(row, col) + flags)
+        if (((EmptyCell)board[row][col]).getMinesAdjacent() ==
+                getUnrevealedUnflaggedAdjacent(row, col) + flags)
             return FLAG_CHORD;
         if (((EmptyCell)board[row][col]).getMinesAdjacent() == flags)
             return REVEAL_CHORD;
@@ -206,7 +212,8 @@ public class Board {
                     if (clickedMine && board[i][j].isMine())
                         continue;
                     clickedMine = (board[i][j].clickCell() || clickedMine);
-                    if (!board[i][j].isMine() && ((EmptyCell) board[i][j]).getMinesAdjacent() == 0)
+                    if (!board[i][j].isMine() &&
+                            ((EmptyCell) board[i][j]).getMinesAdjacent() == 0)
                         chainClickCells(i, j);
                     else
                         updateTracker.addUpdate(new Posn(i, j));
@@ -221,7 +228,8 @@ public class Board {
         int count = 0;
         for (int i = row - 1; i <= row + 1; i++)
             for (int j = col - 1; j <= col + 1; j++)
-                if (isValidCell(i, j) && (board[i][j].getViewState() == Cell.UNREVEALED ||
+                if (isValidCell(i, j) && (
+                        board[i][j].getViewState() == Cell.UNREVEALED ||
                         board[i][j].getViewState() == Cell.QUESTION_MARKED)) {
                     board[i][j].clearQuestionMark();
                     rightClickCell(i, j, false);

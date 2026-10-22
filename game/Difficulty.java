@@ -42,7 +42,8 @@ public class Difficulty implements Serializable, Comparable<Difficulty> {
             that = (Difficulty) other;
         else
             return false;
-        return (this.nRows == that.nRows && this.nCols == that.nCols && this.nMines == that.nMines);
+        return (this.nRows == that.nRows && this.nCols == that.nCols &&
+                this.nMines == that.nMines);
     }
 
     //  The default save states are rendered as their names. Others are marked

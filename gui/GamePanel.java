@@ -19,22 +19,30 @@ public class GamePanel {
     //  These first three are public static because they are used by methods
     //      for calculating the size in pixels of a theoretical sizes in pixels
     //      and cells of theoretical boards, located in OuterFrame
-    public static final ImageIcon borderEdgeHoriz = new ImageIcon(Objects.requireNonNull(
-            GamePanel.class.getResource("/resources/borderEdgeHoriz.png")));
-    public static final ImageIcon borderEdgeVert = new ImageIcon(Objects.requireNonNull(
-            GamePanel.class.getResource("/resources/borderEdgeVert.png")));
-    public static final ImageIcon borderCornerTL = new ImageIcon(Objects.requireNonNull(
-            GamePanel.class.getResource("/resources/borderCornerTL.png")));
-    private final ImageIcon borderCornerTR = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/borderCornerTR.png")));
-    private final ImageIcon borderCornerBR = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/borderCornerBR.png")));
-    private final ImageIcon borderCornerBL = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/borderCornerBL.png")));
-    private final ImageIcon borderMidLeft = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/borderMidLeft.png")));
-    private final ImageIcon borderMidRight = new ImageIcon(Objects.requireNonNull(
-            getClass().getResource("/resources/borderMidRight.png")));
+    public static final ImageIcon borderEdgeHoriz =
+            new ImageIcon(Objects.requireNonNull(GamePanel.class.getResource(
+                    "/resources/borderEdgeHoriz.png")));
+    public static final ImageIcon borderEdgeVert =
+            new ImageIcon(Objects.requireNonNull(GamePanel.class.getResource(
+                    "/resources/borderEdgeVert.png")));
+    public static final ImageIcon borderCornerTL =
+            new ImageIcon(Objects.requireNonNull(GamePanel.class.getResource(
+                    "/resources/borderCornerTL.png")));
+    private final ImageIcon borderCornerTR =
+            new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/resources/borderCornerTR.png")));
+    private final ImageIcon borderCornerBR =
+            new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/resources/borderCornerBR.png")));
+    private final ImageIcon borderCornerBL =
+            new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/resources/borderCornerBL.png")));
+    private final ImageIcon borderMidLeft =
+            new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/resources/borderMidLeft.png")));
+    private final ImageIcon borderMidRight =
+            new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/resources/borderMidRight.png")));
 
     private final int rows, cols;
     private final JPanel gamePanel;
@@ -43,7 +51,8 @@ public class GamePanel {
     private final InfoPanel info;
     private final OuterFrame parent;
 
-    public GamePanel(Difficulty difficulty, byte optionFlags, OuterFrame parentComponent) {
+    public GamePanel(Difficulty difficulty, byte optionFlags,
+                     OuterFrame parentComponent) {
         rows = difficulty.getRows();
         cols = difficulty.getColumns();
         gamePanel = new JPanel(new BorderLayout());
