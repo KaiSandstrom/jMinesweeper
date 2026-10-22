@@ -200,7 +200,7 @@ public class OuterFrame {
         Difficulty current = state.getSelected();
         if (state.containsEntry(current)) {
             int oldScore = state.getScoreSeconds(current);
-            if (newScore > oldScore)
+            if (newScore >= oldScore)
                 return;
         }
         JPanel content = new JPanel(new GridLayout(4, 1, 0, 5));
